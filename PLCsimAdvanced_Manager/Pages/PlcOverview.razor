@@ -1,0 +1,142 @@
+@page "/plcoverview"
+@using Siemens.Simatic.Simulation.Runtime
+@using System.Net.Http.Json
+@using System.Reflection.Metadata.Ecma335
+@using BootstrapBlazor.Components
+@using Color = MudBlazor.Color
+@using Console = System.Console
+@using Size = MudBlazor.Size
+@inject ISnackbar Snackbar
+
+
+<div style="width: 100vw; min-width: 1000px; overflow-x: auto; justify-content: center; height:auto">
+    <div style="padding: 20px">
+        <MudText Typo="Typo.h6">PLC Instances </MudText>
+
+        <MudAlert Severity="Severity.Warning">All instances that are powered on must have the same communication interface</MudAlert>
+    </div>
+    <MudTable Items="@instances" GroupBy="@_groupDefinition" T="IInstance" @ref="mudTable"
+              Hover="true" Dense="true" Breakpoint="Breakpoint.Sm"
+              FixedHeader="true" Height="400px" Style="padding: 20px"
+              GroupHeaderStyle="background-color:var(--mud-palette-background-grey)">
+        <ToolBarContent>
+            <div>
+                @inject IDialogService DialogService
+                <MudButton @onclick="OpenDialogNewPLC" Variant="Variant.Filled">
+                    Create new PLC
+                </MudButton>
+            </div>
+        </ToolBarContent>
+        <ColGroup>
+            <col/>
+            <col/>
+            <col/>
+            <col/>
+        </ColGroup>
+        <HeaderContent>
+            <MudTh>PLC Name</MudTh>
+            <MudTh>Controller IP</MudTh>
+            <MudTh>CPU type</MudTh>
+            <MudTh>Actions</MudTh>
+        </HeaderContent>
+        <GroupHeaderTemplate>
+            <MudTh Class="mud-table-cell-custom-group" colspan="4">
+                @($"{context.GroupName}: {context.Key}")
+            </MudTh>
+        </GroupHeaderTemplate>
+        <RowTemplate>
+            <MudTd DataLabel="PLC Name">
+                <div style="display: flex; align-items: center; gap: 10px;">
+                    <div>
+                        @if (context.OperatingState == EOperatingState.Off)
+                        {
+                            <MudIconButton Icon="@Icons.Material.Outlined.PowerSettingsNew" Title="powerOn" Size="Size.Small" @onclick="() => context.PowerOn()"></MudIconButton>
+                        }
+                        else if (context.OperatingState == EOperatingState.Run || context.OperatingState == EOperatingState.Stop)
+                        {
+                            <MudIconButton Icon="@Icons.Material.Outlined.PowerSettingsNew" Title="powerOff" Size="Size.Small" @onclick="() => context.PowerOff()" Color="Color.Error"></MudIconButton>
+                        }
+                        else
+                        {
+                            <MudProgressCircular Size="Size.Small" Indeterminate="true"/>
+                        }
+                        @if (context.OperatingState == EOperatingState.Stop)
+                        {
+                            <MudIconButton Icon="@Icons.Material.Outlined.PlayArrow" Color="Color.Success" Size="Size.Small"
+                                           Title="Run"
+                                           @onclick="() => { try { context.Run(); } catch (Exception e) { Snackbar.Add(e.Message); } }"/>
+                        }
+                        else if (context.OperatingState == EOperatingState.Run)
+                        {
+                            <MudIconButton Icon="@Icons.Material.Outlined.Stop" Color="Color.Error" Size="Size.Small" Title="Stop" @onclick="() => context.Stop()"/>
+                        }
+                        else
+                        {
+                            <MudIconButton Icon="@Icons.Material.Outlined.PlayArrow" Title="powerOff" Size="Size.Small" Disabled="true" @onclick="() => context.PowerOff()" Color="Color.Error"></MudIconButton>
+                        }
+                    </div>
+                    <div>
+                        @try
+                        {
+                            @context.Name;
+                        }
+                        catch (Exception e)
+                        {
+                        } 
+                    </div>
+                </div>
+            </MudTd>
+            <MudTd DataLabel="Controller IP">
+                @foreach (var ip in context.ControllerIP)
+                {
+                    <div>@ip</div>
+                }
+            </MudTd>
+            <MudTd DataLabel="CPU type">@context.CPUType</MudTd>
+            <MudTd Style="display: inline-flex; justify-content: flex-end">
+                            <!-- Add your start/stop buttons or any other buttons here -->
+            
+            
+                            @if (context.CommunicationInterface == ECommunicationInterface.TCPIP)
+                            {
+                                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">TCP/IP</MudButton>
+                            }
+                            else if (context.CommunicationInterface == ECommunicationInterface.Softbus)
+                            {
+                                <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Size="Size.Small">Softbus</MudButton>
+                            }
+            
+            
+                            <MudIconButton Icon="@Icons.Material.Outlined.Settings" Title="Edit" Size="Size.Small" @onclick="() => OpenDialogPLCSettings(context)"></MudIconButton>
+                            <MudIconButton Icon="@Icons.Material.Outlined.Delete" Title="delete" Size="Size.Small"
+                                           @onclick="() => RemoveInstance(context)">
+                            </MudIconButton>
+
+                            <MudMenu Icon="@Icons.Material.Outlined.MoreVert" Size="Size.Small" Dense="true">
+                                <MudMenuItem @onclick="() => context.MemoryReset()">MRES</MudMenuItem>
+                            </MudMenu>
+                            
+                        </MudTd>
+            
+        </RowTemplate>
+
+    </MudTable>
+</div>
+
+
+
+
+@code
+{
+    public string ip;
+    public IMask ipv4Mask = RegexMask.IPv4();
+    STagInfo[] _tagInfos;
+
+    private TableGroupDefinition<IInstance> _groupDefinition = new()
+    {
+        GroupName = "Communication",
+        Indentation = false,
+        Expandable = false,
+        Selector = (e) => e.CommunicationInterface
+    };
+}

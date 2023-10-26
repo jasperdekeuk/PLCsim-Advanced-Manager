@@ -1,0 +1,139 @@
+@using Siemens.Simatic.Simulation.Runtime
+@using Color = MudBlazor.Color
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudForm @ref="form" @bind-IsValid="@succes" @bind-Errors="@errors">
+            <MudTextField T="string" Label="Instance Name" @bind-Value="@name" Required="true" RequiredError="Instance name is required!"
+                          Validation="@(new Func<string, string>(ValidateName))">
+            </MudTextField>
+            <MudSelect T="string" Label="PLC Family" AnchorOrigin="Origin.BottomCenter" @bind-Value="@type">
+                <MudSelectItem Value="@("S7-1500")"/>
+                <MudSelectItem Value="@("S7-1500R/H")"/>
+                <MudSelectItem Value="@("ET 200SP")"/>
+                <MudSelectItem Value="@("ET 200pro")"/>
+            </MudSelect>
+            <MudSelect T="ECommunicationInterface" Label="Communication Interface" AnchorOrigin="Origin.BottomCenter" @bind-Value="@CommunicationInterface">
+                <MudSelectItem Value="@ECommunicationInterface.Softbus"/>
+                <MudSelectItem Value="@ECommunicationInterface.TCPIP"/>
+            </MudSelect>
+            @if (CommunicationInterface == ECommunicationInterface.TCPIP)
+            {
+                <MudGrid Class="justify-space-between" Style="max-width: 600px;">
+                    <MudItem xs="12" sm="6">
+                        <MudTextField Mask="@ipv4Mask" Label="IP address [X1]" HelperText="@ipv4Mask.Mask"
+                                      @bind-Value="ip" Variant="@Variant.Text" Clearable/>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="justify-space-between" Style="max-width: 600px;">
+                    <MudItem xs="12" sm="6">
+                        <MudTextField Mask="@subnetMask" Label="Subnet Mask" HelperText="@subnetMask.Mask"
+                                      @bind-Value="subnet" Variant="@Variant.Text" Clearable/>
+                    </MudItem>
+                </MudGrid>
+                <MudGrid Class="justify-space-between" Style="max-width: 600px;">
+                    <MudItem xs="12" sm="6">
+                        <MudTextField Mask="@gatewayMask" Label="Default Gateway" HelperText="@gatewayMask.Mask"
+                                      @bind-Value="gateway" Variant="@Variant.Text" Clearable/>
+                    </MudItem>
+                </MudGrid>
+            }
+            <MudCheckBox @bind-Checked="@powerOn" Label="Power On"></MudCheckBox>
+        </MudForm>
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton OnClick="Submit" Disabled="@(!succes)">Create</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    string name;
+    string type = "S7-1500";
+    bool powerOn;
+    ECommunicationInterface CommunicationInterface = ECommunicationInterface.Softbus;
+
+    private IInstance instance;
+
+    // TCPIP settings
+    public string ip;
+    public string subnet;
+    public string gateway;
+    public IMask ipv4Mask = RegexMask.IPv4();
+    public IMask subnetMask = RegexMask.IPv4();
+    public IMask gatewayMask = RegexMask.IPv4();
+
+    bool succes;
+    string[] errors = { };
+    MudForm form;
+
+    bool creating;
+
+    private string ValidateName(string nameToCheck)
+    {
+        foreach (var existingInstance in SimulationRuntimeManager.RegisteredInstanceInfo)
+        {
+            if (existingInstance.Name == nameToCheck)
+            {
+                return "This instance already exists!";
+            }
+        }
+        return null;
+    }
+
+    public async Task Submit()
+    {
+        MudDialog.Close(DialogResult.Ok(true));
+
+
+        ECPUType Etype;
+        switch (type)
+        {
+            case "S7-1500":
+                Etype = ECPUType.CPU1500_Unspecified;
+                break;
+            case "S7-1500R/H":
+                Etype = ECPUType.CPU1500_RH_Unspecified;
+                break;
+            case "ET 200SP":
+                Etype = ECPUType.ET200SP_Unspecified;
+                break;
+            case "ET 200pro":
+                Etype = ECPUType.ET200PRO_Unspecified;
+                break;
+            default:
+                Etype = ECPUType.CPU1500_Unspecified;
+                break;
+        }
+
+        try
+        {
+            instance = SimulationRuntimeManager.RegisterInstance(Etype, name);
+            instance.CommunicationInterface = CommunicationInterface;
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Issue with creating instance: {e.Message}");
+            return;
+        }
+
+        if (powerOn)
+        {
+            try
+            {
+                instance.PowerOn();
+            }
+            catch (Exception e)
+            {
+                Snackbar.Add($"Issue with powering on instance: {e.Message}");
+            }
+        }
+    }
+
+    void Cancel() => MudDialog.Cancel();
+}
