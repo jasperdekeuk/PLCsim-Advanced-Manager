@@ -88,10 +88,16 @@
                 </div>
             </MudTd>
             <MudTd DataLabel="Controller IP">
-                @foreach (var ip in context.ControllerIP)
-                {
-                    <div>@ip</div>
-                }
+                <div class="d-flex align-items-start">
+                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" OnClick="() => OpenDialogSetIPSettings(context)"></MudIconButton>
+                
+                    <div class="ml-2">
+                        @foreach (var ip in context.ControllerIP)
+                        {
+                            <div>@ip</div>
+                        }
+                    </div>
+                </div>
             </MudTd>
             <MudTd DataLabel="CPU type">@context.CPUType</MudTd>
             <MudTd Style="display: inline-flex; justify-content: flex-end">

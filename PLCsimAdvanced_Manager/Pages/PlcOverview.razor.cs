@@ -23,6 +23,7 @@ public partial class PlcOverview
             {
                 IInstance inst = SimulationRuntimeManager.CreateInterface(info.Name);
                 inst.OnOperatingStateChanged += OnOperatingStateChanged;
+                inst.OnIPAddressChanged += OnIpAddressChanged;
                 instances.Add(inst);
             }
             catch (Exception e)
@@ -37,6 +38,16 @@ public partial class PlcOverview
         DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true, FullWidth = true };
 
         DialogService.Show<NewPlcDialog>("Add PLC Instance", closeOnEscapeKey);
+    }
+
+    private void OpenDialogSetIPSettings(IInstance selectedInstance)
+    {
+        DialogOptions closeOnEscapeKey = new DialogOptions()
+            { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true, CloseButton = true };
+        var parameters = new DialogParameters();
+        parameters.Add("selectedInstance", selectedInstance);
+        DialogService.Show<SetIPSettingsDialog>($"IP Settings: {selectedInstance.Name}", parameters, closeOnEscapeKey);
+
     }
 
     private void OpenDialogPLCSettings(IInstance selectedInstance)
@@ -57,6 +68,13 @@ public partial class PlcOverview
         InvokeAsync(() => StateHasChanged());
     }
 
+    private void OnIpAddressChanged(IInstance inst, ERuntimeErrorCode error, DateTime dateTime, byte inInterfaceId, SIPSuite4 inSip)
+    {
+        Snackbar.Add($"{inst.Name} IP setting changed", Severity.Success,
+            config => { config.HideIcon = true; });
+        InvokeAsync(() => StateHasChanged());
+    }
+
     private void OnSoftwareConfigurationChanged(ERuntimeConfigChanged e, uint p1, uint p2, int p3)
     {
         switch (e)
@@ -65,6 +83,7 @@ public partial class PlcOverview
                 var inst = SimulationRuntimeManager.CreateInterface(p3);
                 instances.Add(inst);
                 inst.OnOperatingStateChanged += OnOperatingStateChanged;
+                inst.OnIPAddressChanged += OnIpAddressChanged;
                 Snackbar.Add($"{inst.Name} is registered", Severity.Success, config => { config.HideIcon = true; });
                 break;
             case ERuntimeConfigChanged.InstanceUnregistered:

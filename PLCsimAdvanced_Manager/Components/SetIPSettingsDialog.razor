@@ -1,0 +1,81 @@
+@using Siemens.Simatic.Simulation.Runtime
+
+
+<MudDialog>
+    <DialogContent>
+        @for (int i = 0; i < selectedInstance.ControllerIPSuite4.Length; i++)
+        {
+            var index = i;
+            <h3>X@(i+1) </h3>
+            <MudGrid Class="justify-space-between" Style="max-width: 600px;">
+                <MudItem xs="12" sm="6">
+                    <MudTextField Mask="@ipv4Masks[index]" Label="IP address [X1]" HelperText="@ipv4Masks[index].Mask"
+                                  @bind-Value="ips[index]" Variant="@Variant.Text" Clearable/>
+                </MudItem>
+            </MudGrid>
+            <MudGrid Class="justify-space-between" Style="max-width: 600px;">
+                <MudItem xs="12" sm="6">
+                    <MudTextField Mask="@subnetMask[index]" Label="Subnet Mask" HelperText="@subnetMask[index].Mask"
+                                  @bind-Value="subnets[index]" Variant="@Variant.Text" Clearable/>
+                </MudItem>
+            </MudGrid>
+            <MudGrid Class="justify-space-between" Style="max-width: 600px;">
+                <MudItem xs="12" sm="6">
+                    <MudTextField Mask="@gatewayMask[index]" Label="Default Gateway" HelperText="@gatewayMask[index].Mask"
+                                  @bind-Value="gateways[index]" Variant="@Variant.Text" Clearable/>
+                </MudItem>
+            </MudGrid>
+        }
+
+        <MudButton OnClick="setIp"> Set IP </MudButton>
+    </DialogContent>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public IInstance selectedInstance { get; set; }
+
+    public List<string> ips = new List<string>();
+    public List<string> subnets = new List<string>();
+    public List<string> gateways = new List<string>();
+
+    public List<IMask> ipv4Masks = new List<IMask>();
+    public List<IMask> subnetMask = new List<IMask>();
+    public List<IMask> gatewayMask = new List<IMask>();
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        foreach (var ipSuite in selectedInstance.ControllerIPSuite4)
+        {
+            ips.Add(ipSuite.IPAddress.IPString);
+            subnets.Add(ipSuite.SubnetMask.IPString);
+            gateways.Add(ipSuite.DefaultGateway.IPString);
+            ipv4Masks.Add(RegexMask.IPv4());
+            subnetMask.Add(RegexMask.IPv4());
+            gatewayMask.Add(RegexMask.IPv4());
+        }
+    }
+
+    // TODO -> IP is a list of IP's for every interface a plc can have    
+
+    public void setIp()
+    {
+        for (int i = 0; i < selectedInstance.ControllerIPSuite4.Length; i++)
+        {
+            SIPSuite4 ipSuite = new SIPSuite4();
+            ipSuite.IPAddress = new SIP { IPString = ips[i] };
+            ipSuite.SubnetMask = new SIP { IPString = subnets[i] };
+            ipSuite.DefaultGateway = new SIP { IPString = gateways[i] };
+            selectedInstance.SetIPSuite((uint)i, ipSuite, true);
+
+        }
+        
+        MudDialog.Close();
+    }
+
+}
