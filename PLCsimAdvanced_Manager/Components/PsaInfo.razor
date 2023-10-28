@@ -1,4 +1,5 @@
 @using Siemens.Simatic.Simulation.Runtime
+@using System.Net.NetworkInformation
 
 
 <MudDialog>
@@ -22,28 +23,6 @@
         <MudCard>
             <MudCardHeader>
                 <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Network Mode</MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent> @SimulationRuntimeManager.NetworkMode</MudCardContent>
-        </MudCard>
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Net Interfaces</MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent>
-
-                @foreach (var v in SimulationRuntimeManager.NetInterfaces)
-                {
-                    <div>@v.interfaceDescription</div>
-                }
-            </MudCardContent>
-        </MudCard>
-        <MudCard>
-            <MudCardHeader>
-                <CardHeaderContent>
                     <MudText Typo="Typo.h6">Strict Motion Timing </MudText>
                 </CardHeaderContent>
             </MudCardHeader>
@@ -63,43 +42,11 @@
         <MudCard Style="overflow-wrap:break-word;">
             <MudCardHeader>
                 <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Port</MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText>@SimulationRuntimeManager.Port </MudText>
-            </MudCardContent>
-        </MudCard>
-        <MudCard Style="overflow-wrap:break-word;">
-            <MudCardHeader>
-                <CardHeaderContent>
                     <MudText Typo="Typo.h6">Version</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent>
                 <MudText>@SimulationRuntimeManager.Version </MudText>
-            </MudCardContent>
-        </MudCard>
-        <MudCard Style="overflow-wrap:break-word;">
-            <MudCardHeader>
-                <CardHeaderContent>
-                    <MudText Typo="Typo.h6">Remote Connection Info</MudText>
-                </CardHeaderContent>
-            </MudCardHeader>
-            <MudCardContent>
-                <MudText>
-                    @if (SimulationRuntimeManager.RemoteConnectionInfo.Length == 0)
-                    {
-                        <div>No Remote Connections</div>
-                    }
-                    else
-                    {
-                        foreach (var v in SimulationRuntimeManager.RemoteConnectionInfo)
-                        {
-                            <div>@v.IP:@v.Port</div>
-                        }
-                    }
-                </MudText>
             </MudCardContent>
         </MudCard>
     </DialogContent>

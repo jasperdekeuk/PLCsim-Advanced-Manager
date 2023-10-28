@@ -1,0 +1,94 @@
+@using Siemens.Simatic.Simulation.Runtime
+@using System.Net.NetworkInformation
+
+
+<MudDialog>
+    <DialogContent>
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Network Mode</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent> @SimulationRuntimeManager.NetworkMode</MudCardContent>
+        </MudCard>
+        <MudCard>
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Net Interfaces</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                @foreach (var v in SimulationRuntimeManager.NetInterfaces)
+                {
+                    <MudCard>
+                        <MudCardContent>
+                            <MudList>
+                                <MudListItem>
+                                    <MudText>Interface Description: @v.interfaceDescription</MudText>
+                                </MudListItem>
+                                <MudListItem>
+                                    <MudText>Interface Index: @v.interfaceIndex</MudText>
+                                </MudListItem>
+                                <MudListItem>
+                                    <MudText>Interface Name: @v.interfaceName</MudText>
+                                </MudListItem>
+                                <MudListItem>
+                                    <MudText>Is Connected: @v.isConnected</MudText>
+                                </MudListItem>
+                                <MudListItem>
+                                    <MudText>Switch Binding Enabled: @v.vSwitchBindingEnabled</MudText>
+                                </MudListItem>
+                                <MudListItem>
+                                    <MudText>MAC: @v.MACAddress</MudText>
+                                </MudListItem>
+                                @foreach (var address in NetworkInterface.GetAllNetworkInterfaces().Where(@interface => @interface.Name == v.interfaceName).SelectMany(@interface => @interface.GetIPProperties().UnicastAddresses).Select(@interface => @interface.Address))
+                                {
+                                    <MudListItem>
+                                        <MudText>Address: @address</MudText>
+                                    </MudListItem>
+                                }
+                            </MudList>
+                        </MudCardContent>
+                    </MudCard>
+                }
+            </MudCardContent>
+        </MudCard>
+        <MudCard Style="overflow-wrap:break-word;">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Port</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText>@SimulationRuntimeManager.Port </MudText>
+            </MudCardContent>
+        </MudCard>
+        <MudCard Style="overflow-wrap:break-word;">
+            <MudCardHeader>
+                <CardHeaderContent>
+                    <MudText Typo="Typo.h6">Remote Connection Info</MudText>
+                </CardHeaderContent>
+            </MudCardHeader>
+            <MudCardContent>
+                <MudText>
+                    @if (SimulationRuntimeManager.RemoteConnectionInfo.Length == 0)
+                    {
+                        <div>No Remote Connections</div>
+                    }
+                    else
+                    {
+                        foreach (var v in SimulationRuntimeManager.RemoteConnectionInfo)
+                        {
+                            <div>@v.IP:@v.Port</div>
+                        }
+                    }
+                </MudText>
+            </MudCardContent>
+        </MudCard>
+    </DialogContent>
+</MudDialog>
+
+@code {
+
+}

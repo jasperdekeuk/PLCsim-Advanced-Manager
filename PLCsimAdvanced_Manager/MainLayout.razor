@@ -13,7 +13,8 @@
         <MudText Typo="Typo.h5" Class="ml-3">PLCSim Advanced Manager</MudText>
         <MudSpacer/>
         <MudMenu Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" >
-            <MudMenuItem OnClick="@OpenPsaInfoDialog">Open PSA Information</MudMenuItem>
+            <MudMenuItem OnClick="@OpenPsaInfoDialog">PLCsim Adv. Information</MudMenuItem>
+            <MudMenuItem OnClick="@OpenNetworkSettingsDialog">Network Settings</MudMenuItem>
         </MudMenu>
     </MudAppBar>
     <MudMainContent>
@@ -40,6 +41,13 @@
         DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true, FullWidth = true };
 
         DialogService.Show<PsaInfo>("PLCsim Advanced info", closeOnEscapeKey);
+    }
+    
+    private void OpenNetworkSettingsDialog()
+    {
+        DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true, FullWidth = true };
+
+        DialogService.Show<NetworkSettings>("Network Settings", closeOnEscapeKey);
     }
 
 }
