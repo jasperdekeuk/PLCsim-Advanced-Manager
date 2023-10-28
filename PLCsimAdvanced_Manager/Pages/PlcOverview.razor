@@ -108,12 +108,13 @@
             
             
                             <MudIconButton Icon="@Icons.Material.Outlined.Settings" Title="Edit" Size="Size.Small" @onclick="() => OpenDialogPLCSettings(context)"></MudIconButton>
-                            <MudIconButton Icon="@Icons.Material.Outlined.Delete" Title="delete" Size="Size.Small"
+                            <MudIconButton Icon="@Icons.Material.Outlined.Delete" Title="Delete" Size="Size.Small"
                                            @onclick="() => RemoveInstance(context)">
                             </MudIconButton>
 
                             <MudMenu Icon="@Icons.Material.Outlined.MoreVert" Size="Size.Small" Dense="true">
                                 <MudMenuItem @onclick="() => context.MemoryReset()">MRES</MudMenuItem>
+                                <MudMenuItem @onclick="() => FullDeleteInstance(context)">Hard Delete</MudMenuItem>
                             </MudMenu>
                             
                         </MudTd>

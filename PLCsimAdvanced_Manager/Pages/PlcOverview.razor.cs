@@ -116,6 +116,16 @@ public partial class PlcOverview
         }
     }
 
+    public void FullDeleteInstance(IInstance instance)
+    {
+        string pathToDirectory = instance.StoragePath;
+        RemoveInstance(instance);
+        if (Directory.Exists(pathToDirectory))
+        {
+            Directory.Delete(pathToDirectory, true);
+        }
+    }
+
 
     private string selectedRowStyleFunc(IInstance i, int rowNumber)
     {
