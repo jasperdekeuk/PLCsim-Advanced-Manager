@@ -13,7 +13,7 @@
     <div style="padding: 20px">
         <MudText Typo="Typo.h6">PLC Instances </MudText>
 
-        <MudAlert Severity="Severity.Warning">All instances that are powered on must have the same communication interface</MudAlert>
+        <MudAlert Severity="Severity.Warning">All instances that are powered on must have the same communication interface (softbus/TCPIP)</MudAlert>
     </div>
     <MudTable Items="@instances" GroupBy="@_groupDefinition" T="IInstance" @ref="mudTable"
               Hover="true" Dense="true" Breakpoint="Breakpoint.Sm"
