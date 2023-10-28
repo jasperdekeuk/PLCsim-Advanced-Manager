@@ -2,10 +2,14 @@
 <MudDialog>
     <DialogContent>
         <MudSelect T="ECPUType" Label="PLC Family" AnchorOrigin="Origin.BottomCenter" @bind-Value="@selectedInstance.CPUType">
-            <MudSelectItem Value="@ECPUType.CPU1500_Unspecified"/>
-            <MudSelectItem Value="@ECPUType.CPU1500_RH_Unspecified"/>
-            <MudSelectItem Value="@ECPUType.ET200SP_Unspecified"/>
-            <MudSelectItem Value="@ECPUType.ET200PRO_Unspecified"/>
+            @foreach(ECPUType e in Enum.GetValues(typeof(ECPUType)))
+            {
+                <MudSelectItem Value="e"/>
+            }
+            @* <MudSelectItem Value="@ECPUType.CPU1500_Unspecified"/> *@
+            @* <MudSelectItem Value="@ECPUType.CPU1500_RH_Unspecified"/> *@
+            @* <MudSelectItem Value="@ECPUType.ET200SP_Unspecified"/> *@
+            @* <MudSelectItem Value="@ECPUType.ET200PRO_Unspecified"/> *@
         </MudSelect>
         <MudCheckBox @bind-Checked="@selectedInstance.StrictMotionTiming" Label="Strict Motion Timing"></MudCheckBox>
         <MudTextField @bind-Value="@selectedInstance.StoragePath" Label="Storage Path"></MudTextField>
@@ -23,25 +27,5 @@
         <MudNumericField T="double" @bind-Value="@selectedInstance.ScaleFactor" Label="Scale Factor"></MudNumericField>
         <MudNumericField T="long" @bind-Value="@selectedInstance.OverwrittenMinimalCycleTime_ns" Label="Overwritten Minimal Cycletime [ns]"></MudNumericField>
         <MudCheckBox @bind-Checked="@selectedInstance.IsSendSyncEventInDefaultModeEnabled" Label="Send Syncevent in Default Mode Enabled"></MudCheckBox>
-        
-        <MudGrid Class="justify-space-between" Style="max-width: 800px;">
-            <MudItem xs="12" sm="6">
-                <MudTextField Mask="@ipv4Mask" Label="IP address [X1]" HelperText="@ipv4Mask.Mask"
-                              @bind-Value="ip" Variant="@Variant.Text" Clearable/>
-            </MudItem>
-        </MudGrid>
-        <MudGrid Class="justify-space-between" Style="max-width: 800px;">
-            <MudItem xs="12" sm="6">
-                <MudTextField Mask="@ipv4Mask" Label="Subnet Mask" HelperText="@ipv4Mask.Mask"
-                              @bind-Value="subnet" Variant="@Variant.Text" Clearable/>
-            </MudItem>
-        </MudGrid>
-        <MudGrid Class="justify-space-between" Style="max-width: 800px;">
-            <MudItem xs="12" sm="6">
-                <MudTextField Mask="@ipv4Mask" Label="Default Gateway" HelperText="@ipv4Mask.Mask"
-                              @bind-Value="gateway" Variant="@Variant.Text" Clearable/>
-            </MudItem>
-        </MudGrid>
-        <MudButton OnClick="setIp"> Set IP </MudButton>
     </DialogContent>
 </MudDialog>
