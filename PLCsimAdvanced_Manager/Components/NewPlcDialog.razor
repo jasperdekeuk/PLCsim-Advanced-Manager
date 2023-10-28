@@ -5,7 +5,7 @@
 <MudDialog>
     <DialogContent>
         <MudForm @ref="form" @bind-IsValid="@succes" @bind-Errors="@errors">
-            <MudAutocomplete T="string" @bind-Value="@name" Label="Instance Name" SearchFunc="@Search" Required="true" RequiredError="Instance name is required!" Validation="@(new Func<string, string>(ValidateName))"></MudAutocomplete>
+            <MudAutocomplete T="string" @bind-Value="@name" Label="Instance Name" SearchFunc="@Search" Required="true" CoerceText="false" CoerceValue="true" RequiredError="Instance name is required!" Validation="@(new Func<string, string>(ValidateName))"></MudAutocomplete>
             <MudSelect T="string" Label="PLC Family" AnchorOrigin="Origin.BottomCenter" @bind-Value="@type" Disabled="fieldsDisabled">
                 <MudSelectItem Value="@("S7-1500")"/>
                 <MudSelectItem Value="@("S7-1500R/H")"/>
