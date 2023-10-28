@@ -78,11 +78,12 @@
                     <div>
                         @try
                         {
-                            @context.Name;
+                            @context.Name
+                            ;
                         }
                         catch (Exception e)
                         {
-                        } 
+                        }
                     </div>
                 </div>
             </MudTd>
@@ -94,37 +95,40 @@
             </MudTd>
             <MudTd DataLabel="CPU type">@context.CPUType</MudTd>
             <MudTd Style="display: inline-flex; justify-content: flex-end">
-                            <!-- Add your start/stop buttons or any other buttons here -->
-            
-            
-                            @if (context.CommunicationInterface == ECommunicationInterface.TCPIP)
-                            {
-                                <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small">TCP/IP</MudButton>
-                            }
-                            else if (context.CommunicationInterface == ECommunicationInterface.Softbus)
-                            {
-                                <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Size="Size.Small">Softbus</MudButton>
-                            }
-            
-            
-                            <MudIconButton Icon="@Icons.Material.Outlined.Settings" Title="Edit" Size="Size.Small" @onclick="() => OpenDialogPLCSettings(context)"></MudIconButton>
-                            <MudIconButton Icon="@Icons.Material.Outlined.Delete" Title="Delete" Size="Size.Small"
-                                           @onclick="() => RemoveInstance(context)">
-                            </MudIconButton>
 
-                            <MudMenu Icon="@Icons.Material.Outlined.MoreVert" Size="Size.Small" Dense="true">
-                                <MudMenuItem @onclick="() => context.MemoryReset()">MRES</MudMenuItem>
-                                <MudMenuItem @onclick="() => FullDeleteInstance(context)">Hard Delete</MudMenuItem>
-                            </MudMenu>
-                            
-                        </MudTd>
-            
+                @if (context.CommunicationInterface == ECommunicationInterface.TCPIP)
+                {
+                    <MudTooltip Text="When powered off, this will swap communication interface">
+                        <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small"
+                                   OnClick="() => {if (context.OperatingState == EOperatingState.Off) context.CommunicationInterface = ECommunicationInterface.Softbus; }">
+                            TCP/IP
+                        </MudButton>
+                    </MudTooltip>
+                }
+                else if (context.CommunicationInterface == ECommunicationInterface.Softbus)
+                {
+                    <MudTooltip Text="When powered off, this will swap communication interface">
+                        <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Size="Size.Small" OnClick="() => {if (context.OperatingState == EOperatingState.Off) context.CommunicationInterface = ECommunicationInterface.TCPIP; }">Softbus</MudButton>
+                    </MudTooltip>
+                }
+
+
+                <MudIconButton Icon="@Icons.Material.Outlined.Settings" Title="Edit" Size="Size.Small" @onclick="() => OpenDialogPLCSettings(context)"></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Outlined.Delete" Title="Delete" Size="Size.Small"
+                               @onclick="() => RemoveInstance(context)">
+                </MudIconButton>
+
+                <MudMenu Icon="@Icons.Material.Outlined.MoreVert" Size="Size.Small" Dense="true">
+                    <MudMenuItem @onclick="() => context.MemoryReset()">MRES</MudMenuItem>
+                    <MudMenuItem @onclick="() => FullDeleteInstance(context)">Hard Delete</MudMenuItem>
+                </MudMenu>
+
+            </MudTd>
+
         </RowTemplate>
 
     </MudTable>
 </div>
-
-
 
 
 @code
