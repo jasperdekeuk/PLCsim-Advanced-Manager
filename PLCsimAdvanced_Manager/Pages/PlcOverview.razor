@@ -89,7 +89,7 @@
             </MudTd>
             <MudTd DataLabel="Controller IP">
                 <div class="d-flex align-items-start">
-                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" OnClick="() => OpenDialogSetIPSettings(context)"></MudIconButton>
+                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" OnClick="() => OpenDialogSetIPSettings(context)" Disabled="@(!(context.OperatingState == EOperatingState.Off || context.OperatingState == EOperatingState.Stop))"></MudIconButton>
                 
                     <div class="ml-2">
                         @foreach (var ip in context.ControllerIP)
