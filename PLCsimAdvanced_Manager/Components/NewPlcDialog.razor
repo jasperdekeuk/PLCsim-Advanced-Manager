@@ -5,16 +5,14 @@
 <MudDialog>
     <DialogContent>
         <MudForm @ref="form" @bind-IsValid="@succes" @bind-Errors="@errors">
-            <MudTextField T="string" Label="Instance Name" @bind-Value="@name" Required="true" RequiredError="Instance name is required!"
-                          Validation="@(new Func<string, string>(ValidateName))">
-            </MudTextField>
-            <MudSelect T="string" Label="PLC Family" AnchorOrigin="Origin.BottomCenter" @bind-Value="@type">
+            <MudAutocomplete T="string" @bind-Value="@name" Label="Instance Name" SearchFunc="@Search" Required="true" RequiredError="Instance name is required!" Validation="@(new Func<string, string>(ValidateName))"></MudAutocomplete>
+            <MudSelect T="string" Label="PLC Family" AnchorOrigin="Origin.BottomCenter" @bind-Value="@type" Disabled="fieldsDisabled">
                 <MudSelectItem Value="@("S7-1500")"/>
                 <MudSelectItem Value="@("S7-1500R/H")"/>
                 <MudSelectItem Value="@("ET 200SP")"/>
                 <MudSelectItem Value="@("ET 200pro")"/>
             </MudSelect>
-            <MudSelect T="ECommunicationInterface" Label="Communication Interface" AnchorOrigin="Origin.BottomCenter" @bind-Value="@CommunicationInterface">
+            <MudSelect T="ECommunicationInterface" Label="Communication Interface" AnchorOrigin="Origin.BottomCenter" @bind-Value="@CommunicationInterface" Disabled="@fieldsDisabled">
                 <MudSelectItem Value="@ECommunicationInterface.Softbus"/>
                 <MudSelectItem Value="@ECommunicationInterface.TCPIP"/>
             </MudSelect>
@@ -73,9 +71,18 @@
     MudForm form;
 
     bool creating;
+    bool fieldsDisabled;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        var defaultStoragePath = SimulationRuntimeManager.DefaultStoragePath;
+        instanceNameOptions = Directory.GetDirectories(defaultStoragePath).Select(Path.GetFileName).ToList();
+    }
 
     private string ValidateName(string nameToCheck)
     {
+        fieldsDisabled = instanceNameOptions.Contains(nameToCheck);
         foreach (var existingInstance in SimulationRuntimeManager.RegisteredInstanceInfo)
         {
             if (existingInstance.Name == nameToCheck)
@@ -136,4 +143,13 @@
     }
 
     void Cancel() => MudDialog.Cancel();
+
+
+    List<string> instanceNameOptions;
+
+    Task<IEnumerable<string>> Search(string value)
+    {
+        return Task.FromResult(instanceNameOptions.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase)));
+    }
+
 }
