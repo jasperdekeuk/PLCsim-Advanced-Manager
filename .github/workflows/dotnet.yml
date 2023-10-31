@@ -23,7 +23,7 @@ jobs:
         dotnet-version: 7.x  # Replace with the desired .NET version
 
     - name: Publish
-      run: dotnet publish -c Release -o publish_output
+      run: dotnet publish -c Release -o publish_output --no-dependencies
 
     - name: Create Release
       id: create_release
