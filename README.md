@@ -8,3 +8,17 @@ Goals:
 - Exploit the functionalities of the PLCSIM Advanced API to create a more user friendly interface.
 
 
+
+## Create an instance
+
+![](docs/img/CreateInstance.gif)
+
+## Start an instance
+
+![](docs/img/StartInstance.gif)
+
+## 
+
+![](docs/img/SwitchInterface.gif)
+
+
