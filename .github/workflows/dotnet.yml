@@ -31,8 +31,5 @@ jobs:
       with:
         files: ./publish_output/**
         release_name: ${{ env.RELEASE_NAME }}
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-    
-    - name: Release URL
-      run: echo "Release URL: ${{ steps.create_release.outputs.upload_url }}"
+
+
