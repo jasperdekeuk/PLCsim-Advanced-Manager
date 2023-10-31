@@ -121,30 +121,15 @@ public partial class PlcOverview
 
     public void RemoveInstance(IInstance instance)
     {
-        {
-            try
-            {
-                instances.Remove(instances.SingleOrDefault(v => instance.ID == v.ID));
-                instance.UnregisterInstance();
-                StateHasChanged();
-            }
-            catch (Exception ex)
-            {
-                Snackbar.Add($"Issue with unregistering instance: {ex.Message}");
-            }
-        }
-    }
+        var parameters = new DialogParameters<DeleteDialog>();
+        parameters.Add(x => x.Instance, instance);
+        parameters.Add(x => x.Instances, instances);
+        
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
 
-    public void FullDeleteInstance(IInstance instance)
-    {
-        string pathToDirectory = instance.StoragePath;
-        RemoveInstance(instance);
-        if (Directory.Exists(pathToDirectory))
-        {
-            Directory.Delete(pathToDirectory, true);
-        }
+        DialogService.Show<DeleteDialog>("Delete Instance", parameters, options);
     }
-
+    
 
     private string selectedRowStyleFunc(IInstance i, int rowNumber)
     {

@@ -126,7 +126,6 @@
 
                 <MudMenu Icon="@Icons.Material.Outlined.MoreVert" Size="Size.Small" Dense="true">
                     <MudMenuItem @onclick="() => context.MemoryReset()">MRES</MudMenuItem>
-                    <MudMenuItem @onclick="() => FullDeleteInstance(context)">Hard Delete</MudMenuItem>
                 </MudMenu>
 
             </MudTd>
@@ -142,7 +141,7 @@
     public string ip;
     public IMask ipv4Mask = RegexMask.IPv4();
     STagInfo[] _tagInfos;
-
+    
     private TableGroupDefinition<IInstance> _groupDefinition = new()
     {
         GroupName = "Communication",

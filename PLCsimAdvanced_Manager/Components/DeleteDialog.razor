@@ -1,0 +1,64 @@
+@using Color = MudBlazor.Color
+@using Siemens.Simatic.Simulation.Runtime
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudText>Are you sure you want to @(fullDeleteCheckbox ? "Delete" : "Unregister") this instance?</MudText>
+    </DialogContent>
+    <DialogActions>
+        <MudTooltip Text="If you select this, all the files will be deleted. You will no longer find the instance in the list when creating a new instance.">
+            <MudCheckBox @bind-Checked="@fullDeleteCheckbox" Style="font-size: 0.8rem"
+                         Label="Delete files">
+            </MudCheckBox>
+        </MudTooltip>
+        <MudSpacer/>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Error" Variant="Variant.Filled" OnClick="Submit">@(fullDeleteCheckbox ? "Delete" : "Unregister")</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public IInstance Instance { get; set; }
+
+    [Parameter]
+    public List<IInstance> Instances { get; set; }
+
+    public bool fullDeleteCheckbox { get; set; } = false;
+
+    void Submit()
+    {
+        string pathToDirectory = Instance.StoragePath;
+        unregisterInstance();
+        if (fullDeleteCheckbox)
+        {
+            if (Directory.Exists(pathToDirectory))
+            {
+                Directory.Delete(pathToDirectory, true);
+            }
+        }
+
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+
+    void unregisterInstance()
+    {
+        try
+        {
+            Instances.Remove(Instances.SingleOrDefault(v => Instance.ID == v.ID));
+            Instance.UnregisterInstance();
+            StateHasChanged();
+        }
+        catch (Exception ex)
+        {
+            Snackbar.Add($"Issue with unregistering instance: {ex.Message}");
+        }
+    }
+
+    void Cancel() => MudDialog.Cancel();
+}
