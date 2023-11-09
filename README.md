@@ -20,3 +20,7 @@ Goals:
 ```shell
 dotnet run --launch-profile http
 ```
+6. If build is complete go to following link
+> http://localhost:5030
+
+(if build failes, make sure the port is not in use yet) 
