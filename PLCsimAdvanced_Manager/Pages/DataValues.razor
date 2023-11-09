@@ -9,7 +9,7 @@
     <div style="padding: 20px">
         <div>
             <MudText Typo="Typo.h6">Data Overview </MudText>
-            <MudAlert Severity="Severity.Warning">This feature is still in development and might give strange effects</MudAlert>
+            <MudAlert Severity="Severity.Error">This feature is still in development and might give strange effects</MudAlert>
         </div>
 
 
@@ -159,10 +159,9 @@
 
     private readonly object valuesLock = new object();
 
-    private void readValues()
+    public void readValues()
     {
-        Task.Run(() =>
-        {
+
             lock (valuesLock)
             {
                 if (SelectedInstance == null)
@@ -205,9 +204,8 @@
                     }
                 }
             }
-        });
 
-        InvokeAsync(StateHasChanged);
+        StateHasChanged();
     }
 
     public object parseData(SDataValue dataValue)

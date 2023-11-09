@@ -1,5 +1,6 @@
 @using Color = MudBlazor.Color
 @using Siemens.Simatic.Simulation.Runtime
+@using PLCsimAdvanced_Manager.Pages
 @inject ISnackbar Snackbar
 
 <MudDialog>
@@ -86,6 +87,59 @@
     sbyte newChar;
     char newWChar;
 
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        switch (DataValueByName.DataValue.Type)
+        {
+            case EPrimitiveDataType.Unspecific:
+                break;
+            case EPrimitiveDataType.Struct:
+                break;
+            case EPrimitiveDataType.Bool:
+                newBool = DataValueByName.DataValue.Bool;
+                break;
+            case EPrimitiveDataType.Int8:
+                newSByte = DataValueByName.DataValue.Int8;
+                break;
+            case EPrimitiveDataType.Int16:
+                newShort = DataValueByName.DataValue.Int16;
+                break;
+            case EPrimitiveDataType.Int32:
+                newInt = DataValueByName.DataValue.Int32;
+                break;
+            case EPrimitiveDataType.Int64:
+                newLong = DataValueByName.DataValue.Int64;
+                break;
+            case EPrimitiveDataType.UInt8:
+                newByte = DataValueByName.DataValue.UInt8;
+                break;
+            case EPrimitiveDataType.UInt16:
+                newUShort = DataValueByName.DataValue.UInt16;
+                break;
+            case EPrimitiveDataType.UInt32:
+                newUInt = DataValueByName.DataValue.UInt32;
+                break;
+            case EPrimitiveDataType.UInt64:
+                newULong = DataValueByName.DataValue.UInt64;
+                break;
+            case EPrimitiveDataType.Float:
+                newFloat = DataValueByName.DataValue.Float;
+                break;
+            case EPrimitiveDataType.Double:
+                newDouble = DataValueByName.DataValue.Double;
+                break;
+            case EPrimitiveDataType.Char:
+                newChar = DataValueByName.DataValue.Char;
+                break;
+            case EPrimitiveDataType.WChar:
+                newWChar = DataValueByName.DataValue.WChar;
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
     void Submit()
     {
         var n = Instance.Name;
@@ -138,10 +192,9 @@
                 throw new ArgumentOutOfRangeException();
         }
 
-
         MudDialog.Close(DialogResult.Ok(true));
     }
-    
+
 
     void Cancel() => MudDialog.Cancel();
 }
