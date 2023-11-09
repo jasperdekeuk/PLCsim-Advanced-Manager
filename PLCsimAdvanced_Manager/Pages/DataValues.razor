@@ -1,0 +1,263 @@
+@using Siemens.Simatic.Simulation.Runtime
+@using Color = MudBlazor.Color
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@page "/dataview/{instanceName}"
+
+
+<div style="width: 100vw; min-width: 1000px; overflow-x: auto; justify-content: center; height:auto">
+    <div style="padding: 20px">
+        <div>
+            <MudText Typo="Typo.h6">Data Overview </MudText>
+            <MudAlert Severity="Severity.Warning">This feature is still in development and might give strange effects</MudAlert>
+        </div>
+
+
+        <MudText Typo="Typo.h6" Color="Color.Primary">@InstanceName</MudText>
+        <MudIconButton Icon="@Icons.Material.Filled.Refresh" Title="Refresh" @onclick="() => readValues()"></MudIconButton>
+
+        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+
+            <MudTabPanel Text="Datablocks">
+                <MudTable Items="_dbDataValueByNames" T="SDataValueByName">
+                    <ToolBarContent>
+                        <MudText Typo="Typo.h6">Datablocks</MudText>
+                    </ToolBarContent>
+                    <ColGroup>
+                        <col style="width: 50px"/>
+                        <col style="width: 50px"/>
+                        <col style="width: 50px"/>
+                        <col style="width: 50px"/>
+                    </ColGroup>
+                    <HeaderContent>
+                        <MudTh>Name</MudTh>
+                        <MudTh>Type</MudTh>
+                        <MudTh>Value</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Name">
+                            @context.Name
+                        </MudTd>
+                        <MudTd DataLabel="Type">
+                            @context.DataValue.Type
+                        </MudTd>
+                        <MudTd DataLabel="Value">
+                            @parseData(context.DataValue)
+                        </MudTd>
+                        <MudTd>
+                            <MudIconButton Icon="@Icons.Material.Outlined.Edit" @onclick="() => ChangeData(context)"></MudIconButton>
+                        </MudTd>
+                    </RowTemplate>
+
+                </MudTable>
+
+            </MudTabPanel>
+            <MudTabPanel Text="Inputs">
+                <MudTable Items="_inputDataValueByNames" T="SDataValueByName">
+                    <ColGroup>
+                        <col style="width: 50px"/>
+                        <col style="width: 50px"/>
+                        <col style="width: 50px"/>
+                        <col style="width: 50px"/>
+                    </ColGroup>
+                    <HeaderContent>
+                        <MudTh>Name</MudTh>
+                        <MudTh>Type</MudTh>
+                        <MudTh>Value</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Name">
+                            @context.Name
+                        </MudTd>
+                        <MudTd DataLabel="Type">
+                            @context.DataValue.Type
+                        </MudTd>
+                        <MudTd DataLabel="Value">
+                            @parseData(context.DataValue)
+                        </MudTd>
+                        <MudTd>
+                            <MudIconButton Icon="@Icons.Material.Outlined.Edit" @onclick="() => ChangeData(context)"></MudIconButton>
+                        </MudTd>
+                    </RowTemplate>
+
+                </MudTable>
+            </MudTabPanel>
+            <MudTabPanel Text="Outputs">
+                <MudTable Items="_outputDataValueByNames" T="SDataValueByName">
+                    <HeaderContent>
+                        <MudTh>Name</MudTh>
+                        <MudTh>Type</MudTh>
+                        <MudTh>Value</MudTh>
+                    </HeaderContent>
+                    <RowTemplate>
+                        <MudTd DataLabel="Name">
+                            @context.Name
+                        </MudTd>
+                        <MudTd DataLabel="Type">
+                            @context.DataValue.Type
+                        </MudTd>
+                        <MudTd DataLabel="Value">
+                            @parseData(context.DataValue)
+                        </MudTd>
+                    </RowTemplate>
+
+                </MudTable>
+            </MudTabPanel>
+        </MudTabs>
+    </div>
+</div>
+
+@code {
+
+    [Parameter]
+    public string InstanceName { get; set; }
+
+    public IInstance SelectedInstance { get; set; }
+
+    private SDataValueByName[] _inputDataValueByNames;
+    private SDataValueByName[] _outputDataValueByNames;
+    private SDataValueByName[] _dbDataValueByNames;
+
+    SDataValueByName[] inputDataValueByNamesLocal = null;
+    SDataValueByName[] outputDataValueByNamesLocal = null;
+    SDataValueByName[] dbDataValueByNamesLocal = null;
+
+    protected override async Task OnParametersSetAsync()
+    {
+        OnSelectInstance(InstanceName);
+        await base.OnParametersSetAsync();
+    }
+
+    private void OnSelectInstance(string name)
+    {
+        SelectedInstance = SimulationRuntimeManager.CreateInterface(name);
+        setDataValueByNames();
+    }
+
+    private void setDataValueByNames()
+    {
+        if (SelectedInstance == null)
+        {
+            Snackbar.Add("Issue with reading data for the given instance");
+            return;
+        }
+
+        SelectedInstance.UpdateTagList();
+
+        _inputDataValueByNames = SelectedInstance.TagInfos.Where(e => e.Area == EArea.Input)
+            .Select(e => new SDataValueByName { Name = e.Name })
+            .ToArray();
+        _outputDataValueByNames = SelectedInstance.TagInfos.Where(e => e.Area == EArea.Output)
+            .Select(e => new SDataValueByName { Name = e.Name })
+            .ToArray();
+        _dbDataValueByNames = SelectedInstance.TagInfos.Where(e => e.Area == EArea.DataBlock && e.DataType != EDataType.DB)
+            .Select(e => new SDataValueByName { Name = e.Name })
+            .ToArray();
+
+        readValues();
+    }
+
+    private readonly object valuesLock = new object();
+
+    private void readValues()
+    {
+        Task.Run(() =>
+        {
+            lock (valuesLock)
+            {
+                if (SelectedInstance == null)
+                {
+                    Snackbar.Add($"Was not possible to read data of the instance");
+                    return;
+                }
+
+                if (_inputDataValueByNames != null)
+                {
+                    try
+                    {
+                        SelectedInstance.ReadSignals(ref _inputDataValueByNames);
+                    }
+                    catch (Exception e)
+                    {
+                        Snackbar.Add($"Issue reading input data: {e}");
+                    }
+                }
+                if (_outputDataValueByNames != null)
+                {
+                    try
+                    {
+                        SelectedInstance.ReadSignals(ref _outputDataValueByNames);
+                    }
+                    catch (Exception e)
+                    {
+                        Snackbar.Add($"Issue reading output data: {e}");
+                    }
+                }
+                if (_dbDataValueByNames != null)
+                {
+                    try
+                    {
+                        SelectedInstance.ReadSignals(ref _dbDataValueByNames);
+                    }
+                    catch (Exception e)
+                    {
+                        Snackbar.Add($"Issue reading DB data: {e}");
+                    }
+                }
+            }
+        });
+
+        InvokeAsync(StateHasChanged);
+    }
+
+    public object parseData(SDataValue dataValue)
+    {
+        switch (dataValue.Type)
+        {
+            case EPrimitiveDataType.Unspecific:
+                return null;
+            case EPrimitiveDataType.Struct:
+                return null; // not yet implemented for now
+            case EPrimitiveDataType.Bool:
+                return dataValue.Bool;
+            case EPrimitiveDataType.Int8:
+                return dataValue.Int8;
+            case EPrimitiveDataType.Int16:
+                return dataValue.Int16;
+            case EPrimitiveDataType.Int32:
+                return dataValue.Int32;
+            case EPrimitiveDataType.Int64:
+                return dataValue.Int64;
+            case EPrimitiveDataType.UInt8:
+                return dataValue.UInt8;
+            case EPrimitiveDataType.UInt16:
+                return dataValue.UInt16;
+            case EPrimitiveDataType.UInt32:
+                return dataValue.UInt32;
+            case EPrimitiveDataType.UInt64:
+                return dataValue.UInt64;
+            case EPrimitiveDataType.Float:
+                return dataValue.Float;
+            case EPrimitiveDataType.Double:
+                return dataValue.Double;
+            case EPrimitiveDataType.Char:
+                return dataValue.Char;
+            case EPrimitiveDataType.WChar:
+                return dataValue.WChar;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    public void ChangeData(SDataValueByName dataValueByName)
+    {
+        var parameters = new DialogParameters<ChangeDataDialog>();
+        parameters.Add("Instance", SelectedInstance);
+        parameters.Add("DataValueByName", dataValueByName);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        DialogService.Show<ChangeDataDialog>("Change value", parameters, options);
+    }
+
+}

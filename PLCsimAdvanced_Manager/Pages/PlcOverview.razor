@@ -6,6 +6,8 @@
 @using Color = MudBlazor.Color
 @using Console = System.Console
 @using Size = MudBlazor.Size
+@inject NavigationManager NavigationManager
+@inject IJSRuntime JS
 @inject ISnackbar Snackbar
 
 
@@ -90,7 +92,7 @@
             <MudTd DataLabel="Controller IP">
                 <div class="d-flex align-items-start">
                     <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" OnClick="() => OpenDialogSetIPSettings(context)" Disabled="@(!(context.OperatingState == EOperatingState.Off || context.OperatingState == EOperatingState.Stop))"></MudIconButton>
-                
+
                     <div class="ml-2">
                         @foreach (var ip in context.ControllerIP)
                         {
@@ -123,6 +125,7 @@
                 <MudIconButton Icon="@Icons.Material.Outlined.Delete" Title="Delete" Size="Size.Small"
                                @onclick="() => RemoveInstance(context)">
                 </MudIconButton>
+                    <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="() => OpenNewTab(context.Name)" Size="Size.Small" Title="Show variables in new tab"></MudIconButton>
 
                 <MudMenu Icon="@Icons.Material.Outlined.MoreVert" Size="Size.Small" Dense="true">
                     <MudMenuItem @onclick="() => context.MemoryReset()">MRES</MudMenuItem>
@@ -141,7 +144,7 @@
     public string ip;
     public IMask ipv4Mask = RegexMask.IPv4();
     STagInfo[] _tagInfos;
-    
+
     private TableGroupDefinition<IInstance> _groupDefinition = new()
     {
         GroupName = "Communication",
@@ -149,4 +152,9 @@
         Expandable = false,
         Selector = (e) => e.CommunicationInterface
     };
+
+    private void OpenNewTab(string instanceName)
+    {
+        JS.InvokeAsync<object>("open", $"/dataview/{instanceName}", "_blank");
+    }
 }

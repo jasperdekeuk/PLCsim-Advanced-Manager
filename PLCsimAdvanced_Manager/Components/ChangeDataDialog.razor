@@ -1,0 +1,147 @@
+@using Color = MudBlazor.Color
+@using Siemens.Simatic.Simulation.Runtime
+@inject ISnackbar Snackbar
+
+<MudDialog>
+    <DialogContent>
+        <MudText>@DataValueByName.Name</MudText>
+        <MudText>@DataValueByName.DataValue</MudText>
+        @switch (DataValueByName.DataValue.Type)
+        {
+            case EPrimitiveDataType.Unspecific:
+                break;
+            case EPrimitiveDataType.Struct:
+                break;
+            case EPrimitiveDataType.Bool:
+                <MudCheckBox @bind-Checked="@newBool"></MudCheckBox>
+                break;
+            case EPrimitiveDataType.Int8:
+                <MudTextField T="sbyte" @bind-Value="@newSByte"></MudTextField>
+                break;
+            case EPrimitiveDataType.Int16:
+                <MudTextField T="short" @bind-Value="@newShort"></MudTextField>
+                break;
+            case EPrimitiveDataType.Int32:
+                <MudTextField T="Int32" @bind-Value="@newInt"></MudTextField>
+                break;
+            case EPrimitiveDataType.Int64:
+                <MudTextField T="long" @bind-Value="@newLong"></MudTextField>
+                break;
+            case EPrimitiveDataType.UInt8:
+                <MudTextField T="byte" @bind-Value="@newByte"></MudTextField>
+                break;
+            case EPrimitiveDataType.UInt16:
+                <MudTextField T="ushort" @bind-Value="@newUShort"></MudTextField>
+                break;
+            case EPrimitiveDataType.UInt32:
+                <MudTextField T="UInt32" @bind-Value="@newUInt"></MudTextField>
+                break;
+            case EPrimitiveDataType.UInt64:
+                <MudTextField T="ulong" @bind-Value="@newULong"></MudTextField>
+                break;
+            case EPrimitiveDataType.Float:
+                <MudTextField T="float" @bind-Value="@newFloat"></MudTextField>
+                break;
+            case EPrimitiveDataType.Double:
+                <MudTextField T="double" @bind-Value="@newDouble"></MudTextField>
+                break;
+            case EPrimitiveDataType.Char:
+                <MudTextField T="sbyte" @bind-Value="@newSByte"></MudTextField>
+                break;
+            case EPrimitiveDataType.WChar:
+                <MudTextField T="char" @bind-Value="@newWChar"></MudTextField>
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    </DialogContent>
+    <DialogActions>
+        <MudButton OnClick="Cancel">Cancel</MudButton>
+        <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="Submit">Apply</MudButton>
+    </DialogActions>
+</MudDialog>
+
+@code {
+
+    [CascadingParameter]
+    MudDialogInstance MudDialog { get; set; }
+
+    [Parameter]
+    public SDataValueByName DataValueByName { get; set; }
+
+    [Parameter]
+    public IInstance Instance { get; set; }
+
+    bool newBool;
+    sbyte newSByte;
+    short newShort;
+    int newInt;
+    long newLong;
+    byte newByte;
+    ushort newUShort;
+    uint newUInt;
+    ulong newULong;
+    float newFloat;
+    double newDouble;
+    sbyte newChar;
+    char newWChar;
+
+    void Submit()
+    {
+        var n = Instance.Name;
+        switch (DataValueByName.DataValue.Type)
+        {
+            case EPrimitiveDataType.Unspecific:
+                break;
+            case EPrimitiveDataType.Struct:
+                break;
+            case EPrimitiveDataType.Bool:
+                Instance.WriteBool(DataValueByName.Name, newBool);
+                break;
+            case EPrimitiveDataType.Int8:
+                Instance.WriteInt8(DataValueByName.Name, newSByte);
+                break;
+            case EPrimitiveDataType.Int16:
+                Instance.WriteInt16(DataValueByName.Name, newShort);
+                break;
+            case EPrimitiveDataType.Int32:
+                Instance.WriteInt32(DataValueByName.Name, newInt);
+                break;
+            case EPrimitiveDataType.Int64:
+                Instance.WriteInt64(DataValueByName.Name, newLong);
+                break;
+            case EPrimitiveDataType.UInt8:
+                Instance.WriteUInt8(DataValueByName.Name, newByte);
+                break;
+            case EPrimitiveDataType.UInt16:
+                Instance.WriteUInt16(DataValueByName.Name, newUShort);
+                break;
+            case EPrimitiveDataType.UInt32:
+                Instance.WriteUInt32(DataValueByName.Name, newUInt);
+                break;
+            case EPrimitiveDataType.UInt64:
+                Instance.WriteUInt64(DataValueByName.Name, newULong);
+                break;
+            case EPrimitiveDataType.Float:
+                Instance.WriteFloat(DataValueByName.Name, newFloat);
+                break;
+            case EPrimitiveDataType.Double:
+                Instance.WriteDouble(DataValueByName.Name, newDouble);
+                break;
+            case EPrimitiveDataType.Char:
+                Instance.WriteChar(DataValueByName.Name, newChar);
+                break;
+            case EPrimitiveDataType.WChar:
+                Instance.WriteWChar(DataValueByName.Name, newWChar);
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+
+
+        MudDialog.Close(DialogResult.Ok(true));
+    }
+    
+
+    void Cancel() => MudDialog.Cancel();
+}
