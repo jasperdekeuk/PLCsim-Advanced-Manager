@@ -2,6 +2,7 @@
 # Edit at https://www.toptal.com/developers/gitignore?templates=visualstudio,jetbrains,rider,visualstudiocode
 
 /s7-plcsim_advanced_function_manual_en-US_en-US (1).pdf
+/PLCsimAdvanced_Manager/Libs/*.dll
 
 ### JetBrains ###
 # Covers JetBrains IDEs: IntelliJ, RubyMine, PhpStorm, AppCode, PyCharm, CLion, Android Studio, WebStorm and Rider
