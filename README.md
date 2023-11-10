@@ -24,3 +24,9 @@ dotnet run --launch-profile http
 > http://localhost:5030
 
 (if build failes, make sure the port is not in use yet) 
+
+> If you want to make it available for other devices on your network, you can run the following command
+> ```shell
+> dotnet run --launch-profile http --urls=http://<yourIP>:5030
+> ```
+> Don't forget to replay <yourIP> with your actual IP address
