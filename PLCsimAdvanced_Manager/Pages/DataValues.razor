@@ -10,12 +10,11 @@
     <div style="padding: 20px">
         <div>
             <MudText Typo="Typo.h6">Data Overview </MudText>
-            <MudAlert Severity="Severity.Error">This feature is still in development and might give strange effects. Manual refresh required at the moment </MudAlert>
+            <MudAlert Severity="Severity.Warning">This feature is still in development </MudAlert>
         </div>
 
 
         <MudText Typo="Typo.h6" Color="Color.Primary">@InstanceName</MudText>
-        <MudIconButton Icon="@Icons.Material.Filled.Refresh" Title="Refresh" @onclick="() => readValues()"></MudIconButton>
 
         <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
 
@@ -49,7 +48,7 @@
                             <MudIconButton Icon="@Icons.Material.Outlined.Edit" @onclick="() => ChangeData(context)"></MudIconButton>
                         </MudTd>
                     </RowTemplate>
-                
+
                 </MudTable>
 
             </MudTabPanel>
@@ -80,7 +79,7 @@
                             <MudIconButton Icon="@Icons.Material.Outlined.Edit" @onclick="() => ChangeData(context)"></MudIconButton>
                         </MudTd>
                     </RowTemplate>
-            
+
                 </MudTable>
             </MudTabPanel>
             <MudTabPanel Text="Outputs">
@@ -101,7 +100,7 @@
                             @parseData(context.DataValue)
                         </MudTd>
                     </RowTemplate>
-            
+
                 </MudTable>
             </MudTabPanel>
         </MudTabs>
@@ -118,24 +117,29 @@
     private SDataValueByName[] _inputDataValueByNames;
     private SDataValueByName[] _outputDataValueByNames;
     private SDataValueByName[] _dbDataValueByNames;
-    
 
+    private Timer _timer;
 
-    protected override async Task OnParametersSetAsync()
+    protected override void OnInitialized()
     {
         OnSelectInstance(InstanceName);
-        await base.OnParametersSetAsync();
+
+        _timer = new Timer(new TimerCallback(async (object state) =>
+        {
+            await InvokeAsync(() =>
+            {
+                readValues();
+                StateHasChanged();
+            });
+        }), null, TimeSpan.Zero, TimeSpan.FromMilliseconds(500));
+
+        base.OnInitialized();
     }
 
     private void OnSelectInstance(string name)
     {
         SelectedInstance = SimulationRuntimeManager.CreateInterface(name);
         setDataValueByNames();
-        
-        Timer timer = new Timer(new TimerCallback(async (object state) =>
-        {
-            await InvokeAsync(() => readValues());
-        }), null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
     }
 
     private void setDataValueByNames()
@@ -164,15 +168,15 @@
 
     public void readValues()
     {
-        for (int i = 0 ; i < _dbDataValueByNames.Length; i++)
+        for (int i = 0; i < _dbDataValueByNames.Length; i++)
         {
             _dbDataValueByNames[i].DataValue = SelectedInstance.Read(_dbDataValueByNames[i].Name);
         }
-        for (int i = 0 ; i < _inputDataValueByNames.Length; i++)
+        for (int i = 0; i < _inputDataValueByNames.Length; i++)
         {
             _inputDataValueByNames[i].DataValue = SelectedInstance.Read(_inputDataValueByNames[i].Name);
         }
-        for (int i = 0 ; i < _outputDataValueByNames.Length; i++)
+        for (int i = 0; i < _outputDataValueByNames.Length; i++)
         {
             _outputDataValueByNames[i].DataValue = SelectedInstance.Read(_outputDataValueByNames[i].Name);
         }
@@ -230,5 +234,7 @@
 
         DialogService.Show<ChangeDataDialog>("Change value", parameters, options);
     }
+
+
 
 }
