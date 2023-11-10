@@ -29,4 +29,4 @@ dotnet run --launch-profile http
 > ```shell
 > dotnet run --launch-profile http --urls=http://<yourIP>:5030
 > ```
-> Don't forget to replay <yourIP> with your actual IP address
+> Don't forget to replace <yourIP> with your actual IP address
