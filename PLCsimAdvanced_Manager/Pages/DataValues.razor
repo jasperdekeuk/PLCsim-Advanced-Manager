@@ -1,5 +1,6 @@
 @using Siemens.Simatic.Simulation.Runtime
 @using Color = MudBlazor.Color
+@using System.Collections.Concurrent
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @page "/dataview/{instanceName}"
@@ -9,7 +10,7 @@
     <div style="padding: 20px">
         <div>
             <MudText Typo="Typo.h6">Data Overview </MudText>
-            <MudAlert Severity="Severity.Error">This feature is still in development and might give strange effects</MudAlert>
+            <MudAlert Severity="Severity.Error">This feature is still in development and might give strange effects. Manual refresh required at the moment </MudAlert>
         </div>
 
 
@@ -48,7 +49,7 @@
                             <MudIconButton Icon="@Icons.Material.Outlined.Edit" @onclick="() => ChangeData(context)"></MudIconButton>
                         </MudTd>
                     </RowTemplate>
-
+                
                 </MudTable>
 
             </MudTabPanel>
@@ -79,7 +80,7 @@
                             <MudIconButton Icon="@Icons.Material.Outlined.Edit" @onclick="() => ChangeData(context)"></MudIconButton>
                         </MudTd>
                     </RowTemplate>
-
+            
                 </MudTable>
             </MudTabPanel>
             <MudTabPanel Text="Outputs">
@@ -100,7 +101,7 @@
                             @parseData(context.DataValue)
                         </MudTd>
                     </RowTemplate>
-
+            
                 </MudTable>
             </MudTabPanel>
         </MudTabs>
@@ -117,10 +118,8 @@
     private SDataValueByName[] _inputDataValueByNames;
     private SDataValueByName[] _outputDataValueByNames;
     private SDataValueByName[] _dbDataValueByNames;
+    
 
-    SDataValueByName[] inputDataValueByNamesLocal = null;
-    SDataValueByName[] outputDataValueByNamesLocal = null;
-    SDataValueByName[] dbDataValueByNamesLocal = null;
 
     protected override async Task OnParametersSetAsync()
     {
@@ -132,6 +131,11 @@
     {
         SelectedInstance = SimulationRuntimeManager.CreateInterface(name);
         setDataValueByNames();
+        
+        Timer timer = new Timer(new TimerCallback(async (object state) =>
+        {
+            await InvokeAsync(() => readValues());
+        }), null, TimeSpan.Zero, TimeSpan.FromSeconds(1));
     }
 
     private void setDataValueByNames()
@@ -157,53 +161,21 @@
         readValues();
     }
 
-    private readonly object valuesLock = new object();
 
     public void readValues()
     {
-
-            lock (valuesLock)
-            {
-                if (SelectedInstance == null)
-                {
-                    Snackbar.Add($"Was not possible to read data of the instance");
-                    return;
-                }
-
-                if (_inputDataValueByNames != null)
-                {
-                    try
-                    {
-                        SelectedInstance.ReadSignals(ref _inputDataValueByNames);
-                    }
-                    catch (Exception e)
-                    {
-                        Snackbar.Add($"Issue reading input data: {e}");
-                    }
-                }
-                if (_outputDataValueByNames != null)
-                {
-                    try
-                    {
-                        SelectedInstance.ReadSignals(ref _outputDataValueByNames);
-                    }
-                    catch (Exception e)
-                    {
-                        Snackbar.Add($"Issue reading output data: {e}");
-                    }
-                }
-                if (_dbDataValueByNames != null)
-                {
-                    try
-                    {
-                        SelectedInstance.ReadSignals(ref _dbDataValueByNames);
-                    }
-                    catch (Exception e)
-                    {
-                        Snackbar.Add($"Issue reading DB data: {e}");
-                    }
-                }
-            }
+        for (int i = 0 ; i < _dbDataValueByNames.Length; i++)
+        {
+            _dbDataValueByNames[i].DataValue = SelectedInstance.Read(_dbDataValueByNames[i].Name);
+        }
+        for (int i = 0 ; i < _inputDataValueByNames.Length; i++)
+        {
+            _inputDataValueByNames[i].DataValue = SelectedInstance.Read(_inputDataValueByNames[i].Name);
+        }
+        for (int i = 0 ; i < _outputDataValueByNames.Length; i++)
+        {
+            _outputDataValueByNames[i].DataValue = SelectedInstance.Read(_outputDataValueByNames[i].Name);
+        }
 
         StateHasChanged();
     }
@@ -213,9 +185,9 @@
         switch (dataValue.Type)
         {
             case EPrimitiveDataType.Unspecific:
-                return null;
+                return "Unspecific type, value not avaliable";
             case EPrimitiveDataType.Struct:
-                return null; // not yet implemented for now
+                return "Struct type, not implemented"; // not yet implemented for now
             case EPrimitiveDataType.Bool:
                 return dataValue.Bool;
             case EPrimitiveDataType.Int8:
@@ -246,6 +218,7 @@
                 throw new ArgumentOutOfRangeException();
         }
     }
+
 
     public void ChangeData(SDataValueByName dataValueByName)
     {
