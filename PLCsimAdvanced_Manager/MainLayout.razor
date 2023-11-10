@@ -2,6 +2,7 @@
 @using Color = MudBlazor.Color
 @inherits LayoutComponentBase
 @inject IDialogService DialogService
+@inject IJSRuntime JS
 
 <MudThemeProvider Theme="@CustomTheme"/>
 <MudDialogProvider/>
@@ -12,6 +13,7 @@
     <MudAppBar Elevation="1">
         <MudText Typo="Typo.h5" Class="ml-3">PLCSim Advanced Manager</MudText>
         <MudSpacer/>
+        <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" aria-label="github" OnClick="OpenGithub"></MudIconButton>
         <MudMenu Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End" >
             <MudMenuItem OnClick="@OpenPsaInfoDialog">PLCsim Adv. Information</MudMenuItem>
             <MudMenuItem OnClick="@OpenNetworkSettingsDialog">Network Settings</MudMenuItem>
@@ -48,6 +50,11 @@
         DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true, FullWidth = true };
 
         DialogService.Show<NetworkSettings>("Network Settings", closeOnEscapeKey);
+    }
+
+    private void OpenGithub()
+    {
+        JS.InvokeAsync<object>("open", "https://github.com/jasperdekeuk/PLCsim-Advanced-Manager", "_blank");
     }
 
 }
