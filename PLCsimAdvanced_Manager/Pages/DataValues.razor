@@ -18,94 +18,101 @@
            <MudText Typo="Typo.h5" Color="Color.Primary">@InstanceName</MudText>
         </div>
 
-        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+        @if (InstanceRegistered)
+        {
+            <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
 
-            <MudTabPanel Text="Datablocks">
-                <MudTable Items="_dbDataValueByNames" T="SDataValueByName">
-                    <ToolBarContent>
-                        <MudText Typo="Typo.h6">Datablocks</MudText>
-                    </ToolBarContent>
-                    <ColGroup>
-                        <col style="width: 50px"/>
-                        <col style="width: 50px"/>
-                        <col style="width: 50px"/>
-                        <col style="width: 50px"/>
-                    </ColGroup>
-                    <HeaderContent>
-                        <MudTh>Name</MudTh>
-                        <MudTh>Type</MudTh>
-                        <MudTh>Value</MudTh>
-                    </HeaderContent>
-                    <RowTemplate>
-                        <MudTd DataLabel="Name">
-                            @context.Name
-                        </MudTd>
-                        <MudTd DataLabel="Type">
-                            @context.DataValue.Type
-                        </MudTd>
-                        <MudTd DataLabel="Value">
-                            @parseData(context.DataValue)
-                        </MudTd>
-                        <MudTd>
-                            <MudIconButton Icon="@Icons.Material.Outlined.Edit" @onclick="() => ChangeData(context)"></MudIconButton>
-                        </MudTd>
-                    </RowTemplate>
+                <MudTabPanel Text="Datablocks">
+                    <MudTable Items="_dbDataValueByNames" T="SDataValueByName">
+                        <ToolBarContent>
+                            <MudText Typo="Typo.h6">Datablocks</MudText>
+                        </ToolBarContent>
+                        <ColGroup>
+                            <col style="width: 50px"/>
+                            <col style="width: 50px"/>
+                            <col style="width: 50px"/>
+                            <col style="width: 50px"/>
+                        </ColGroup>
+                        <HeaderContent>
+                            <MudTh>Name</MudTh>
+                            <MudTh>Type</MudTh>
+                            <MudTh>Value</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Name">
+                                @context.Name
+                            </MudTd>
+                            <MudTd DataLabel="Type">
+                                @context.DataValue.Type
+                            </MudTd>
+                            <MudTd DataLabel="Value">
+                                @parseData(context.DataValue)
+                            </MudTd>
+                            <MudTd>
+                                <MudIconButton Icon="@Icons.Material.Outlined.Edit" @onclick="() => ChangeData(context)"></MudIconButton>
+                            </MudTd>
+                        </RowTemplate>
 
-                </MudTable>
+                    </MudTable>
 
-            </MudTabPanel>
-            <MudTabPanel Text="Inputs">
-                <MudTable Items="_inputDataValueByNames" T="SDataValueByName">
-                    <ColGroup>
-                        <col style="width: 50px"/>
-                        <col style="width: 50px"/>
-                        <col style="width: 50px"/>
-                        <col style="width: 50px"/>
-                    </ColGroup>
-                    <HeaderContent>
-                        <MudTh>Name</MudTh>
-                        <MudTh>Type</MudTh>
-                        <MudTh>Value</MudTh>
-                    </HeaderContent>
-                    <RowTemplate>
-                        <MudTd DataLabel="Name">
-                            @context.Name
-                        </MudTd>
-                        <MudTd DataLabel="Type">
-                            @context.DataValue.Type
-                        </MudTd>
-                        <MudTd DataLabel="Value">
-                            @parseData(context.DataValue)
-                        </MudTd>
-                        <MudTd>
-                            <MudIconButton Icon="@Icons.Material.Outlined.Edit" @onclick="() => ChangeData(context)"></MudIconButton>
-                        </MudTd>
-                    </RowTemplate>
+                </MudTabPanel>
+                <MudTabPanel Text="Inputs">
+                    <MudTable Items="_inputDataValueByNames" T="SDataValueByName">
+                        <ColGroup>
+                            <col style="width: 50px"/>
+                            <col style="width: 50px"/>
+                            <col style="width: 50px"/>
+                            <col style="width: 50px"/>
+                        </ColGroup>
+                        <HeaderContent>
+                            <MudTh>Name</MudTh>
+                            <MudTh>Type</MudTh>
+                            <MudTh>Value</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Name">
+                                @context.Name
+                            </MudTd>
+                            <MudTd DataLabel="Type">
+                                @context.DataValue.Type
+                            </MudTd>
+                            <MudTd DataLabel="Value">
+                                @parseData(context.DataValue)
+                            </MudTd>
+                            <MudTd>
+                                <MudIconButton Icon="@Icons.Material.Outlined.Edit" @onclick="() => ChangeData(context)"></MudIconButton>
+                            </MudTd>
+                        </RowTemplate>
 
-                </MudTable>
-            </MudTabPanel>
-            <MudTabPanel Text="Outputs">
-                <MudTable Items="_outputDataValueByNames" T="SDataValueByName">
-                    <HeaderContent>
-                        <MudTh>Name</MudTh>
-                        <MudTh>Type</MudTh>
-                        <MudTh>Value</MudTh>
-                    </HeaderContent>
-                    <RowTemplate>
-                        <MudTd DataLabel="Name">
-                            @context.Name
-                        </MudTd>
-                        <MudTd DataLabel="Type">
-                            @context.DataValue.Type
-                        </MudTd>
-                        <MudTd DataLabel="Value">
-                            @parseData(context.DataValue)
-                        </MudTd>
-                    </RowTemplate>
+                    </MudTable>
+                </MudTabPanel>
+                <MudTabPanel Text="Outputs">
+                    <MudTable Items="_outputDataValueByNames" T="SDataValueByName">
+                        <HeaderContent>
+                            <MudTh>Name</MudTh>
+                            <MudTh>Type</MudTh>
+                            <MudTh>Value</MudTh>
+                        </HeaderContent>
+                        <RowTemplate>
+                            <MudTd DataLabel="Name">
+                                @context.Name
+                            </MudTd>
+                            <MudTd DataLabel="Type">
+                                @context.DataValue.Type
+                            </MudTd>
+                            <MudTd DataLabel="Value">
+                                @parseData(context.DataValue)
+                            </MudTd>
+                        </RowTemplate>
 
-                </MudTable>
-            </MudTabPanel>
-        </MudTabs>
+                    </MudTable>
+                </MudTabPanel>
+            </MudTabs>
+        }
+        else
+        {
+            <MudAlert Severity="Severity.Error">Instance not registered</MudAlert>
+        }
     </div>
 </div>
 
@@ -113,6 +120,8 @@
 
     [Parameter]
     public string InstanceName { get; set; }
+
+    public bool InstanceRegistered= false;
 
     public IInstance SelectedInstance { get; set; }
 
@@ -140,8 +149,18 @@
 
     private void OnSelectInstance(string name)
     {
-        SelectedInstance = SimulationRuntimeManager.CreateInterface(name);
-        setDataValueByNames();
+        try
+        {
+            SelectedInstance = SimulationRuntimeManager.CreateInterface(name);
+            InstanceRegistered = true;
+            setDataValueByNames();
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Error while selecting instance {name}: {e.Message}");
+            InstanceRegistered = false;
+        }
+
     }
 
     private void setDataValueByNames()
@@ -170,17 +189,44 @@
 
     public void readValues()
     {
+        if (!InstanceRegistered)
+        {
+            OnSelectInstance(SelectedInstance.Name);
+            return;
+        }
         for (int i = 0; i < _dbDataValueByNames.Length; i++)
         {
-            _dbDataValueByNames[i].DataValue = SelectedInstance.Read(_dbDataValueByNames[i].Name);
+            try
+            {
+                _dbDataValueByNames[i].DataValue = SelectedInstance.Read(_dbDataValueByNames[i].Name);
+            }
+            catch (Exception e)
+            {
+                InstanceRegistered = false;
+            }
         }
         for (int i = 0; i < _inputDataValueByNames.Length; i++)
         {
-            _inputDataValueByNames[i].DataValue = SelectedInstance.Read(_inputDataValueByNames[i].Name);
+            try
+            {
+                _inputDataValueByNames[i].DataValue = SelectedInstance.Read(_inputDataValueByNames[i].Name);
+
+            }
+            catch (Exception e)
+            {
+                InstanceRegistered = false;
+            }
         }
         for (int i = 0; i < _outputDataValueByNames.Length; i++)
         {
-            _outputDataValueByNames[i].DataValue = SelectedInstance.Read(_outputDataValueByNames[i].Name);
+            try
+            {
+                _outputDataValueByNames[i].DataValue = SelectedInstance.Read(_outputDataValueByNames[i].Name);
+            }
+            catch (Exception e)
+            {
+                InstanceRegistered = false;
+            }
         }
 
         StateHasChanged();
