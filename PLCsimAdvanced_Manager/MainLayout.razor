@@ -12,7 +12,10 @@
 <MudLayout>
     <MudAppBar Elevation="1">
         <MudLink Href="/" Underline="Underline.None" Color="Color.Inherit">
-            <MudText Typo="Typo.h5" Class="ml-3">PLCSim Advanced Manager</MudText>
+            <MudItem xs="12" md="12" Class="d-flex align-items-baseline">
+                <MudText Typo="Typo.h5" Class="ml-3">PLCSim Advanced Manager</MudText>
+                <MudText Typo="Typo.caption" Class="ml-3">v0.0.1</MudText>
+            </MudItem>
         </MudLink>
         <MudSpacer/>
         <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" aria-label="github" OnClick="OpenGithub"></MudIconButton>
