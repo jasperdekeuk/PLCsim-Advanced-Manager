@@ -1,31 +1,33 @@
 @using Siemens.Simatic.Simulation.Runtime
 <MudDialog>
     <DialogContent>
-        <MudSelect T="ECPUType" Label="PLC Family" AnchorOrigin="Origin.BottomCenter" @bind-Value="@selectedInstance.CPUType">
-            @foreach(ECPUType e in Enum.GetValues(typeof(ECPUType)))
-            {
-                <MudSelectItem Value="e"/>
-            }
-            @* <MudSelectItem Value="@ECPUType.CPU1500_Unspecified"/> *@
-            @* <MudSelectItem Value="@ECPUType.CPU1500_RH_Unspecified"/> *@
-            @* <MudSelectItem Value="@ECPUType.ET200SP_Unspecified"/> *@
-            @* <MudSelectItem Value="@ECPUType.ET200PRO_Unspecified"/> *@
-        </MudSelect>
-        <MudCheckBox @bind-Checked="@selectedInstance.StrictMotionTiming" Label="Strict Motion Timing"></MudCheckBox>
-        <MudTextField @bind-Value="@selectedInstance.StoragePath" Label="Storage Path"></MudTextField>
-        <MudSelect T="ECommunicationInterface" Label="Communication Interface" AnchorOrigin="Origin.BottomCenter" @bind-Value="@selectedInstance.CommunicationInterface">
-            <MudSelectItem Value="@ECommunicationInterface.Softbus"/>
-            <MudSelectItem Value="@ECommunicationInterface.TCPIP"/>
-        </MudSelect>
-        <MudSelect T="EOperatingMode" Label="Operating Mode" AnchorOrigin="Origin.BottomCenter" @bind-Value="@selectedInstance.OperatingMode">
-            @foreach (EOperatingMode e in Enum.GetValues(typeof(EOperatingMode)))
-            {
-                <MudSelectItem Value="e"/>
-            }
-        </MudSelect>
-        <MudTextField @bind-Value="@selectedInstance.SystemTime" Label="SystemTime"></MudTextField>
-        <MudNumericField T="double" @bind-Value="@selectedInstance.ScaleFactor" Label="Scale Factor"></MudNumericField>
-        <MudNumericField T="long" @bind-Value="@selectedInstance.OverwrittenMinimalCycleTime_ns" Label="Overwritten Minimal Cycletime [ns]"></MudNumericField>
-        <MudCheckBox @bind-Checked="@selectedInstance.IsSendSyncEventInDefaultModeEnabled" Label="Send Syncevent in Default Mode Enabled"></MudCheckBox>
+        <div>
+            <MudText Typo="Typo.h6">PLC Family: </MudText>
+            <MudText> @selectedInstance.CPUType.ToString()</MudText>
+        </div>
+        <div>
+            <MudText Typo="Typo.h6">Strict Motion Timing: </MudText> <MudText> @selectedInstance.StrictMotionTiming.ToString()</MudText>
+        </div>
+        <div>
+            <MudText Typo="Typo.h6">Storage Path: </MudText> <MudText> @selectedInstance.StoragePath</MudText>
+        </div>
+        <div>
+            <MudText Typo="Typo.h6">Communication Interface: </MudText> <MudText> @selectedInstance.CommunicationInterface.ToString()</MudText>
+        </div>
+        <div>
+            <MudText Typo="Typo.h6">Operating Mode: </MudText> <MudText> @selectedInstance.OperatingMode.ToString()</MudText>
+        </div>
+        <div>
+            <MudText Typo="Typo.h6">System Time: </MudText> <MudText> @selectedInstance.SystemTime</MudText>
+        </div>
+        <div>
+            <MudText Typo="Typo.h6">Scale Factor: </MudText> <MudText> @selectedInstance.ScaleFactor.ToString()</MudText>
+        </div>
+        <div>
+            <MudText Typo="Typo.h6">Overwritten Minimal Cycle Time [ns]: </MudText> <MudText> @selectedInstance.OverwrittenMinimalCycleTime_ns.ToString()</MudText>
+        </div>
+        <div>
+            <MudText Typo="Typo.h6">Send Sync Event in Default Mode Enabled: </MudText> <MudText> @selectedInstance.IsSendSyncEventInDefaultModeEnabled.ToString()</MudText>
+        </div>
     </DialogContent>
 </MudDialog>
