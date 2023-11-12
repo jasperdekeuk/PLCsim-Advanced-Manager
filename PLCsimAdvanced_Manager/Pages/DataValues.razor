@@ -173,14 +173,19 @@
 
         SelectedInstance.UpdateTagList();
 
-        _inputDataValueByNames = SelectedInstance.TagInfos.Where(e => e.Area == EArea.Input)
-            .Select(e => new SDataValueByName { Name = e.Name })
+        _inputDataValueByNames = SelectedInstance.TagInfos.Where(e => e.Area == EArea.Input && e.DataType != EDataType.Struct)
+            .Select(e => new SDataValueByName { Name = e.Name, DataValue = new SDataValue { Type = e.PrimitiveDataType } })
             .ToArray();
-        _outputDataValueByNames = SelectedInstance.TagInfos.Where(e => e.Area == EArea.Output)
-            .Select(e => new SDataValueByName { Name = e.Name })
+        _outputDataValueByNames = SelectedInstance.TagInfos
+            .Where(e => e.Area == EArea.Output && e.DataType != EDataType.Struct)
+            .Select(e => new SDataValueByName 
+            { 
+                Name = e.Name, 
+                DataValue = new SDataValue { Type = e.PrimitiveDataType }
+            })
             .ToArray();
-        _dbDataValueByNames = SelectedInstance.TagInfos.Where(e => e.Area == EArea.DataBlock && e.DataType != EDataType.DB)
-            .Select(e => new SDataValueByName { Name = e.Name })
+        _dbDataValueByNames = SelectedInstance.TagInfos.Where(e => e.Area == EArea.DataBlock && e.DataType != EDataType.Struct)
+            .Select(e => new SDataValueByName { Name = e.Name, DataValue = new SDataValue { Type = e.PrimitiveDataType } })
             .ToArray();
 
         readValues();
@@ -198,7 +203,11 @@
         {
             try
             {
-                _dbDataValueByNames[i].DataValue = SelectedInstance.Read(_dbDataValueByNames[i].Name);
+                if (_dbDataValueByNames[i].DataValue.Type != EPrimitiveDataType.Struct)
+                {
+                    _dbDataValueByNames[i].DataValue = SelectedInstance.Read(_dbDataValueByNames[i].Name);
+
+                }
             }
             catch (Exception e)
             {
@@ -209,7 +218,10 @@
         {
             try
             {
-                _inputDataValueByNames[i].DataValue = SelectedInstance.Read(_inputDataValueByNames[i].Name);
+                if (_inputDataValueByNames[i].DataValue.Type != EPrimitiveDataType.Struct)
+                {
+                    _inputDataValueByNames[i].DataValue = SelectedInstance.Read(_inputDataValueByNames[i].Name);
+                }
 
             }
             catch (Exception e)
@@ -221,7 +233,10 @@
         {
             try
             {
-                _outputDataValueByNames[i].DataValue = SelectedInstance.Read(_outputDataValueByNames[i].Name);
+                if (_outputDataValueByNames[i].DataValue.Type != EPrimitiveDataType.Struct)
+                {
+                    _outputDataValueByNames[i].DataValue = SelectedInstance.Read(_outputDataValueByNames[i].Name);
+                }
             }
             catch (Exception e)
             {
