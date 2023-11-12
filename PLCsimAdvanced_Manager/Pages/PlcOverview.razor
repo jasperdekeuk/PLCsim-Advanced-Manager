@@ -91,14 +91,16 @@
             </MudTd>
             <MudTd DataLabel="Controller IP">
                 <div class="d-flex align-items-start">
-                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" OnClick="() => OpenDialogSetIPSettings(context)" Disabled="@(!(context.OperatingState == EOperatingState.Off || context.OperatingState == EOperatingState.Stop))"></MudIconButton>
-
                     <div class="ml-2">
                         @foreach (var ip in context.ControllerIP)
                         {
                             <div>@ip</div>
                         }
                     </div>
+                    @if(context.ControllerIP.Length != 0)
+                    {
+                        <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" OnClick="() => OpenDialogSetIPSettings(context)" Disabled="@(!(context.OperatingState == EOperatingState.Off || context.OperatingState == EOperatingState.Stop))"></MudIconButton>
+                    }
                 </div>
             </MudTd>
             <MudTd DataLabel="CPU type">@context.CPUType</MudTd>
@@ -119,16 +121,14 @@
                         <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Size="Size.Small" OnClick="() => {if (context.OperatingState == EOperatingState.Off) context.CommunicationInterface = ECommunicationInterface.TCPIP; }">Softbus</MudButton>
                     </MudTooltip>
                 }
-
-
-                <MudIconButton Icon="@Icons.Material.Outlined.Settings" Title="Edit" Size="Size.Small" @onclick="() => OpenDialogPLCSettings(context)"></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="() => OpenNewTab(context.Name)" Size="Size.Small" Title="Show variables in new tab"></MudIconButton>
                 <MudIconButton Icon="@Icons.Material.Outlined.Delete" Title="Delete" Size="Size.Small"
                                @onclick="() => RemoveInstance(context)">
                 </MudIconButton>
-                    <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="() => OpenNewTab(context.Name)" Size="Size.Small" Title="Show variables in new tab"></MudIconButton>
 
                 <MudMenu Icon="@Icons.Material.Outlined.MoreVert" Size="Size.Small" Dense="true">
                     <MudMenuItem @onclick="() => context.MemoryReset()">MRES</MudMenuItem>
+                    <MudMenuItem @onclick="() => OpenDialogPLCSettings(context)">Settings</MudMenuItem>
                 </MudMenu>
 
             </MudTd>
