@@ -173,18 +173,18 @@
 
         SelectedInstance.UpdateTagList();
 
-        _inputDataValueByNames = SelectedInstance.TagInfos.Where(e => e.Area == EArea.Input && e.DataType != EDataType.Struct)
+        _inputDataValueByNames = SelectedInstance.TagInfos.Where(e => e.Area == EArea.Input && e.PrimitiveDataType != EPrimitiveDataType.Struct)
             .Select(e => new SDataValueByName { Name = e.Name, DataValue = new SDataValue { Type = e.PrimitiveDataType } })
             .ToArray();
         _outputDataValueByNames = SelectedInstance.TagInfos
-            .Where(e => e.Area == EArea.Output && e.DataType != EDataType.Struct)
+            .Where(e => e.Area == EArea.Output && e.PrimitiveDataType != EPrimitiveDataType.Struct)
             .Select(e => new SDataValueByName 
             { 
                 Name = e.Name, 
                 DataValue = new SDataValue { Type = e.PrimitiveDataType }
             })
             .ToArray();
-        _dbDataValueByNames = SelectedInstance.TagInfos.Where(e => e.Area == EArea.DataBlock && e.DataType != EDataType.Struct)
+        _dbDataValueByNames = SelectedInstance.TagInfos.Where(e => e.Area == EArea.DataBlock && e.PrimitiveDataType != EPrimitiveDataType.Struct)
             .Select(e => new SDataValueByName { Name = e.Name, DataValue = new SDataValue { Type = e.PrimitiveDataType } })
             .ToArray();
 
