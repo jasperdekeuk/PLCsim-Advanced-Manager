@@ -15,7 +15,7 @@
 
 
         <div style="padding: 20px; background-color: #f0f0f0;">
-           <MudText Typo="Typo.h5" Color="Color.Primary">@InstanceName</MudText>
+            <MudText Typo="Typo.h5" Color="Color.Primary">@InstanceName</MudText>
         </div>
 
         @if (InstanceRegistered)
@@ -23,7 +23,7 @@
             <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
 
                 <MudTabPanel Text="Datablocks">
-                    <MudTable Items="_dbDataValueByNames" T="SDataValueByName">
+                    <MudTable Items="_dbDataValueByNames" T="SDataValueByName" FixedHeader="true" Dense="true">
                         <ToolBarContent>
                             <MudText Typo="Typo.h6">Datablocks</MudText>
                         </ToolBarContent>
@@ -121,7 +121,7 @@
     [Parameter]
     public string InstanceName { get; set; }
 
-    public bool InstanceRegistered= false;
+    public bool InstanceRegistered = false;
 
     public IInstance SelectedInstance { get; set; }
 
@@ -153,6 +153,11 @@
         {
             SelectedInstance = SimulationRuntimeManager.CreateInterface(name);
             InstanceRegistered = true;
+            SelectedInstance.OnHardwareConfigChanged += (sender, code, time) =>
+            {
+                Snackbar.Add("New configuration downloaded to the instance");
+                setDataValueByNames();
+            };
             setDataValueByNames();
         }
         catch (Exception e)
@@ -160,7 +165,6 @@
             Snackbar.Add($"Error while selecting instance {name}: {e.Message}");
             InstanceRegistered = false;
         }
-
     }
 
     private void setDataValueByNames()
@@ -178,9 +182,9 @@
             .ToArray();
         _outputDataValueByNames = SelectedInstance.TagInfos
             .Where(e => e.Area == EArea.Output && e.PrimitiveDataType != EPrimitiveDataType.Struct)
-            .Select(e => new SDataValueByName 
-            { 
-                Name = e.Name, 
+            .Select(e => new SDataValueByName
+            {
+                Name = e.Name,
                 DataValue = new SDataValue { Type = e.PrimitiveDataType }
             })
             .ToArray();
@@ -206,7 +210,6 @@
                 if (_dbDataValueByNames[i].DataValue.Type != EPrimitiveDataType.Struct)
                 {
                     _dbDataValueByNames[i].DataValue = SelectedInstance.Read(_dbDataValueByNames[i].Name);
-
                 }
             }
             catch (Exception e)
@@ -222,7 +225,6 @@
                 {
                     _inputDataValueByNames[i].DataValue = SelectedInstance.Read(_inputDataValueByNames[i].Name);
                 }
-
             }
             catch (Exception e)
             {
