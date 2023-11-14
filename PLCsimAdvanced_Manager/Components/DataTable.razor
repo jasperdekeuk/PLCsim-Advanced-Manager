@@ -1,0 +1,248 @@
+@using Siemens.Simatic.Simulation.Runtime
+@using Color = MudBlazor.Color
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+
+
+
+<MudTable ServerData="@(new Func<TableState, Task<TableData<SDataValueByName>>>(ServerReload))"
+          Dense="true" Hover="true" @ref="table" Loading="false" LoadingProgressColor="Color.Transparent">
+    <ToolBarContent>
+        <MudText Typo="Typo.h6">Datablock Values</MudText>
+        <MudSpacer/>
+        <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+        </MudTextField>
+    </ToolBarContent>
+    <HeaderContent>
+        <MudTh>Name</MudTh>
+        <MudTh>Type</MudTh>
+        <MudTh>Value</MudTh>
+    </HeaderContent>
+    <GroupHeaderTemplate>
+        <MudTh Class="mud-table-cell-custom-group" colspan="5">@($"{context.Key}") </MudTh>
+    </GroupHeaderTemplate>
+    <RowTemplate>
+        <MudTd DataLabel="Name">
+            @context.Name
+        </MudTd>
+        <MudTd DataLabel="Type">
+            @context.DataValue.Type
+        </MudTd>
+        <MudTd DataLabel="Value">
+            @parseData(context.DataValue)
+        </MudTd>
+        <MudTd>
+            <MudIconButton Icon="@Icons.Material.Outlined.Edit" @onclick="() => ChangeData(context)"></MudIconButton>
+        </MudTd>
+    </RowTemplate>
+    <NoRecordsContent>
+        <MudText>No matching records found</MudText>
+    </NoRecordsContent>
+    <LoadingContent>
+        <MudText>Not found</MudText>
+    </LoadingContent>
+    <PagerContent>
+        <MudTablePager/>
+    </PagerContent>
+</MudTable>
+
+@code {
+    
+    [Parameter] public string InstanceName { get; set; }
+    [Parameter] public EArea Area { get; set; }
+    private IInstance SelectedInstance;
+    
+
+    public bool InstanceRegistered = false;
+
+
+    private SDataValueByName[] _DataValueByNames;
+
+
+
+    
+    private System.Timers.Timer refreshTimer;
+    protected override async Task OnInitializedAsync()
+    {
+        OnSelectInstance(InstanceName);
+
+    // Set up the timer to refresh data every 500 milliseconds
+        refreshTimer = new System.Timers.Timer(500);
+        refreshTimer.Elapsed += async (sender, e) => await RefreshData();
+        refreshTimer.AutoReset = true;
+        refreshTimer.Start();
+    }
+    
+    private void OnSelectInstance(string name)
+    {
+        try
+        {
+            SelectedInstance = SimulationRuntimeManager.CreateInterface(name);
+            InstanceRegistered = true;
+            SelectedInstance.OnSoftwareConfigurationChanged += (sender, code) =>
+            {
+                Snackbar.Add("New configuration downloaded to the instance");
+                InstanceRegistered = false;
+            };
+            setDataValueByNames();
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Error while selecting instance {name}: {e.Message}");
+            InstanceRegistered = false;
+        }
+    }
+
+    // -------------------------------
+    private IEnumerable<SDataValueByName> pagedData;
+    private MudTable<SDataValueByName> table;
+
+    private int totalItems;
+    private string searchString = null;
+
+    /// <summary>
+    /// Here we simulate getting the paged, filtered and ordered data from the server
+    /// </summary>
+    private async Task<TableData<SDataValueByName>> ServerReload(TableState state)
+    {
+        await Task.Delay(300);
+        var _DataValueByNamesToGet = _DataValueByNames.Where(element =>
+        {
+            if (string.IsNullOrWhiteSpace(searchString))
+                return true;
+            if (element.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if (element.DataValue.Type.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                return true;
+            if ($"{element.Name} {element.DataValue.Type} {element.DataValue.ToString()}".Contains(searchString))
+                return true;
+            return false;
+        }).ToArray();
+        totalItems = _DataValueByNamesToGet.Count();
+
+
+        if (!InstanceRegistered)
+        {
+            OnSelectInstance(SelectedInstance.Name);
+            return new TableData<SDataValueByName>();
+        }
+        for (int i = 0; i < _DataValueByNamesToGet.Length; i++)
+        {
+            try
+            {
+                if (_DataValueByNamesToGet[i].DataValue.Type != EPrimitiveDataType.Struct)
+                {
+                    _DataValueByNamesToGet[i].DataValue = SelectedInstance.Read(_DataValueByNamesToGet[i].Name);
+                }
+            }
+            catch (Exception e)
+            {
+                InstanceRegistered = false;
+            }
+        }
+
+        pagedData = _DataValueByNamesToGet.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
+        return new TableData<SDataValueByName>() { TotalItems = totalItems, Items = pagedData };
+    }
+    
+    private async Task RefreshData()
+    {
+        if (!InstanceRegistered)
+        {
+            OnSelectInstance(SelectedInstance.Name);
+        }
+
+    // Assuming _dbDataValueByNames is your source data
+        for (int i = 0; i < _DataValueByNames.Length; i++)
+        {
+            try
+            {
+                if (_DataValueByNames[i].DataValue.Type != EPrimitiveDataType.Struct)
+                {
+                    _DataValueByNames[i].DataValue = SelectedInstance.Read(_DataValueByNames[i].Name);
+                }
+            }
+            catch (Exception e)
+            {
+                InstanceRegistered = false;
+            }
+        }
+
+    // Update paged data and reload the table
+        table.ReloadServerData();
+    }
+
+    private void OnSearch(string text)
+    {
+        searchString = text;
+        // table.ReloadServerData();
+    }
+    
+    private void setDataValueByNames()
+    {
+        if (SelectedInstance == null)
+        {
+            Snackbar.Add("Issue with reading data for the given instance");
+            return;
+        }
+
+        SelectedInstance.UpdateTagList();
+
+        _DataValueByNames = SelectedInstance.TagInfos.Where(e => e.Area == Area && e.PrimitiveDataType != EPrimitiveDataType.Struct)
+            .Select(e => new SDataValueByName { Name = e.Name, DataValue = new SDataValue { Type = e.PrimitiveDataType } })
+            .ToArray();
+    }
+    
+    public object parseData(SDataValue dataValue)
+    {
+        switch (dataValue.Type)
+        {
+            case EPrimitiveDataType.Unspecific:
+                return "Unspecific type, value not avaliable";
+            case EPrimitiveDataType.Struct:
+                return "Struct type, not implemented"; // not yet implemented for now
+            case EPrimitiveDataType.Bool:
+                return dataValue.Bool;
+            case EPrimitiveDataType.Int8:
+                return dataValue.Int8;
+            case EPrimitiveDataType.Int16:
+                return dataValue.Int16;
+            case EPrimitiveDataType.Int32:
+                return dataValue.Int32;
+            case EPrimitiveDataType.Int64:
+                return dataValue.Int64;
+            case EPrimitiveDataType.UInt8:
+                return dataValue.UInt8;
+            case EPrimitiveDataType.UInt16:
+                return dataValue.UInt16;
+            case EPrimitiveDataType.UInt32:
+                return dataValue.UInt32;
+            case EPrimitiveDataType.UInt64:
+                return dataValue.UInt64;
+            case EPrimitiveDataType.Float:
+                return dataValue.Float;
+            case EPrimitiveDataType.Double:
+                return dataValue.Double;
+            case EPrimitiveDataType.Char:
+                return dataValue.Char;
+            case EPrimitiveDataType.WChar:
+                return dataValue.WChar;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    
+    public void ChangeData(SDataValueByName dataValueByName)
+    {
+        var parameters = new DialogParameters<ChangeDataDialog>();
+        parameters.Add("Instance", SelectedInstance);
+        parameters.Add("DataValueByName", dataValueByName);
+
+        var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
+
+        DialogService.Show<ChangeDataDialog>("Change value", parameters, options);
+    }
+    
+}
