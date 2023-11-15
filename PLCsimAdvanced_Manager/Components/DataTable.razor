@@ -2,50 +2,56 @@
 @using Color = MudBlazor.Color
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
+@implements IDisposable
 
-
-
-<MudTable ServerData="@(new Func<TableState, Task<TableData<SDataValueByName>>>(ServerReload))"
-          Dense="true" Hover="true" @ref="table" Loading="false" LoadingProgressColor="Color.Transparent">
-    <ToolBarContent>
-        <MudText Typo="Typo.h6">Datablock Values</MudText>
-        <MudSpacer/>
-        <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
-                      AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
-        </MudTextField>
-    </ToolBarContent>
-    <HeaderContent>
-        <MudTh>Name</MudTh>
-        <MudTh>Type</MudTh>
-        <MudTh>Value</MudTh>
-    </HeaderContent>
-    <GroupHeaderTemplate>
-        <MudTh Class="mud-table-cell-custom-group" colspan="5">@($"{context.Key}") </MudTh>
-    </GroupHeaderTemplate>
-    <RowTemplate>
-        <MudTd DataLabel="Name">
-            @context.Name
-        </MudTd>
-        <MudTd DataLabel="Type">
-            @context.DataValue.Type
-        </MudTd>
-        <MudTd DataLabel="Value">
-            @parseData(context.DataValue)
-        </MudTd>
-        <MudTd>
-            <MudIconButton Icon="@Icons.Material.Outlined.Edit" @onclick="() => ChangeData(context)"></MudIconButton>
-        </MudTd>
-    </RowTemplate>
-    <NoRecordsContent>
-        <MudText>No matching records found</MudText>
-    </NoRecordsContent>
-    <LoadingContent>
-        <MudText>Not found</MudText>
-    </LoadingContent>
-    <PagerContent>
-        <MudTablePager/>
-    </PagerContent>
-</MudTable>
+@if (InstanceRegistered)
+{
+    <MudTable ServerData="@(new Func<TableState, Task<TableData<SDataValueByName>>>(ServerReload))"
+              Dense="true" Hover="true" @ref="table" Loading="false" LoadingProgressColor="Color.Transparent">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Datablock Values</MudText>
+            <MudSpacer/>
+            <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
+            </MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>Name</MudTh>
+            <MudTh>Type</MudTh>
+            <MudTh>Value</MudTh>
+        </HeaderContent>
+        <GroupHeaderTemplate>
+            <MudTh Class="mud-table-cell-custom-group" colspan="5">@($"{context.Key}") </MudTh>
+        </GroupHeaderTemplate>
+        <RowTemplate>
+            <MudTd DataLabel="Name">
+                @context.Name
+            </MudTd>
+            <MudTd DataLabel="Type">
+                @context.DataValue.Type
+            </MudTd>
+            <MudTd DataLabel="Value">
+                @parseData(context.DataValue)
+            </MudTd>
+            <MudTd>
+                <MudIconButton Icon="@Icons.Material.Outlined.Edit" @onclick="() => ChangeData(context)"></MudIconButton>
+            </MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>No matching records found</MudText>
+        </NoRecordsContent>
+        <LoadingContent>
+            <MudText>Not found</MudText>
+        </LoadingContent>
+        <PagerContent>
+            <MudTablePager/>
+        </PagerContent>
+    </MudTable>
+}
+else
+{
+    <MudAlert Severity="Severity.Error">Instance not registered</MudAlert>
+}
 
 @code {
     
@@ -80,11 +86,7 @@
         {
             SelectedInstance = SimulationRuntimeManager.CreateInterface(name);
             InstanceRegistered = true;
-            SelectedInstance.OnSoftwareConfigurationChanged += (sender, code) =>
-            {
-                Snackbar.Add("New configuration downloaded to the instance");
-                InstanceRegistered = false;
-            };
+            StateHasChanged();
             setDataValueByNames();
         }
         catch (Exception e)
@@ -104,10 +106,9 @@
     /// <summary>
     /// Here we simulate getting the paged, filtered and ordered data from the server
     /// </summary>
-    private async Task<TableData<SDataValueByName>> ServerReload(TableState state)
+    private Task<TableData<SDataValueByName>> ServerReload(TableState state)
     {
-        await Task.Delay(300);
-        var _DataValueByNamesToGet = _DataValueByNames.Where(element =>
+        var _DataValueByNamesToGet = _DataValueByNames?.Where(element =>
         {
             if (string.IsNullOrWhiteSpace(searchString))
                 return true;
@@ -119,38 +120,42 @@
                 return true;
             return false;
         }).ToArray();
-        totalItems = _DataValueByNamesToGet.Count();
+        if (_DataValueByNamesToGet != null)
+        {
+            totalItems = _DataValueByNamesToGet.Count();
 
 
-        if (!InstanceRegistered)
-        {
-            OnSelectInstance(SelectedInstance.Name);
-            return new TableData<SDataValueByName>();
-        }
-        for (int i = 0; i < _DataValueByNamesToGet.Length; i++)
-        {
-            try
+            if (!InstanceRegistered)
             {
-                if (_DataValueByNamesToGet[i].DataValue.Type != EPrimitiveDataType.Struct)
+                OnSelectInstance(SelectedInstance.Name);
+                return Task.FromResult(new TableData<SDataValueByName>());
+            }
+            for (int i = 0; i < _DataValueByNamesToGet.Length; i++)
+            {
+                try
                 {
-                    _DataValueByNamesToGet[i].DataValue = SelectedInstance.Read(_DataValueByNamesToGet[i].Name);
+                    if (_DataValueByNamesToGet[i].DataValue.Type != EPrimitiveDataType.Struct)
+                    {
+                        _DataValueByNamesToGet[i].DataValue = SelectedInstance.Read(_DataValueByNamesToGet[i].Name);
+                    }
+                }
+                catch (Exception e)
+                {
+                    InstanceRegistered = false;
                 }
             }
-            catch (Exception e)
-            {
-                InstanceRegistered = false;
-            }
-        }
 
-        pagedData = _DataValueByNamesToGet.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
-        return new TableData<SDataValueByName>() { TotalItems = totalItems, Items = pagedData };
+            pagedData = _DataValueByNamesToGet.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
+        }
+        return Task.FromResult(new TableData<SDataValueByName>() { TotalItems = totalItems, Items = pagedData });
     }
     
     private async Task RefreshData()
     {
         if (!InstanceRegistered)
         {
-            OnSelectInstance(SelectedInstance.Name);
+            await InvokeAsync(StateHasChanged);
+            return;
         }
 
     // Assuming _dbDataValueByNames is your source data
@@ -244,5 +249,12 @@
 
         DialogService.Show<ChangeDataDialog>("Change value", parameters, options);
     }
-    
+
+    public void Dispose()
+    {
+        SelectedInstance.Dispose();
+        refreshTimer.Dispose();
+        Snackbar?.Dispose();
+    }
+
 }
