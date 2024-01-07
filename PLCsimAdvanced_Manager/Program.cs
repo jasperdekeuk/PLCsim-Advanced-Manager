@@ -13,16 +13,27 @@ builder.Services.AddServerSideBlazor();
 builder.Services.AddBootstrapBlazor();
 builder.Services.AddMatBlazor();
 builder.Services.AddMudServices();
+var useUrls = builder.Configuration.GetSection("UseUrls").Get<string[]>();
+if (useUrls != null && useUrls.Length > 0)
+{
+    builder.WebHost.UseUrls(useUrls);
+}
 
 var app = builder.Build();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
+    if (useUrls != null && useUrls.Length > 0)
+    {
+        builder.WebHost.UseUrls(useUrls);
+    }
+
     app.UseExceptionHandler("/Error");
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
 
 app.UseHttpsRedirection();
 
