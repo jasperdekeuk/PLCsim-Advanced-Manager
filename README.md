@@ -9,9 +9,12 @@ Goals:
 - Exploit the functionalities of the PLCSIM Advanced API to create a more user friendly interface
 - Read and write variables from the PLC (DB/Inputs/Outputs)
 
-
+## Overview
 ![](docs/img/Overview.png)
 
+## Data monitoring and manipulation
+Click the `show varibale in new tab' button on the line of the PLC.
+![](docs/img/dataView.png)
 # Quickstart
 
 1. Clone the repo
