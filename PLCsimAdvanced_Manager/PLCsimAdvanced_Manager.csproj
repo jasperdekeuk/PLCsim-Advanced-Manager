@@ -1,11 +1,13 @@
 <Project Sdk="Microsoft.NET.Sdk.Web">
 
     <PropertyGroup>
+        <OutputType>Exe</OutputType>
         <TargetFramework>net7.0</TargetFramework>
         <Nullable>enable</Nullable>
         <ImplicitUsings>enable</ImplicitUsings>
-        <UserSecretsId>aspnet-PlcSimAdvanced_manager-D00B00B8-D1DE-4F1B-9002-0E5B6A29DDBD</UserSecretsId>
-        <DockerDefaultTargetOS>Linux</DockerDefaultTargetOS>
+        <PublishSingleFile>true</PublishSingleFile>
+        <SelfContained>true</SelfContained>
+        <RuntimeIdentifier>win-x64</RuntimeIdentifier>
     </PropertyGroup>
 
     <ItemGroup>
@@ -25,6 +27,7 @@
     </ItemGroup>
 
     <ItemGroup>
+        <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never"/>
         <Content Include="..\.dockerignore">
             <Link>.dockerignore</Link>
         </Content>
@@ -32,7 +35,9 @@
 
     <ItemGroup>
         <Reference Include="Siemens.Simatic.Simulation.Runtime.Api.x64">
-            <HintPath>$(MSBuildProjectDirectory)/libs/Siemens.Simatic.Simulation.Runtime.Api.x64.dll</HintPath>
+            <HintPath>./Siemens.Simatic.Simulation.Runtime.Api.x64.dll</HintPath>
+            <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+            <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
         </Reference>
     </ItemGroup>
 
