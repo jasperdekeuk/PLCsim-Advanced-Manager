@@ -30,6 +30,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: ./publish_output/**
-          release_name: ${{ env.RELEASE_NAME }}
-
-
+  
+  
+  
+  
