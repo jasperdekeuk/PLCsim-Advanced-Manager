@@ -23,6 +23,7 @@ Click the `show varibale in new tab' button on the line of the PLC.
 4. Run the `PLCsimAdvancedManager.exe` file
 
 > Make sure the port is not in use yet. The default port is 5000.
+> 
 > The `"http://*:5000"` in the appsettings.json file means that the server will listen to all incoming connections on port 5000. 
 > Thus the server will be accessible from other devices in the network. This requires admin rights. You can delete this line of you only want to work locally
 > 
