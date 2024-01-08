@@ -17,21 +17,14 @@ Click the `show varibale in new tab' button on the line of the PLC.
 ![](docs/img/dataView.png)
 # Quickstart
 
-1. Clone the repo
-2. Get the DLL of PLCsim Advanced. Default location is: `Program Files (x86)\Common Files\Siemens\PLCSIMADV\API\5.0\Siemens.Simatic.Simulation.Runtime.Api.x64.dll`
-3. Copy the DLL to the `Libs` folder
-4. Open your terminal and go to the PLCsim_Advanced_Manager folder. (`<...>\PLCsimAdvanced_Manager\PLCsimAdvanced_Manager`)
-5. Start the project
-```shell
-dotnet run --launch-profile http
-```
-6. If build is complete go to following link
-> http://localhost:5030
+1. Download the latest version from the [releases](https://github.com/jasperdekeuk/PLCsim-Advanced-Manager/releases)
+2. Extract the zip file
+3. optional: setup the url and port in the `appsettings.json` file
+4. Run the `PLCsimAdvancedManager.exe` file
 
-(if build failes, make sure the port is not in use yet) 
-
-> If you want to make it available for other devices on your network, you can run the following command
-> ```shell
-> dotnet run --launch-profile http --urls=http://<yourIP>:5030
-> ```
-> Don't forget to replace <yourIP> with your actual IP address
+> Make sure the port is not in use yet. The default port is 5000.
+> The `"http://*:5000"` in the appsettings.json file means that the server will listen to all incoming connections on port 5000. 
+> Thus the server will be accessible from other devices in the network. This requires admin rights. You can delete this line of you only want to work locally
+> 
+> To reach the server from another device in the network, you have to know the IP address of the device running the server.
+> You can access the server like <serverIP>:<port>
