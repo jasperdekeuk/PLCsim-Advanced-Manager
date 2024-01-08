@@ -25,11 +25,18 @@ jobs:
       - name: Publish
         run: dotnet publish -c Release -o publish_output
 
+      - name: Archive Release
+        uses: thedoctor0/zip-release@0.7.5
+        with:
+          type: 'zip'
+          filename: 'release.zip'
+          path: ./publish_output
+
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          files: ./publish_output/**
+          files: release.zip
   
   
   
