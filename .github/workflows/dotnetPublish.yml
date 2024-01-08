@@ -30,14 +30,14 @@ jobs:
           dotnet-version: 7.x  # Replace with the desired .NET version
 
       - name: Publish
-        run: dotnet publish -c Release -o ${{ steps.get_version.outputs.VERSION }}
+        run: dotnet publish -c Release -o ${GITHUB_REF#refs/tags/}
 
       - name: Archive Release
         uses: thedoctor0/zip-release@0.7.5
         with:
           type: 'zip'
           filename: 'PLCsimAdvanced_manager.zip'
-          path: ./${{ steps.get_version.outputs.VERSION }}
+          path: './${GITHUB_REF#refs/tags}/'
 
       - name: Create release body file
         uses: ultram4rine/extract-changes-action@v1
