@@ -33,7 +33,7 @@ jobs:
         with:
           type: 'zip'
           filename: 'PLCsimAdvanced_manager.zip'
-          path: ./publish_output
+          path: ./${GITHUB_REF#refs/tags/}
 
       - name: Create Release
         id: create_release
