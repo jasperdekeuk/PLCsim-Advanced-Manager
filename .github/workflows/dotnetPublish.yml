@@ -26,20 +26,20 @@ jobs:
           dotnet-version: 7.x  # Replace with the desired .NET version
 
       - name: Publish
-        run: dotnet publish -c Release -o publish_output
+        run: dotnet publish -c Release -o ${GITHUB_REF#refs/tags/})
 
       - name: Archive Release
         uses: thedoctor0/zip-release@0.7.5
         with:
           type: 'zip'
-          filename: 'release.zip'
+          filename: 'PLCsimAdvanced_manager.zip'
           path: ./publish_output
 
       - name: Create Release
         id: create_release
         uses: softprops/action-gh-release@v1
         with:
-          files: release.zip
+          files: PLCsimAdvanced_manager.zip
   
   
   
