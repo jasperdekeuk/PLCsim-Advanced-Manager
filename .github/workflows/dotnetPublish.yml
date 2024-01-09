@@ -38,6 +38,10 @@ jobs:
           type: 'zip'
           filename: 'PLCsimAdvanced_manager.zip'
           path: './PLCsimAdvanced_manager/'
+          
+      - name: Extract release notes
+        id: extract-release-notes
+        uses: ffurrer2/extract-release-notes@v1
 
       - name: Create release body file
         uses: ultram4rine/extract-changes-action@v1
@@ -51,7 +55,7 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: PLCsimAdvanced_manager.zip
-          body_path: changes.txt
+          body: ${{ steps.extract-release-notes.outputs.release_notes }}
   
   
   
