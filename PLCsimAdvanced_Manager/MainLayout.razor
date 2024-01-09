@@ -1,8 +1,11 @@
 ﻿@using MudBlazor
+@using Octokit
 @using Color = MudBlazor.Color
 @inherits LayoutComponentBase
 @inject IDialogService DialogService
 @inject IJSRuntime JS
+@inject ISnackbar Snackbar
+
 
 <MudThemeProvider Theme="@CustomTheme"/>
 <MudDialogProvider/>
@@ -14,7 +17,7 @@
         <MudLink Href="/" Underline="Underline.None" Color="Color.Inherit">
             <MudItem xs="12" md="12" Class="d-flex align-items-baseline">
                 <MudText Typo="Typo.h5" Class="ml-3">PLCSim Advanced Manager</MudText>
-                <MudText Typo="Typo.caption" Class="ml-3">v0.0.1</MudText>
+                <MudText Typo="Typo.caption" Class="ml-3">@version</MudText>
             </MudItem>
         </MudLink>
         <MudSpacer/>
@@ -22,6 +25,7 @@
         <MudMenu Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End">
             <MudMenuItem OnClick="@OpenPsaInfoDialog">PLCsim Adv. Information</MudMenuItem>
             <MudMenuItem OnClick="@OpenNetworkSettingsDialog">Network Settings</MudMenuItem>
+            <MudMenuItem OnClick="@CheckGitHubNewerVersion">Check for update</MudMenuItem>
         </MudMenu>
     </MudAppBar>
     <MudMainContent>
@@ -32,6 +36,7 @@
 
 @code {
 
+    string version = "0.0.1";
     MudTheme CustomTheme = new MudTheme()
     {
         Palette = new Palette()
@@ -60,6 +65,50 @@
     private void OpenGithub()
     {
         JS.InvokeAsync<object>("open", "https://github.com/jasperdekeuk/PLCsim-Advanced-Manager", "_blank");
+    }
+    
+    
+    
+    private async System.Threading.Tasks.Task CheckGitHubNewerVersion()
+    {
+        try
+        {
+        //Get all releases from GitHub
+        //Source: https://octokitnet.readthedocs.io/en/latest/getting-started/
+        GitHubClient client = new GitHubClient(new ProductHeaderValue("SomeName"));
+        IReadOnlyList<Release> releases = await client.Repository.Release.GetAll("jasperdekeuk", "PLCsim-Advanced-Manager");
+    
+        //Setup the versions
+        Version latestGitHubVersion = new Version(releases[0].TagName);
+        Version localVersion = new Version(version); //Replace this with your local version. 
+        //Only tested with numeric values.
+        
+    
+        //Compare the Versions
+        //Source: https://stackoverflow.com/questions/7568147/compare-version-numbers-without-using-split-function
+        int versionComparison = localVersion.CompareTo(latestGitHubVersion);
+        if (versionComparison < 0)
+        {
+            //The version on GitHub is more up to date than this local release.
+            Snackbar.Add($"New version available on Github: {latestGitHubVersion}");
+
+        }
+        else if (versionComparison > 0)
+        {
+            //This local version is greater than the release version on GitHub.
+            Snackbar.Add("This local version is greater than the release version on GitHub");
+
+        }
+        else
+        {
+            //This local Version and the Version on GitHub are equal.
+            Snackbar.Add("You have the latest version");
+        }
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Issue with version check, make sure you have a network connection.");
+        }
     }
 
 }
