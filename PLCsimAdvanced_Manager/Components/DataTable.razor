@@ -9,7 +9,7 @@
     <MudTable ServerData="@(new Func<TableState, Task<TableData<SDataValueByName>>>(ServerReload))"
               Dense="true" Hover="true" @ref="table" Loading="false" LoadingProgressColor="Color.Transparent">
         <ToolBarContent>
-            <MudText Typo="Typo.h6">Datablock Values</MudText>
+            <MudText Typo="Typo.h6">Values</MudText>
             <MudSpacer/>
             <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
                           AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Medium" Class="mt-0">
