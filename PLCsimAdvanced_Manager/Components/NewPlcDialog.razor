@@ -149,7 +149,8 @@
 
     Task<IEnumerable<string>> Search(string value)
     {
-        return Task.FromResult(instanceNameOptions.Where(x => x.Contains(value, StringComparison.InvariantCultureIgnoreCase)));
+        return Task.FromResult(instanceNameOptions
+            .Where(x => !string.IsNullOrEmpty(value) && x.Contains(value, StringComparison.InvariantCultureIgnoreCase)));
     }
 
 }
