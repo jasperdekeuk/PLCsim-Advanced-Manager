@@ -34,15 +34,17 @@
             <col/>
             <col/>
             <col/>
+            <col/>
         </ColGroup>
         <HeaderContent>
             <MudTh>PLC Name</MudTh>
+            <MudTh>Status</MudTh>
             <MudTh>Controller IP</MudTh>
             <MudTh>CPU type</MudTh>
             <MudTh>Actions</MudTh>
         </HeaderContent>
         <GroupHeaderTemplate>
-            <MudTh Class="mud-table-cell-custom-group" colspan="4">
+            <MudTh Class="mud-table-cell-custom-group" colspan="5">
                 @($"{context.GroupName}: {context.Key}")
             </MudTh>
         </GroupHeaderTemplate>
@@ -66,7 +68,7 @@
                         {
                             <MudIconButton Icon="@Icons.Material.Outlined.PlayArrow" Color="Color.Success" Size="Size.Small"
                                            Title="Run"
-                                           @onclick="() => { try { context.Run(); } catch (Exception e) { Snackbar.Add(e.Message); } }"/>
+                                           @onclick="() => { try { context.Run(); }catch (Exception e) { Snackbar.Add(e.Message); } }"/>
                         }
                         else if (context.OperatingState == EOperatingState.Run)
                         {
@@ -89,6 +91,9 @@
                     </div>
                 </div>
             </MudTd>
+            <MudTd DataLabel="Status" Width="200px">
+                <MudAlert Severity="Severity.Normal"  Dense="true" ContentAlignment="HorizontalAlignment.Center" Variant="Variant.Text" NoIcon="true" Class="my-2">@context.OperatingState</MudAlert>
+            </MudTd>
             <MudTd DataLabel="Controller IP">
                 <div class="d-flex align-items-start">
                     <div class="ml-2">
@@ -97,7 +102,7 @@
                             <div>@ip</div>
                         }
                     </div>
-                    @if(context.ControllerIP.Length != 0)
+                    @if (context.ControllerIP.Length != 0)
                     {
                         <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" OnClick="() => OpenDialogSetIPSettings(context)" Disabled="@(!(context.OperatingState == EOperatingState.Off || context.OperatingState == EOperatingState.Stop))"></MudIconButton>
                     }
@@ -110,7 +115,7 @@
                 {
                     <MudTooltip Text="When powered off, this will swap communication interface">
                         <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small"
-                                   OnClick="() => {if (context.OperatingState == EOperatingState.Off) context.CommunicationInterface = ECommunicationInterface.Softbus; }">
+                                   OnClick="() => { if (context.OperatingState == EOperatingState.Off) context.CommunicationInterface = ECommunicationInterface.Softbus; }">
                             TCP/IP
                         </MudButton>
                     </MudTooltip>
@@ -118,7 +123,7 @@
                 else if (context.CommunicationInterface == ECommunicationInterface.Softbus)
                 {
                     <MudTooltip Text="When powered off, this will swap communication interface">
-                        <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Size="Size.Small" OnClick="() => {if (context.OperatingState == EOperatingState.Off) context.CommunicationInterface = ECommunicationInterface.TCPIP; }">Softbus</MudButton>
+                        <MudButton Variant="Variant.Outlined" Color="Color.Secondary" Size="Size.Small" OnClick="() => { if (context.OperatingState == EOperatingState.Off) context.CommunicationInterface = ECommunicationInterface.TCPIP; }">Softbus</MudButton>
                     </MudTooltip>
                 }
                 <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="() => OpenNewTab(context.Name)" Size="Size.Small" Title="Show variables in new tab"></MudIconButton>
