@@ -9,7 +9,7 @@
     <DialogActions>
         <MudTooltip Text="If you select this, all the files will be deleted. You will no longer find the instance in the list when creating a new instance.">
             <MudCheckBox @bind-Checked="@fullDeleteCheckbox" Style="font-size: 0.8rem"
-                         Label="Delete files">
+                         Label="Cleanup Storage">
             </MudCheckBox>
         </MudTooltip>
         <MudSpacer/>
@@ -34,22 +34,19 @@
     void Submit()
     {
         string pathToDirectory = Instance.StoragePath;
-        unregisterInstance();
-        if (fullDeleteCheckbox)
-        {
-            if (Directory.Exists(pathToDirectory))
-            {
-                Directory.Delete(pathToDirectory, true);
-            }
-        }
+        unregisterInstance(fullDeleteCheckbox);
 
         MudDialog.Close(DialogResult.Ok(true));
     }
 
-    void unregisterInstance()
+    void unregisterInstance(bool CleanupStoragePath)
     {
         try
         {
+            if(CleanupStoragePath)
+            {
+                Instance.CleanupStoragePath();
+            }
             Instances.Remove(Instances.SingleOrDefault(v => Instance.ID == v.ID));
             Instance.UnregisterInstance();
             StateHasChanged();
