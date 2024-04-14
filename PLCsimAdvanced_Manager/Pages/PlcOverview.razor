@@ -134,6 +134,7 @@
                 <MudMenu Icon="@Icons.Material.Outlined.MoreVert" Size="Size.Small" Dense="true">
                     <MudMenuItem @onclick="() => { try { context.MemoryReset(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">MRES</MudMenuItem>
                     <MudMenuItem @onclick="() => OpenDialogPLCSettings(context)">Settings</MudMenuItem>
+                    <MudMenuItem @onclick="() => CheckNetinterfaceMapping(context)">Netinterface Mapping</MudMenuItem>
                 </MudMenu>
 
             </MudTd>

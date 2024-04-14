@@ -60,6 +60,17 @@ public partial class PlcOverview
         DialogService.Show<PlcSettings>($"PLC Settings: {selectedInstance.Name}", parameters, closeOnEscapeKey);
     }
 
+    private void OpenDialogNetInterfaceMapping(IInstance selectedInstance)
+    {
+        DialogOptions closeOnEscapeKey = new DialogOptions()
+            { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true, CloseButton = true };
+        var parameters = new DialogParameters();
+        parameters.Add("selectedInstance", selectedInstance);
+
+        DialogService.Show<NetInterfaceMappingSettings>($"Net Interface Mapping: {selectedInstance.Name}", parameters, closeOnEscapeKey);
+    }
+    
+
     private void OnOperatingStateChanged(IInstance inst, ERuntimeErrorCode error, DateTime dateTime,
         EOperatingState operatingState, EOperatingState operatingState2)
     {
@@ -128,6 +139,11 @@ public partial class PlcOverview
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
 
         DialogService.Show<DeleteDialog>("Delete Instance", parameters, options);
+    }
+    
+    public void CheckNetinterfaceMapping(IInstance instane)
+    {
+        OpenDialogNetInterfaceMapping(instane);
     }
     
 

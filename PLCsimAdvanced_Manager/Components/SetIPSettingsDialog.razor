@@ -25,6 +25,11 @@
                                   @bind-Value="gateways[index]" Variant="@Variant.Text" Clearable/>
                 </MudItem>
             </MudGrid>
+            <MudGrid Class="justify-space-between" Style="max-width: 600px;">
+                <MudItem xs="12" sm="6">
+                    <MudField Label="Net Interface Mapping">@selectedInstance.GetNetInterfaceMapping((EPLCInterface)index)</MudField>
+                </MudItem>
+            </MudGrid>
         }
 
         <MudButton OnClick="setIp"> Set IP </MudButton>
