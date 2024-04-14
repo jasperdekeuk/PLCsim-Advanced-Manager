@@ -54,11 +54,11 @@
                     <div>
                         @if (context.OperatingState == EOperatingState.Off)
                         {
-                            <MudIconButton Icon="@Icons.Material.Outlined.PowerSettingsNew" Title="powerOn" Size="Size.Small" @onclick="() => context.PowerOn()"></MudIconButton>
+                            <MudIconButton Icon="@Icons.Material.Outlined.PowerSettingsNew" Title="powerOn" Size="Size.Small" @onclick="() => { try { context.PowerOn(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }"></MudIconButton>
                         }
                         else if (context.OperatingState == EOperatingState.Run || context.OperatingState == EOperatingState.Stop)
                         {
-                            <MudIconButton Icon="@Icons.Material.Outlined.PowerSettingsNew" Title="powerOff" Size="Size.Small" @onclick="() => context.PowerOff()" Color="Color.Error"></MudIconButton>
+                            <MudIconButton Icon="@Icons.Material.Outlined.PowerSettingsNew" Title="powerOff" Size="Size.Small" @onclick="() => { try { context.PowerOff(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }" Color="Color.Error"></MudIconButton>
                         }
                         else
                         {
@@ -72,11 +72,11 @@
                         }
                         else if (context.OperatingState == EOperatingState.Run)
                         {
-                            <MudIconButton Icon="@Icons.Material.Outlined.Stop" Color="Color.Error" Size="Size.Small" Title="Stop" @onclick="() => context.Stop()"/>
+                            <MudIconButton Icon="@Icons.Material.Outlined.Stop" Color="Color.Error" Size="Size.Small" Title="Stop" @onclick="() => { try { context.Stop(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }"/>
                         }
                         else
                         {
-                            <MudIconButton Icon="@Icons.Material.Outlined.PlayArrow" Title="powerOff" Size="Size.Small" Disabled="true" @onclick="() => context.PowerOff()" Color="Color.Error"></MudIconButton>
+                            <MudIconButton Icon="@Icons.Material.Outlined.PlayArrow" Title="powerOff" Size="Size.Small" Disabled="true" @onclick="() => { try { context.PowerOff(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }" Color="Color.Error"></MudIconButton>
                         }
                     </div>
                     <div>
@@ -92,7 +92,7 @@
                 </div>
             </MudTd>
             <MudTd DataLabel="Status" Width="200px">
-                <MudAlert Severity="Severity.Normal"  Dense="true" ContentAlignment="HorizontalAlignment.Center" Variant="Variant.Text" NoIcon="true" Class="my-2">@context.OperatingState</MudAlert>
+                <MudAlert Severity="Severity.Normal" Dense="true" ContentAlignment="HorizontalAlignment.Center" Variant="Variant.Text" NoIcon="true" Class="my-2">@context.OperatingState</MudAlert>
             </MudTd>
             <MudTd DataLabel="Controller IP">
                 <div class="d-flex align-items-start">
@@ -132,7 +132,7 @@
                 </MudIconButton>
 
                 <MudMenu Icon="@Icons.Material.Outlined.MoreVert" Size="Size.Small" Dense="true">
-                    <MudMenuItem @onclick="() => context.MemoryReset()">MRES</MudMenuItem>
+                    <MudMenuItem @onclick="() => { try { context.MemoryReset(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">MRES</MudMenuItem>
                     <MudMenuItem @onclick="() => OpenDialogPLCSettings(context)">Settings</MudMenuItem>
                 </MudMenu>
 
