@@ -19,8 +19,8 @@ Click the `show varibale in new tab` button on the line of the PLC.
 ![](docs/img/dataView.png)
 # Quickstart
 
->**Warning** 
-REQUIREMENT: PLCsim Advanced v5 or higher installed and licensed. (Trial license might give unexpected behaviour)
+> [!WARNING]
+> REQUIREMENT: PLCsim Advanced v5 or higher installed and licensed. (Trial license might give unexpected behaviour)
 
 1. Download the latest version from the [releases](https://github.com/jasperdekeuk/PLCsim-Advanced-Manager/releases)
 2. Extract the zip file
