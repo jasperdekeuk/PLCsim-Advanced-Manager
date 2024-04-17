@@ -73,9 +73,9 @@ If you have multiple servers where PLCsim Advanced is installed, you can manage 
 
 ## Advanced network setup
 PLCsim Advanced has the option to map every network interfaces of the PLC instance to a different network interfaces of the host machine. 
-This way you can simulate a PLC that is connected to a different network.
+This way you can simulate a PLC that is connected to multiple networks.
 ![](docs/img/setup_advanced_networking.png)
 
 ### Use cases
-- You want the exact setup of the PLC in the real world where the PLC is connected to multiple networks
+- You want the exact setup of the PLC in the real world where every PLC interface is connected to a different network 
 - You want to do advanced networking setups
