@@ -92,7 +92,25 @@
                 </div>
             </MudTd>
             <MudTd DataLabel="Status" Width="200px">
-                <MudAlert Severity="Severity.Normal" Dense="true" ContentAlignment="HorizontalAlignment.Center" Variant="Variant.Text" NoIcon="true" Class="my-2">@context.OperatingState</MudAlert>
+                @* <MudAlert Severity="Severity.Normal" Dense="true" ContentAlignment="HorizontalAlignment.Center" Variant="Variant.Text" NoIcon="true" Class="my-2">@context.OperatingState</MudAlert> *@
+                @switch (context.OperatingState)
+                {
+                    case EOperatingState.Off:
+                        <MudChip Variant="Variant.Text" Size="Size.Small" Disabled="true" Color="Color.Transparent"> @context.OperatingState </MudChip>
+                        break;
+                    case EOperatingState.Run:
+                        <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Success"> @context.OperatingState </MudChip>
+                        break;
+                    case EOperatingState.Stop:
+                        <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Warning"> @context.OperatingState </MudChip>
+                        break;
+                    case EOperatingState.InvalidOperatingState:
+                        <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Error"> @context.OperatingState </MudChip>
+                        break;
+                    default:
+                        <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Info"> @context.OperatingState </MudChip>
+                        break;
+                }
             </MudTd>
             <MudTd DataLabel="Controller IP">
                 <div class="d-flex align-items-start">
@@ -109,8 +127,8 @@
                 </div>
             </MudTd>
             <MudTd DataLabel="CPU type">@context.CPUType</MudTd>
-            <MudTd Style="display: inline-flex; justify-content: flex-end">
-
+            <MudTd >
+            
                 @if (context.CommunicationInterface == ECommunicationInterface.TCPIP)
                 {
                     <MudTooltip Text="When powered off, this will swap communication interface">
@@ -130,13 +148,13 @@
                 <MudIconButton Icon="@Icons.Material.Outlined.Delete" Title="Delete" Size="Size.Small"
                                @onclick="() => RemoveInstance(context)">
                 </MudIconButton>
-
+            
                 <MudMenu Icon="@Icons.Material.Outlined.MoreVert" Size="Size.Small" Dense="true">
                     <MudMenuItem @onclick="() => { try { context.MemoryReset(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">MRES</MudMenuItem>
                     <MudMenuItem @onclick="() => OpenDialogPLCSettings(context)">Settings</MudMenuItem>
                     <MudMenuItem @onclick="() => CheckNetinterfaceMapping(context)">Netinterface Mapping</MudMenuItem>
                 </MudMenu>
-
+            
             </MudTd>
 
         </RowTemplate>
