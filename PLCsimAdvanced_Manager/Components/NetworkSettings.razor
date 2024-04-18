@@ -42,11 +42,12 @@
                                 <MudListItem>
                                     <MudText>MAC: @v.MACAddress</MudText>
                                 </MudListItem>
-                                @foreach (var address in NetworkInterface.GetAllNetworkInterfaces().Where(@interface => @interface.Name == v.interfaceName).SelectMany(@interface => @interface.GetIPProperties().UnicastAddresses).Select(@interface => @interface.Address))
+                                @* This part is massively slow *@
+                                @foreach (var address in allNetworkInterfaces.Where(@interface => @interface.Name == v.interfaceName).SelectMany(@interface => @interface.GetIPProperties().UnicastAddresses).Select(@interface => @interface.Address))
                                 {
-                                    <MudListItem>
-                                        <MudText>Address: @address</MudText>
-                                    </MudListItem>
+                                <MudListItem>
+                                    <MudText>Address: @address</MudText>
+                                </MudListItem>
                                 }
                             </MudList>
                         </MudCardContent>
@@ -90,5 +91,12 @@
 </MudDialog>
 
 @code {
+    
+    NetworkInterface[] allNetworkInterfaces;
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        allNetworkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
+    }
 
 }
