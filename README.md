@@ -34,7 +34,7 @@ Click the `show varibale in new tab` button on the line of the PLC.
 > Thus the server will be accessible from other devices in the network. This requires admin rights. You can delete this line if you only want to work locally
 > 
 > To reach the server from another device in the network, you have to know the IP address of the device running the server.
-> You can access the server like serverIP:port
+> You can access the server like `<serverIP>:<port>` in your webbrowser. For example `192.168.10.15:5000`.
 
 # Possible Setups
 
