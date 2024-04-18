@@ -19,13 +19,13 @@ Click the `show varibale in new tab` button on the line of the PLC.
 ![](docs/img/dataView.png)
 # Quickstart
 
-> [!WARNING]
-> REQUIREMENT: PLCsim Advanced v5 or higher installed and licensed. (Trial license might give unexpected behaviour)
-
 1. Download the latest version from the [releases](https://github.com/jasperdekeuk/PLCsim-Advanced-Manager/releases)
 2. Extract the zip file
 3. optional: set up the url and port in the `appsettings.json` file
 4. Run the `PLCsimAdvancedManager.exe` file
+
+> [!WARNING]
+> REQUIREMENT: PLCsim Advanced v5 or higher installed and licensed. (Trial license might give unexpected behaviour)
 
 > [!NOTE]  
 > Make sure the port is not in use yet. The default port is 5000.
