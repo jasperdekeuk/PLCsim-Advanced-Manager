@@ -14,7 +14,29 @@
 
 
         <div style="padding: 20px; background-color: #f0f0f0;">
-            <MudText Typo="Typo.h5" Color="Color.Primary">@InstanceName</MudText>
+            <div>
+                <MudText Typo="Typo.h5" Color="Color.Primary">@InstanceName</MudText>
+            </div>
+            <div>
+                @switch (SelectedInstance.OperatingState)
+                {
+                    case EOperatingState.Off:
+                        <MudChip Variant="Variant.Text" Size="Size.Small" Disabled="true" Color="Color.Transparent"> @SelectedInstance.OperatingState </MudChip>
+                        break;
+                    case EOperatingState.Run:
+                        <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Success"> @SelectedInstance.OperatingState </MudChip>
+                        break;
+                    case EOperatingState.Stop:
+                        <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Warning"> @SelectedInstance.OperatingState </MudChip>
+                        break;
+                    case EOperatingState.InvalidOperatingState:
+                        <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Error"> @SelectedInstance.OperatingState </MudChip>
+                        break;
+                    default:
+                        <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Info"> @SelectedInstance.OperatingState </MudChip>
+                        break;
+                }
+            </div>
         </div>
         <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
 
@@ -35,7 +57,37 @@
 
 @code {
 
-    [Parameter]
-    public string InstanceName { get; set; }
+    [Parameter] public string InstanceName { get; set; }
+    private IInstance SelectedInstance;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        OnSelectInstance(InstanceName);
+    }
+
+    private void OnSelectInstance(string name)
+    {
+        try
+        {
+            SelectedInstance = SimulationRuntimeManager.CreateInterface(name);
+            SelectedInstance.OnOperatingStateChanged += OnSelectedInstanceOnOnOperatingStateChanged;
+            StateHasChanged();
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Error while selecting instance {name}: {e.Message}");
+        }
+    }
+
+    private void OnSelectedInstanceOnOnOperatingStateChanged(IInstance inSender, ERuntimeErrorCode inErrorCode, DateTime inDateTime, EOperatingState inPrevState, EOperatingState inOperatingState)
+    {
+        if (inSender != SelectedInstance)
+        {
+            return;
+        }
+
+        InvokeAsync(StateHasChanged);
+    }
 
 }
