@@ -47,7 +47,6 @@ public partial class PlcOverview
         var parameters = new DialogParameters();
         parameters.Add("selectedInstance", selectedInstance);
         DialogService.Show<SetIPSettingsDialog>($"IP Settings: {selectedInstance.Name}", parameters, closeOnEscapeKey);
-
     }
 
     private void OpenDialogPLCSettings(IInstance selectedInstance)
@@ -67,9 +66,10 @@ public partial class PlcOverview
         var parameters = new DialogParameters();
         parameters.Add("selectedInstance", selectedInstance);
 
-        DialogService.Show<NetInterfaceMappingSettings>($"Net Interface Mapping: {selectedInstance.Name}", parameters, closeOnEscapeKey);
+        DialogService.Show<NetInterfaceMappingSettings>($"Net Interface Mapping: {selectedInstance.Name}", parameters,
+            closeOnEscapeKey);
     }
-    
+
 
     private void OnOperatingStateChanged(IInstance inst, ERuntimeErrorCode error, DateTime dateTime,
         EOperatingState operatingState, EOperatingState operatingState2)
@@ -79,7 +79,8 @@ public partial class PlcOverview
         InvokeAsync(() => StateHasChanged());
     }
 
-    private void OnIpAddressChanged(IInstance inst, ERuntimeErrorCode error, DateTime dateTime, byte inInterfaceId, SIPSuite4 inSip)
+    private void OnIpAddressChanged(IInstance inst, ERuntimeErrorCode error, DateTime dateTime, byte inInterfaceId,
+        SIPSuite4 inSip)
     {
         Snackbar.Add($"{inst.Name} IP setting changed", Severity.Success,
             config => { config.HideIcon = true; });
@@ -88,6 +89,11 @@ public partial class PlcOverview
 
     private void OnSoftwareConfigurationChanged(ERuntimeConfigChanged e, uint p1, uint p2, int p3)
     {
+        if (p3 == -1)
+        {
+            return;
+        }
+
         switch (e)
         {
             case ERuntimeConfigChanged.InstanceRegistered:
@@ -135,17 +141,17 @@ public partial class PlcOverview
         var parameters = new DialogParameters<DeleteDialog>();
         parameters.Add(x => x.Instance, instance);
         parameters.Add(x => x.Instances, instances);
-        
+
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
 
         DialogService.Show<DeleteDialog>("Delete Instance", parameters, options);
     }
-    
+
     public void CheckNetinterfaceMapping(IInstance instane)
     {
         OpenDialogNetInterfaceMapping(instane);
     }
-    
+
 
     private string selectedRowStyleFunc(IInstance i, int rowNumber)
     {
