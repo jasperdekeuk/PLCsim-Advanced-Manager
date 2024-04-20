@@ -74,7 +74,7 @@ else
         OnSelectInstance(InstanceName);
 
     // Set up the timer to refresh data every 500 milliseconds
-        refreshTimer = new System.Timers.Timer(500);
+        refreshTimer = new System.Timers.Timer(100);
         refreshTimer.Elapsed += async (sender, e) => await RefreshData();
         refreshTimer.AutoReset = true;
         refreshTimer.Start();
