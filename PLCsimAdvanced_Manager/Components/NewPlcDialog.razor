@@ -77,10 +77,13 @@
     {
         base.OnInitialized();
         var defaultStoragePath = SimulationRuntimeManager.DefaultStoragePath;
-        instanceNameOptions = Directory.GetDirectories(defaultStoragePath).Select(Path.GetFileName).ToList();
+        if (Directory.Exists(defaultStoragePath))
+        {
+            instanceNameOptions = Directory.GetDirectories(defaultStoragePath).Select(Path.GetFileName).ToList();
+        }
     }
 
-    private string ValidateName(string nameToCheck)
+    private string? ValidateName(string nameToCheck)
     {
         fieldsDisabled = instanceNameOptions.Contains(nameToCheck);
         foreach (var existingInstance in SimulationRuntimeManager.RegisteredInstanceInfo)
@@ -145,7 +148,7 @@
     void Cancel() => MudDialog.Cancel();
 
 
-    List<string> instanceNameOptions;
+    List<string> instanceNameOptions = new ();
 
     Task<IEnumerable<string>> Search(string value)
     {
