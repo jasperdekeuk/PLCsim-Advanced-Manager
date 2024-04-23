@@ -11,7 +11,12 @@
                     <MudText Typo="Typo.h6">Network Mode</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
-            <MudCardContent> @SimulationRuntimeManager.NetworkMode</MudCardContent>
+            <MudCardContent>
+                <MudSelect T="ECommunicationMode" @bind-Value="@SimulationRuntimeManager.NetworkMode" Label="Network Mode">
+                    <MudSelectItem Value="@ECommunicationMode.Promiscuous">Single Adapter</MudSelectItem>
+                    <MudSelectItem Value="@ECommunicationMode.Non_Promiscuous">Multiple Adapter</MudSelectItem>
+                </MudSelect>
+            </MudCardContent>
         </MudCard>
         <MudCard>
             <MudCardHeader>
