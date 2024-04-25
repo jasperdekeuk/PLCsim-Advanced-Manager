@@ -28,8 +28,10 @@
             <MudCardContent>
                 @foreach (var v in SimulationRuntimeManager.NetInterfaces)
                 {
+                    var thisv = v;
                     <MudCard>
                         <MudCardContent>
+                            <MudButton OnClick="() => { try { SimulationRuntimeManager.SetNetInterfaceBindings(thisv.interfaceIndex) ;}catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">Set Binding</MudButton>
                             <MudList>
                                 <MudListItem>
                                     <MudText>Interface Description: @v.interfaceDescription</MudText>
@@ -49,7 +51,6 @@
                                 <MudListItem>
                                     <MudText>MAC: @v.MACAddress</MudText>
                                 </MudListItem>
-                                @* This part is massively slow *@
                                 @foreach (var address in allNetworkInterfaces.Where(@interface => @interface.Name == v.interfaceName).SelectMany(@interface => @interface.GetIPProperties().UnicastAddresses).Select(@interface => @interface.Address))
                                 {
                                     <MudListItem>
