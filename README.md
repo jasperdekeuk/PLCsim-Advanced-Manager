@@ -17,7 +17,7 @@ Goals:
 ![](docs/img/Overview.png)
 
 ## Data monitoring and manipulation
-Click the `show varibale in new tab` button on the line of the PLC.
+Click the `show variable in new tab` button on the line of the PLC.
 ![](docs/img/dataView.png)
 # Quickstart
 
