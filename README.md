@@ -5,11 +5,13 @@ A webserver manager for Siemens Simatic PLCsim Advanced.
 
 Goals:
 
-- Manage your PLCSIM Advanced instances remote in a webserver. This way you don't have to log in to the target PC, but can start
+- [x] Manage your PLCSIM Advanced instances remote in a webserver. This way you don't have to log in to the target PC, but can start
   instances over the network
-- Exploit the functionalities of the PLCSIM Advanced API to create a more user-friendly interface
-- Read and write variables from the PLC (DB/Inputs/Outputs)
-- Advanced network setting. Being able to set every interface of the instance to an interface of the host machine
+- [x] Exploit the functionalities of the PLCSIM Advanced API to create a more advanced UI
+- [x] Read and write variables from the PLC (DB/Inputs/Outputs)
+- [x] Advanced network setting. Being able to set every interface of the instance to an interface of the host machine
+- [ ] Easy virtual commissioning by e.g. setting buttons and lights in the UI to the PLC variables
+- [ ] Traces on the variables for analysis
 
 ## Overview
 ![](docs/img/Overview.png)
