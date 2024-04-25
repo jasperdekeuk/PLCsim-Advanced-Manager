@@ -7,6 +7,22 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.3] - 2024-04-25
+
+### Fix
+- Improve speed of Network config dialog
+- No longer crashes on creating new instance when default path does not exist yet
+- No longer crashes when trying to create more instances than PLCsim Advanced max allows
+
+### Changes
+- Use Chips for instance status
+- Increase update frequency of dataview 
+
+### Features
+- Add instance status to dataview page
+- Network mode now settable via network settings
+- Switch binding settable in network settings
+
 ## [0.0.2] - 2024-04-14
 
 ### Features
