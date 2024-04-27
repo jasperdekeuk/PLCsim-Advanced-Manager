@@ -137,7 +137,8 @@
                 Snackbar.Add($"Network mode changed", Severity.Success, config => { config.HideIcon = true; });
                 break;
             default:
-                throw new ArgumentOutOfRangeException(nameof(e), e, null);
+                Snackbar.Add(e.ToString());
+                break;
         }
 
         InvokeAsync(() => StateHasChanged());
