@@ -7,6 +7,14 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.4] - 2024-04-27
+
+### Changes
+- Add icons to status
+
+### Features
+- Add basic options for storage (Rename/Delete/Duplicate/Register)
+
 ## [0.0.3] - 2024-04-25
 
 ### Fix
