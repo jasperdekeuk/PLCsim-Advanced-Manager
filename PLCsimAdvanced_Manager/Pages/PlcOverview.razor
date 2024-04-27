@@ -22,10 +22,13 @@
               FixedHeader="true" Height="400px" Style="padding: 20px"
               GroupHeaderStyle="background-color:var(--mud-palette-background-grey)">
         <ToolBarContent>
-            <div>
+            <div style="display: flex; justify-content: space-between;">
                 @inject IDialogService DialogService
-                <MudButton @onclick="OpenDialogNewPLC" Variant="Variant.Filled">
+                <MudButton @onclick="OpenDialogNewPLC" Variant="Variant.Filled" Class="mr-2">
                     Create new PLC
+                </MudButton>
+                <MudButton @onclick="OpenDialogStorage" Variant="Variant.Filled">
+                    Storage
                 </MudButton>
             </div>
         </ToolBarContent>

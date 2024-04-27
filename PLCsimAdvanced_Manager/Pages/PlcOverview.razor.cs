@@ -39,6 +39,13 @@ public partial class PlcOverview
 
         DialogService.Show<NewPlcDialog>("Add PLC Instance", closeOnEscapeKey);
     }
+    
+    private void OpenDialogStorage()
+    {
+        DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true, FullWidth = true, CloseButton = true};
+
+        DialogService.Show<StorageDialog>("Storage", closeOnEscapeKey);
+    }
 
     private void OpenDialogSetIPSettings(IInstance selectedInstance)
     {

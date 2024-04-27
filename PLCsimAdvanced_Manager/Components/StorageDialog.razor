@@ -1,0 +1,173 @@
+@using Siemens.Simatic.Simulation.Runtime
+@using Color = MudBlazor.Color
+@using System.IO
+@inject ISnackbar Snackbar
+
+
+<MudDialog>
+    <DialogContent>
+        Size: @rootDirectorySize
+        @SimulationRuntimeManager.DefaultStoragePath
+        <MudList>
+            @foreach (var directory in Directory.GetDirectories(@SimulationRuntimeManager.DefaultStoragePath))
+            {
+                var dir = directory; // Create a local copy to avoid issues with the foreach loop
+                var isRunning = SimulationRuntimeManager.RegisteredInstanceInfo.Any(e => e.Name == Path.GetFileName(directory));
+                <MudListItem>
+                    <MudText>@Path.GetFileName(directory)</MudText>
+                    <MudButton Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Success" OnClick="() => RegisterInstance(dir)">Register</MudButton>
+                    <MudButton Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Warning" OnClick="() => OpenRenameDialog(dir)">Rename</MudButton>
+                    <MudButton Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Info" OnClick="() => DuplicateDirectory(dir)">Duplicate</MudButton>
+                    <MudButton Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => DeleteDirectory(dir)">Delete</MudButton>
+                    <MudDialog @bind-IsVisible="renameDialog" CloseButton="true">
+                        <DialogContent>
+                            <MudTextField @bind-Value="@newDirectoryName" Label="New instance name"/>
+                        </DialogContent>
+                        <DialogActions>
+                            <MudButton Color="Color.Primary" OnClick="RenameDirectory">Rename</MudButton>
+                        </DialogActions>
+                    </MudDialog>
+                </MudListItem>
+            }
+        </MudList>
+    </DialogContent>
+
+
+</MudDialog>
+
+
+@code {
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
+
+    private string directoryToRename;
+    private string newDirectoryName;
+    private bool renameDialog;
+    private FileSystemWatcher watcher;
+    private string rootDirectorySize;
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        rootDirectorySize = GetDirectorySize(SimulationRuntimeManager.DefaultStoragePath);
+        watcher = new FileSystemWatcher(SimulationRuntimeManager.DefaultStoragePath)
+        {
+            NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
+            IncludeSubdirectories = true
+        };
+
+        watcher.Changed += OnChanged;
+        watcher.Created += OnChanged;
+        watcher.Deleted += OnChanged;
+
+        watcher.EnableRaisingEvents = true;
+    }
+    
+    private void OnChanged(object sender, FileSystemEventArgs e)
+    {
+        InvokeAsync(() =>
+        {
+            rootDirectorySize = GetDirectorySize(SimulationRuntimeManager.DefaultStoragePath);
+            StateHasChanged();
+        });
+    }
+
+    private void OpenRenameDialog(string directory)
+    {
+        renameDialog = true;
+        directoryToRename = directory;
+    }
+
+    private void RenameDirectory()
+    {
+        try
+        {
+            string newDirectoryPath = Path.Combine(Path.GetDirectoryName(directoryToRename), newDirectoryName);
+            Directory.Move(directoryToRename, newDirectoryPath);
+            Snackbar.Add($"Directory {directoryToRename} renamed to {newDirectoryName} successfully.", Severity.Success);
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Failed to rename directory {directoryToRename}. Error: {e.Message}", Severity.Error);
+        }
+        finally
+        {
+            renameDialog = false;
+        }
+    }
+
+    private void RegisterInstance(string directory)
+    {
+        var instanceName = Path.GetFileName(directory);
+        try
+        {
+            SimulationRuntimeManager.RegisterInstance(instanceName);
+            Snackbar.Add($"Instance {instanceName} registered successfully.", Severity.Success);
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Failed to register instance {instanceName}. Error: {e.Message}", Severity.Error);
+        }
+    }
+
+    private void DeleteDirectory(string directory)
+    {
+        try
+        {
+            Directory.Delete(directory, true);
+            Snackbar.Add($"Directory {directory} deleted successfully.", Severity.Success);
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Failed to delete directory {directory}. Error: {e.Message}", Severity.Error);
+        }
+    }
+    
+    private void DuplicateDirectory(string directory)
+    {
+        try
+        {
+            var newDirectoryPath = Path.Combine(Path.GetDirectoryName(directory), Path.GetFileName(directory) + "_copy");
+            int counter = 1;
+            while (Directory.Exists(newDirectoryPath))
+            {
+                newDirectoryPath = Path.Combine(Path.GetDirectoryName(directory), Path.GetFileName(directory) + "_copy" + counter);
+                counter++;
+            }
+            Directory.CreateDirectory(newDirectoryPath);
+            foreach (var dirPath in Directory.GetDirectories(directory, "*", SearchOption.AllDirectories))
+                Directory.CreateDirectory(dirPath.Replace(directory, newDirectoryPath));
+
+            foreach (var newPath in Directory.GetFiles(directory, "*.*", SearchOption.AllDirectories))
+                File.Copy(newPath, newPath.Replace(directory, newDirectoryPath), true);
+
+            Snackbar.Add($"Directory {Path.GetFileName(directory)} duplicated successfully.", Severity.Success);
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Failed to duplicate directory {Path.GetFileName(directory)}. Error: {e.Message}", Severity.Error);
+        }
+    }
+    
+    private string GetDirectorySize(string directory)
+    {
+        try
+        {
+            var directoryInfo = new DirectoryInfo(directory);
+            long sizeInBytes = directoryInfo.EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
+            double sizeInKB = (double)sizeInBytes / 1024;
+            double sizeInMB = sizeInKB / 1024;
+            double sizeInGB = sizeInMB / 1024;
+
+            if (sizeInGB > 1)
+                return $"{sizeInGB:0.##} GB";
+            else if (sizeInMB > 1)
+                return $"{sizeInMB:0.##} MB";
+            else
+                return $"{sizeInKB:0.##} KB";
+        }
+        catch (Exception)
+        {
+            return "Size not available";
+        }
+    }
+
+}
