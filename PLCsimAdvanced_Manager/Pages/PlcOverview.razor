@@ -96,19 +96,19 @@
                 @switch (context.OperatingState)
                 {
                     case EOperatingState.Off:
-                        <MudChip Variant="Variant.Text" Size="Size.Small" Disabled="true" Color="Color.Transparent"> @context.OperatingState </MudChip>
+                        <MudChip Icon="@Icons.Material.Outlined.HighlightOff" Variant="Variant.Text" Size="Size.Small" Disabled="true" Color="Color.Transparent"> @context.OperatingState </MudChip>
                         break;
                     case EOperatingState.Run:
-                        <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Success"> @context.OperatingState </MudChip>
+                        <MudChip Icon="@Icons.Material.Outlined.PlayCircleOutline" Variant="Variant.Text" Size="Size.Small" Color="Color.Success"> @context.OperatingState </MudChip>
                         break;
                     case EOperatingState.Stop:
-                        <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Warning"> @context.OperatingState </MudChip>
+                        <MudChip Icon="@Icons.Material.Outlined.StopCircle" Variant="Variant.Text" Size="Size.Small" Color="Color.Warning"> @context.OperatingState </MudChip>
                         break;
                     case EOperatingState.InvalidOperatingState:
-                        <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Error"> @context.OperatingState </MudChip>
+                        <MudChip Icon="@Icons.Material.Outlined.ErrorOutline" Variant="Variant.Text" Size="Size.Small" Color="Color.Error"> @context.OperatingState </MudChip>
                         break;
                     default:
-                        <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Info"> @context.OperatingState </MudChip>
+                        <MudChip Icon="@Icons.Material.Outlined.Info" Variant="Variant.Text" Size="Size.Small" Color="Color.Info"> @context.OperatingState </MudChip>
                         break;
                 }
             </MudTd>
