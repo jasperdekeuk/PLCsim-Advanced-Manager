@@ -1,5 +1,6 @@
 @using Siemens.Simatic.Simulation.Runtime
 @using System.Net.NetworkInformation
+@using Color = MudBlazor.Color
 @inject ISnackbar Snackbar
 
 
@@ -22,7 +23,7 @@
             <MudCardHeader>
                 <CardHeaderContent>
                     <MudText Typo="Typo.h6">Net Interfaces</MudText>
-                    <MudButton OnClick="() => { try { SimulationRuntimeManager.ResetNetInterfaceBindings(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">Reset Interfaces</MudButton>
+                    <MudButton ariant="Variant.Outlined" Color="Color.Warning" OnClick="() => { try { SimulationRuntimeManager.ResetNetInterfaceBindings(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">Reset Interfaces</MudButton>
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent>
@@ -31,7 +32,7 @@
                     var thisv = v;
                     <MudCard>
                         <MudCardContent>
-                            <MudButton OnClick="() => { try { SimulationRuntimeManager.SetNetInterfaceBindings(thisv.interfaceIndex) ;}catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">Set Binding</MudButton>
+                            <MudButton ariant="Variant.Outlined" Color="Color.Primary" OnClick="() => { try { SimulationRuntimeManager.SetNetInterfaceBindings(thisv.interfaceIndex) ;}catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">Set Binding</MudButton>
                             <MudList>
                                 <MudListItem>
                                     <MudText>Interface Description: @v.interfaceDescription</MudText>
