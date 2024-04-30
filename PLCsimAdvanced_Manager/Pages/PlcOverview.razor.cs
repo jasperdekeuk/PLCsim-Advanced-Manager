@@ -76,6 +76,13 @@ public partial class PlcOverview
         DialogService.Show<NetInterfaceMappingSettings>($"Net Interface Mapping: {selectedInstance.Name}", parameters,
             closeOnEscapeKey);
     }
+    private void OpenDialogSnapshots(IInstance selectedInstance)
+    {
+        DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true, FullWidth = true, CloseButton = true};
+        var parameters = new DialogParameters();
+        parameters.Add("selectedInstance", selectedInstance);
+        DialogService.Show<SnapshotsDialog>("Snapshots", parameters, closeOnEscapeKey);
+    }
 
 
     private void OnOperatingStateChanged(IInstance inst, ERuntimeErrorCode error, DateTime dateTime,
@@ -159,6 +166,10 @@ public partial class PlcOverview
         OpenDialogNetInterfaceMapping(instane);
     }
 
+    public void SeeSnapshots(IInstance instane)
+    {
+        OpenDialogSnapshots(instane);
+    }
 
     private string selectedRowStyleFunc(IInstance i, int rowNumber)
     {

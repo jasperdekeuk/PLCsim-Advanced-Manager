@@ -148,10 +148,11 @@
                     </MudTooltip>
                 }
                 <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="() => OpenNewTab(context.Name)" Size="Size.Small" Title="Show variables in new tab"></MudIconButton>
+                <MudIconButton Icon="@Icons.Material.Outlined.History" Title="Snapshots" Size="Size.Small" @onclick="() => SeeSnapshots(context)" ></MudIconButton>
                 <MudIconButton Icon="@Icons.Material.Outlined.Delete" Title="Delete" Size="Size.Small"
                                @onclick="() => RemoveInstance(context)">
                 </MudIconButton>
-            
+
                 <MudMenu Icon="@Icons.Material.Outlined.MoreVert" Size="Size.Small" Dense="true">
                     <MudMenuItem @onclick="() => { try { context.MemoryReset(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">MRES</MudMenuItem>
                     <MudMenuItem @onclick="() => OpenDialogPLCSettings(context)">Settings</MudMenuItem>

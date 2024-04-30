@@ -1,0 +1,187 @@
+@using Siemens.Simatic.Simulation.Runtime
+@using Color = MudBlazor.Color
+@inject ISnackbar Snackbar
+
+
+<MudDialog>
+    <DialogContent>
+        
+        Instance: @selectedInstance.Name -- Size Snapshots: @rootDirectorySize
+        <MudDivider></MudDivider>
+        <MudButton Disabled="selectedInstance.OperatingState != EOperatingState.Off" Variant="Variant.Outlined" Color="Color.Success" OnClick="() => setNameDialog=true">Create Snapshot</MudButton>
+
+        <MudList>
+            @foreach (var snapshot in GetSnapshots())
+            {
+                var dir = snapshot; // Create a local copy to avoid issues with the foreach loop
+                <MudListItem>
+                    <MudText>@Path.GetFileName(snapshot)</MudText>
+                    <MudButton Disabled="selectedInstance.OperatingState != EOperatingState.Off" Variant="Variant.Outlined" Color="Color.Success" OnClick="() => selectedInstance.RetrieveStorage(snapshot)">Rollback to this version</MudButton>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Warning" OnClick="() => OpenRenameDialog(dir)">Rename</MudButton>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="() => DeleteFile(dir)">Delete</MudButton>
+                    <MudDialog @bind-IsVisible="setNameDialog" CloseButton="true">
+                        <DialogContent>
+                            <MudTextField @bind-Value="@newSnapshotName" Label="New snapshot name"/>
+                        </DialogContent>
+                        <DialogActions>
+                            <MudButton Color="Color.Primary" OnClick="CreateSnapshot">Create snapshot</MudButton>
+                        </DialogActions>
+                    </MudDialog>
+                    <MudDialog @bind-IsVisible="renameDialog" CloseButton="true">
+                        <DialogContent>
+                            <MudTextField @bind-Value="@newDirectoryName" Label="New instance name"/>
+                        </DialogContent>
+                        <DialogActions>
+                            <MudButton Color="Color.Primary" OnClick="RenameDirectory">Rename</MudButton>
+                        </DialogActions>
+                    </MudDialog>
+                </MudListItem>
+            }
+        </MudList>
+    </DialogContent>
+
+
+</MudDialog>
+
+
+@code {
+
+    private bool renameDialog;
+    private string newDirectoryName;
+
+
+    [Parameter] public IInstance selectedInstance { get; set; }
+    static string SnapshotFolder = "Snapshots";
+    static string label;
+    private bool setNameDialog;
+    private string directoryToRename;
+    private string newSnapshotName;
+    private string rootDirectorySize;
+    private FileSystemWatcher watcher;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        var path = Path.Combine(selectedInstance.StoragePath, SnapshotFolder);
+        rootDirectorySize = GetDirectorySize(path);
+        watcher = new FileSystemWatcher(path)
+        {
+            NotifyFilter = NotifyFilters.LastAccess | NotifyFilters.LastWrite | NotifyFilters.FileName | NotifyFilters.DirectoryName,
+            IncludeSubdirectories = true
+        };
+
+        watcher.Changed += OnChanged;
+        watcher.Created += OnChanged;
+        watcher.Deleted += OnChanged;
+
+        watcher.EnableRaisingEvents = true;
+    }
+
+    private string[] GetSnapshots()
+    {
+        var path = Path.Combine(selectedInstance.StoragePath, SnapshotFolder);
+        label = Path.Combine(path, "test");
+        if (!Directory.Exists(path))
+        {
+            return Array.Empty<string>();
+        }
+
+        var snapshots = Directory.GetFiles(path);
+        return snapshots;
+    }
+    
+    
+    private void OpenRenameDialog(string directory)
+    {
+        renameDialog = true;
+        directoryToRename = directory;
+    }
+
+    private void CreateSnapshot()
+    {
+        try
+        {
+            var path = Path.Combine(selectedInstance.StoragePath, SnapshotFolder);
+            if (!Directory.Exists(path))
+            {
+                Directory.CreateDirectory(path);
+            }
+            var fullpath = Path.Combine(path, newSnapshotName);
+
+            selectedInstance.ArchiveStorage(fullpath);
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Failed to create snapshot {newSnapshotName}. Error: {e.Message}", Severity.Error);
+
+        }
+        finally
+        {
+            setNameDialog = false;
+        }
+    }
+    
+    private void OnChanged(object sender, FileSystemEventArgs e)
+    {
+        InvokeAsync(() =>
+        {
+            rootDirectorySize = GetDirectorySize(SimulationRuntimeManager.DefaultStoragePath);
+            StateHasChanged();
+        });
+    }
+
+    private void RenameDirectory()
+    {
+        try
+        {
+            string newDirectoryPath = Path.Combine(Path.GetDirectoryName(directoryToRename), newDirectoryName);
+            Directory.Move(directoryToRename, newDirectoryPath);
+            Snackbar.Add($"Directory {directoryToRename} renamed to {newDirectoryName} successfully.", Severity.Success);
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Failed to rename directory {directoryToRename}. Error: {e.Message}", Severity.Error);
+        }
+        finally
+        {
+            renameDialog = false;
+        }
+    }
+
+        
+    private string GetDirectorySize(string directory)
+    {
+        try
+        {
+            var directoryInfo = new DirectoryInfo(directory);
+            long sizeInBytes = directoryInfo.EnumerateFiles("*", SearchOption.AllDirectories).Sum(file => file.Length);
+            double sizeInKB = (double)sizeInBytes / 1024;
+            double sizeInMB = sizeInKB / 1024;
+            double sizeInGB = sizeInMB / 1024;
+
+            if (sizeInGB > 1)
+                return $"{sizeInGB:0.##} GB";
+            else if (sizeInMB > 1)
+                return $"{sizeInMB:0.##} MB";
+            else
+                return $"{sizeInKB:0.##} KB";
+        }
+        catch (Exception)
+        {
+            return "Size not available";
+        }
+    }
+    private void DeleteFile(string filePath)
+    {
+        try
+        {
+            File.Delete(filePath);
+            Snackbar.Add($"File {filePath} deleted successfully.", Severity.Success);
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Failed to delete file {filePath}. Error: {e.Message}", Severity.Error);
+        }
+    }
+
+}
