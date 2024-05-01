@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.5] - 2024-05-01
+
+### Features
+- Add basic options for snapshots (Create/Delete/Rename)
+
+### Changes
+- Set colors to network buttons
+- Change network option to chips
+
 ## [0.0.4] - 2024-04-27
 
 ### Changes
