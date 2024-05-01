@@ -135,16 +135,16 @@
                 @if (context.CommunicationInterface == ECommunicationInterface.TCPIP)
                 {
                     <MudTooltip Text="When powered off, this will swap communication interface">
-                        <MudButton Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small"
+                        <MudChip Variant="Variant.Outlined" Color="Color.Primary" Size="Size.Small"
                                    OnClick="() => { if (context.OperatingState == EOperatingState.Off) context.CommunicationInterface = ECommunicationInterface.Softbus; }">
                             TCP/IP
-                        </MudButton>
+                        </MudChip>
                     </MudTooltip>
                 }
                 else if (context.CommunicationInterface == ECommunicationInterface.Softbus)
                 {
                     <MudTooltip Text="When powered off, this will swap communication interface">
-                        <MudButton Variant="Variant.Outlined" Color="Color.Dark" Size="Size.Small" OnClick="() => { if (context.OperatingState == EOperatingState.Off) context.CommunicationInterface = ECommunicationInterface.TCPIP; }">Softbus</MudButton>
+                        <MudChip Variant="Variant.Outlined" Color="Color.Dark" Size="Size.Small" OnClick="() => { if (context.OperatingState == EOperatingState.Off) context.CommunicationInterface = ECommunicationInterface.TCPIP; }">Softbus</MudChip>
                     </MudTooltip>
                 }
                 <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="() => OpenNewTab(context.Name)" Size="Size.Small" Title="Show variables in new tab"></MudIconButton>
