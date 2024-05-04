@@ -1,39 +1,41 @@
-@using Siemens.Simatic.Simulation.Runtime
 @using Color = MudBlazor.Color
+@using Siemens.Simatic.Simulation.Runtime
 @using System.IO
 @inject ISnackbar Snackbar
-
 
 <MudDialog>
     <DialogContent>
         Size: @rootDirectorySize
         @SimulationRuntimeManager.DefaultStoragePath
-        <MudList>
+
+        <MudSimpleTable>
+            <MudTh>Name</MudTh>
+            <MudTh  Style="text-align: right;">Actions</MudTh>
+
             @foreach (var directory in Directory.GetDirectories(@SimulationRuntimeManager.DefaultStoragePath))
             {
                 var dir = directory; // Create a local copy to avoid issues with the foreach loop
                 var isRunning = SimulationRuntimeManager.RegisteredInstanceInfo.Any(e => e.Name == Path.GetFileName(directory));
-                <MudListItem>
-                    <MudText>@Path.GetFileName(directory)</MudText>
-                    <MudButton Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Success" OnClick="() => RegisterInstance(dir)">Register</MudButton>
-                    <MudButton Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Warning" OnClick="() => OpenRenameDialog(dir)">Rename</MudButton>
-                    <MudButton Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Info" OnClick="() => DuplicateDirectory(dir)">Duplicate</MudButton>
-                    <MudButton Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => DeleteDirectory(dir)">Delete</MudButton>
-                    <MudDialog @bind-IsVisible="renameDialog" CloseButton="true">
-                        <DialogContent>
-                            <MudTextField @bind-Value="@newDirectoryName" Label="New instance name"/>
-                        </DialogContent>
-                        <DialogActions>
-                            <MudButton Color="Color.Primary" OnClick="RenameDirectory">Rename</MudButton>
-                        </DialogActions>
-                    </MudDialog>
-                </MudListItem>
+
+                <MudTr>
+                    <MudTd>
+                        <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Text" Label="true" Color="Color.Dark">
+                            <MudText Typo="Typo.h6">@Path.GetFileName(directory)</MudText>
+                        </MudChip>                    </MudTd>
+                    <MudTd Style="text-align: right;">
+                        <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Success" OnClick="() => RegisterInstance(dir)">Register</MudChip>
+                        <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Warning" OnClick="() => OpenRenameDialog(dir)">Rename</MudChip>
+                        <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Info" OnClick="() => DuplicateDirectory(dir)">Duplicate</MudChip>
+                        <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => DeleteDirectory(dir)">Delete</MudChip>
+                    </MudTd>
+                </MudTr>
             }
-        </MudList>
+        </MudSimpleTable>
     </DialogContent>
-
-
 </MudDialog>
+@code {
+    // Your existing code here...
+}
 
 
 @code {
