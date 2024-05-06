@@ -5,42 +5,50 @@
 
 <MudDialog>
     <DialogContent>
-        
         Instance: @selectedInstance.Name -- Size Snapshots: @rootDirectorySize
         <MudDivider></MudDivider>
         <MudButton Disabled="selectedInstance.OperatingState != EOperatingState.Off" Variant="Variant.Outlined" Color="Color.Success" OnClick="() => setNameDialog=true">Create Snapshot</MudButton>
 
-        <MudList>
+        <MudSimpleTable>
+            <MudTh>Name</MudTh>
+            <MudTh  Style="text-align: right;">Actions</MudTh>
+
             @foreach (var snapshot in GetSnapshots())
             {
-                var dir = snapshot; // Create a local copy to avoid issues with the foreach loop
-                <MudListItem>
-                    <MudText>@Path.GetFileName(snapshot)</MudText>
-                    <MudButton Disabled="selectedInstance.OperatingState != EOperatingState.Off" Variant="Variant.Outlined" Color="Color.Success" OnClick="() => selectedInstance.RetrieveStorage(snapshot)">Rollback to this version</MudButton>
-                    <MudButton Variant="Variant.Outlined" Color="Color.Warning" OnClick="() => OpenRenameDialog(dir)">Rename</MudButton>
-                    <MudButton Variant="Variant.Outlined" Color="Color.Error" OnClick="() => DeleteFile(dir)">Delete</MudButton>
-                    <MudDialog @bind-IsVisible="setNameDialog" CloseButton="true">
-                        <DialogContent>
-                            <MudTextField @bind-Value="@newSnapshotName" Label="New snapshot name"/>
-                        </DialogContent>
-                        <DialogActions>
-                            <MudButton Color="Color.Primary" OnClick="CreateSnapshot">Create snapshot</MudButton>
-                        </DialogActions>
-                    </MudDialog>
-                    <MudDialog @bind-IsVisible="renameDialog" CloseButton="true">
-                        <DialogContent>
-                            <MudTextField @bind-Value="@newDirectoryName" Label="New instance name"/>
-                        </DialogContent>
-                        <DialogActions>
-                            <MudButton Color="Color.Primary" OnClick="RenameDirectory">Rename</MudButton>
-                        </DialogActions>
-                    </MudDialog>
-                </MudListItem>
+            var dir = snapshot; // Create a local copy to avoid issues with the foreach loop
+            var isRunning = selectedInstance.OperatingState != EOperatingState.Off;
+
+            <MudTr>
+                <MudTd>
+                    <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Text" Label="true" Color="Color.Dark">
+                        <MudText Typo="Typo.h6">@Path.GetFileName(snapshot)</MudText>
+                    </MudChip>
+                </MudTd>
+                <MudTd Style="text-align: right;">
+                    <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Success" OnClick="() => selectedInstance.RetrieveStorage(snapshot)">Rollback</MudChip>
+                    <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Warning" OnClick="() => OpenRenameDialog(dir)">Rename</MudChip>
+                    <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => DeleteFile(dir)">Delete</MudChip>
+                </MudTd>
+            </MudTr>
             }
-        </MudList>
+        </MudSimpleTable>
+        <MudDialog @bind-IsVisible="setNameDialog" CloseButton="true">
+            <DialogContent>
+                <MudTextField @bind-Value="@newSnapshotName" Label="New snapshot name"/>
+            </DialogContent>
+            <DialogActions>
+                <MudButton Color="Color.Primary" OnClick="CreateSnapshot">Create snapshot</MudButton>
+            </DialogActions>
+        </MudDialog>
+        <MudDialog @bind-IsVisible="renameDialog" CloseButton="true">
+            <DialogContent>
+                <MudTextField @bind-Value="@newDirectoryName" Label="New instance name"/>
+            </DialogContent>
+            <DialogActions>
+                <MudButton Color="Color.Primary" OnClick="RenameDirectory">Rename</MudButton>
+            </DialogActions>
+        </MudDialog>
     </DialogContent>
-
-
 </MudDialog>
 
 
