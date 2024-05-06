@@ -31,6 +31,14 @@
                 </MudTr>
             }
         </MudSimpleTable>
+        <MudDialog @bind-IsVisible="renameDialog" CloseButton="true">
+            <DialogContent>
+                <MudTextField @bind-Value="@newDirectoryName" Label="New instance name"/>
+            </DialogContent>
+            <DialogActions>
+                <MudButton Color="Color.Primary" OnClick="RenameDirectory">Rename</MudButton>
+            </DialogActions>
+        </MudDialog>
     </DialogContent>
 </MudDialog>
 @code {
