@@ -68,7 +68,7 @@
 
     private void OpenNetworkSettingsDialog()
     {
-        DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true, FullWidth = true };
+        DialogOptions closeOnEscapeKey = new DialogOptions() { MaxWidth = MaxWidth.Medium, CloseOnEscapeKey = true, FullWidth = true };
 
         DialogService.Show<NetworkSettings>("Network Settings", closeOnEscapeKey);
     }

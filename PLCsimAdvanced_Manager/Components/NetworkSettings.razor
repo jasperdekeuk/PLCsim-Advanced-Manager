@@ -27,41 +27,62 @@
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent>
-                @foreach (var v in SimulationRuntimeManager.NetInterfaces)
-                {
-                    var thisv = v;
-                    <MudCard>
-                        <MudCardContent>
-                            <MudButton ariant="Variant.Outlined" Color="Color.Primary" OnClick="() => { try { SimulationRuntimeManager.SetNetInterfaceBindings(thisv.interfaceIndex) ;}catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">Set Binding</MudButton>
-                            <MudList>
-                                <MudListItem>
-                                    <MudText>Interface Description: @v.interfaceDescription</MudText>
-                                </MudListItem>
-                                <MudListItem>
-                                    <MudText>Interface Index: @v.interfaceIndex</MudText>
-                                </MudListItem>
-                                <MudListItem>
-                                    <MudText>Interface Name: @v.interfaceName</MudText>
-                                </MudListItem>
-                                <MudListItem>
-                                    <MudText>Is Connected: @v.isConnected</MudText>
-                                </MudListItem>
-                                <MudListItem>
-                                    <MudText>Switch Binding Enabled: @v.vSwitchBindingEnabled</MudText>
-                                </MudListItem>
-                                <MudListItem>
-                                    <MudText>MAC: @v.MACAddress</MudText>
-                                </MudListItem>
-                                @foreach (var address in allNetworkInterfaces.Where(@interface => @interface.Name == v.interfaceName).SelectMany(@interface => @interface.GetIPProperties().UnicastAddresses).Select(@interface => @interface.Address))
-                                {
-                                    <MudListItem>
-                                        <MudText>Address: @address</MudText>
-                                    </MudListItem>
-                                }
-                            </MudList>
-                        </MudCardContent>
-                    </MudCard>
-                }
+                <MudTable Items="@SimulationRuntimeManager.NetInterfaces">
+                    <HeaderContent>
+                        <MudTh>Interface</MudTh>
+                        @* <MudTh>Interface Index</MudTh> *@
+                        <MudTh>Is Connected</MudTh>
+                        <MudTh>Switch Binding Enabled</MudTh>
+                        @* <MudTh>MAC</MudTh> *@
+                        <MudTh>Address</MudTh>
+                        <MudTh>Actions</MudTh>
+                    </HeaderContent>
+                    <RowTemplate Context="v">
+                        <MudTd>
+                            <strong>@v.interfaceName</strong><br/>
+                            <small>@v.interfaceDescription</small>
+                        </MudTd>
+                        @* <MudTd>@v.interfaceIndex</MudTd> *@
+                        <MudTd>
+                            @if (v.isConnected)
+                            {
+                            <MudChip Variant="Variant.Text" Size="Size.Small"  Color="Color.Success">
+                                <MudIcon Icon="@Icons.Material.Filled.CheckCircleOutline" />
+                            </MudChip>
+                            }
+                            else
+                            {
+                            <MudChip Variant="Variant.Text" Size="Size.Small" Disabled="true" Color="Color.Error">
+                                <MudIcon Icon="@Icons.Material.Filled.HighlightOff" />
+                            </MudChip>
+                            }
+                        </MudTd>
+                        <MudTd>
+                            @if (v.vSwitchBindingEnabled)
+                            {
+                            <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Success">
+                                <MudIcon Icon="@Icons.Material.Filled.CheckCircleOutline" />
+                            </MudChip>
+                            }
+                            else
+                            {
+                            <MudChip Variant="Variant.Text" Size="Size.Small" Disabled="true" Color="Color.Error">
+                                <MudIcon Icon="@Icons.Material.Filled.HighlightOff" />
+                            </MudChip>
+                            }
+                        </MudTd>
+                        @* <MudTd>@v.MACAddress</MudTd> *@
+                        <MudTd>
+                            @foreach (var address in allNetworkInterfaces.Where(@interface => @interface.Name == v.interfaceName).SelectMany(@interface => @interface.GetIPProperties().UnicastAddresses).Where(@address => @address.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork))
+                            {
+                            <div>@address.Address</div>
+                            }
+                        </MudTd>
+                        <MudTd>
+                            <MudButton Variant="Variant.Outlined" Size="Size.Small" Color="Color.Primary" OnClick="() => { try { SimulationRuntimeManager.SetNetInterfaceBindings(v.interfaceIndex); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">Set Binding</MudButton>
+                        </MudTd>
+                    </RowTemplate>
+                </MudTable>
             </MudCardContent>
         </MudCard>
         <MudCard Style="overflow-wrap:break-word;">
