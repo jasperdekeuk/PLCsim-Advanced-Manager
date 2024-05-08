@@ -21,12 +21,13 @@
 
                 <MudTr>
                     <MudTd>
-                        <strong>@Path.GetFileName(snapshot)</strong><br/>
 
 
-                        @* <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Text" Label="true" Color="Color.Dark"> *@
-                        @*     <MudText Typo="Typo.h6">@Path.GetFileName(snapshot)</MudText> *@
-                        @* </MudChip> *@
+                        <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Text" Color="Color.Info">
+                            <MudText Typo="Typo.h6">
+                                <strong>@Path.GetFileName(snapshot)</strong>
+                            </MudText>
+                        </MudChip>
                     </MudTd>
                     <MudTd>
                         <small>
@@ -34,9 +35,11 @@
                         </small>
                     </MudTd>
                     <MudTd Style="text-align: right;">
-                        <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Success" OnClick="() => selectedInstance.RetrieveStorage(snapshot)">Rollback</MudChip>
-                        <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Warning" OnClick="() => OpenRenameDialog(dir)">Rename</MudChip>
-                        <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => DeleteFile(dir)">Delete</MudChip>
+                        <MudButtonGroup Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Success" OverrideStyles="false">
+                            <MudButton Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Success" OnClick="() => selectedInstance.RetrieveStorage(snapshot)">Rollback</MudButton>
+                            <MudButton Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Warning" OnClick="() => OpenRenameDialog(dir)">Rename</MudButton>
+                            <MudButton Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => DeleteFile(dir)">Delete</MudButton>
+                        </MudButtonGroup>
                     </MudTd>
                 </MudTr>
             }

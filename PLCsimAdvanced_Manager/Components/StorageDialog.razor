@@ -10,7 +10,7 @@
 
         <MudSimpleTable>
             <MudTh>Name</MudTh>
-            <MudTh  Style="text-align: right;">Actions</MudTh>
+            <MudTh Style="text-align: right;">Actions</MudTh>
 
             @foreach (var directory in Directory.GetDirectories(@SimulationRuntimeManager.DefaultStoragePath))
             {
@@ -19,14 +19,19 @@
 
                 <MudTr>
                     <MudTd>
-                        <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Text" Label="true" Color="Color.Dark">
-                            <MudText Typo="Typo.h6">@Path.GetFileName(directory)</MudText>
-                        </MudChip>                    </MudTd>
+                        <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Text" Color="Color.Info">
+                            <MudText Typo="Typo.h6">
+                                <strong>@Path.GetFileName(directory)</strong>
+                            </MudText>
+                        </MudChip>
+                    </MudTd>
                     <MudTd Style="text-align: right;">
-                        <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Success" OnClick="() => RegisterInstance(dir)">Register</MudChip>
-                        <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Warning" OnClick="() => OpenRenameDialog(dir)">Rename</MudChip>
-                        <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Info" OnClick="() => DuplicateDirectory(dir)">Duplicate</MudChip>
-                        <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => DeleteDirectory(dir)">Delete</MudChip>
+                        <MudButtonGroup OverrideStyles="false">
+                            <MudButton Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Success" OnClick="() => RegisterInstance(dir)">Register</MudButton>
+                            <MudButton Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Warning" OnClick="() => OpenRenameDialog(dir)">Rename</MudButton>
+                            <MudButton Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Info" OnClick="() => DuplicateDirectory(dir)">Duplicate</MudButton>
+                            <MudButton Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => DeleteDirectory(dir)">Delete</MudButton>
+                        </MudButtonGroup>
                     </MudTd>
                 </MudTr>
             }
@@ -41,6 +46,7 @@
         </MudDialog>
     </DialogContent>
 </MudDialog>
+
 @code {
     // Your existing code here...
 }
@@ -54,6 +60,7 @@
     private bool renameDialog;
     private FileSystemWatcher watcher;
     private string rootDirectorySize;
+
     protected override void OnInitialized()
     {
         base.OnInitialized();
@@ -70,7 +77,7 @@
 
         watcher.EnableRaisingEvents = true;
     }
-    
+
     private void OnChanged(object sender, FileSystemEventArgs e)
     {
         InvokeAsync(() =>
@@ -130,7 +137,7 @@
             Snackbar.Add($"Failed to delete directory {directory}. Error: {e.Message}", Severity.Error);
         }
     }
-    
+
     private void DuplicateDirectory(string directory)
     {
         try
@@ -142,6 +149,7 @@
                 newDirectoryPath = Path.Combine(Path.GetDirectoryName(directory), Path.GetFileName(directory) + "_copy" + counter);
                 counter++;
             }
+
             Directory.CreateDirectory(newDirectoryPath);
             foreach (var dirPath in Directory.GetDirectories(directory, "*", SearchOption.AllDirectories))
                 Directory.CreateDirectory(dirPath.Replace(directory, newDirectoryPath));
@@ -156,7 +164,7 @@
             Snackbar.Add($"Failed to duplicate directory {Path.GetFileName(directory)}. Error: {e.Message}", Severity.Error);
         }
     }
-    
+
     private string GetDirectorySize(string directory)
     {
         try
