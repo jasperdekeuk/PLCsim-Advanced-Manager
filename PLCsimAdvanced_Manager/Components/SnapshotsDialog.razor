@@ -54,7 +54,7 @@
         </MudDialog>
         <MudDialog @bind-IsVisible="renameDialog" CloseButton="true">
             <DialogContent>
-                <MudTextField @bind-Value="@newDirectoryName" Label="New instance name"/>
+                <MudTextField @bind-Value="@newDirectoryName" Label="New snapshot name"/>
             </DialogContent>
             <DialogActions>
                 <MudButton Color="Color.Primary" OnClick="RenameDirectory">Rename</MudButton>

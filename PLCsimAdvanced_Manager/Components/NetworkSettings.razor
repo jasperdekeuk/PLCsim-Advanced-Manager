@@ -23,7 +23,7 @@
             <MudCardHeader>
                 <CardHeaderContent>
                     <MudText Typo="Typo.h6">Net Interfaces</MudText>
-                    <MudButton ariant="Variant.Outlined" Color="Color.Warning" OnClick="() => { try { SimulationRuntimeManager.ResetNetInterfaceBindings(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">Reset Interfaces</MudButton>
+                    <MudButton Variant="Variant.Outlined" Color="Color.Warning" OnClick="() => { try { SimulationRuntimeManager.ResetNetInterfaceBindings(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">Reset Interfaces</MudButton>
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent>
@@ -32,7 +32,7 @@
                         <MudTh>Interface</MudTh>
                         @* <MudTh>Interface Index</MudTh> *@
                         <MudTh>Is Connected</MudTh>
-                        <MudTh>Switch Binding Enabled</MudTh>
+                        <MudTh>Binding Enabled</MudTh>
                         @* <MudTh>MAC</MudTh> *@
                         <MudTh>Address</MudTh>
                         <MudTh>Actions</MudTh>
