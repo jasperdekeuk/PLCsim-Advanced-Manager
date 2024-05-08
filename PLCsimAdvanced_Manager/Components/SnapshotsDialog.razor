@@ -7,29 +7,38 @@
     <DialogContent>
         Instance: @selectedInstance.Name -- Size Snapshots: @rootDirectorySize
         <MudDivider></MudDivider>
-        <MudButton Disabled="selectedInstance.OperatingState != EOperatingState.Off" Variant="Variant.Outlined" Color="Color.Success" OnClick="() => setNameDialog=true">Create Snapshot</MudButton>
+        <MudButton Disabled="selectedInstance.OperatingState != EOperatingState.Off" Variant="Variant.Outlined" Color="Color.Success" OnClick="() => setNameDialog = true">Create Snapshot</MudButton>
 
         <MudSimpleTable>
             <MudTh>Name</MudTh>
-            <MudTh  Style="text-align: right;">Actions</MudTh>
+            <MudTh>Timestamp</MudTh>
+            <MudTh Style="text-align: right;">Actions</MudTh>
 
             @foreach (var snapshot in GetSnapshots())
             {
-            var dir = snapshot; // Create a local copy to avoid issues with the foreach loop
-            var isRunning = selectedInstance.OperatingState != EOperatingState.Off;
+                var dir = snapshot; // Create a local copy to avoid issues with the foreach loop
+                var isRunning = selectedInstance.OperatingState != EOperatingState.Off;
 
-            <MudTr>
-                <MudTd>
-                    <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Text" Label="true" Color="Color.Dark">
-                        <MudText Typo="Typo.h6">@Path.GetFileName(snapshot)</MudText>
-                    </MudChip>
-                </MudTd>
-                <MudTd Style="text-align: right;">
-                    <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Success" OnClick="() => selectedInstance.RetrieveStorage(snapshot)">Rollback</MudChip>
-                    <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Warning" OnClick="() => OpenRenameDialog(dir)">Rename</MudChip>
-                    <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => DeleteFile(dir)">Delete</MudChip>
-                </MudTd>
-            </MudTr>
+                <MudTr>
+                    <MudTd>
+                        <strong>@Path.GetFileName(snapshot)</strong><br/>
+
+
+                        @* <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Text" Label="true" Color="Color.Dark"> *@
+                        @*     <MudText Typo="Typo.h6">@Path.GetFileName(snapshot)</MudText> *@
+                        @* </MudChip> *@
+                    </MudTd>
+                    <MudTd>
+                        <small>
+                            @File.GetLastWriteTime(snapshot).ToShortDateString()<br/>@File.GetLastWriteTime(snapshot).ToShortTimeString()
+                        </small>
+                    </MudTd>
+                    <MudTd Style="text-align: right;">
+                        <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Success" OnClick="() => selectedInstance.RetrieveStorage(snapshot)">Rollback</MudChip>
+                        <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Warning" OnClick="() => OpenRenameDialog(dir)">Rename</MudChip>
+                        <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => DeleteFile(dir)">Delete</MudChip>
+                    </MudTd>
+                </MudTr>
             }
         </MudSimpleTable>
         <MudDialog @bind-IsVisible="setNameDialog" CloseButton="true">
@@ -76,7 +85,7 @@
         {
             Directory.CreateDirectory(path);
         }
-        
+
         rootDirectorySize = GetDirectorySize(path);
         watcher = new FileSystemWatcher(path)
         {
@@ -101,10 +110,11 @@
         }
 
         var snapshots = Directory.GetFiles(path);
-        return snapshots;
+        var orderedSnapshots = snapshots.OrderByDescending(file => File.GetLastWriteTime(file)).ToArray();
+        return orderedSnapshots;
     }
-    
-    
+
+
     private void OpenRenameDialog(string directory)
     {
         renameDialog = true;
@@ -120,6 +130,7 @@
             {
                 Directory.CreateDirectory(path);
             }
+
             var fullpath = Path.Combine(path, newSnapshotName);
 
             selectedInstance.ArchiveStorage(fullpath);
@@ -127,14 +138,13 @@
         catch (Exception e)
         {
             Snackbar.Add($"Failed to create snapshot {newSnapshotName}. Error: {e.Message}", Severity.Error);
-
         }
         finally
         {
             setNameDialog = false;
         }
     }
-    
+
     private void OnChanged(object sender, FileSystemEventArgs e)
     {
         InvokeAsync(() =>
@@ -162,7 +172,7 @@
         }
     }
 
-        
+
     private string GetDirectorySize(string directory)
     {
         try
@@ -185,6 +195,7 @@
             return "Size not available";
         }
     }
+
     private void DeleteFile(string filePath)
     {
         try
