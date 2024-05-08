@@ -71,6 +71,12 @@
     {
         base.OnInitialized();
         var path = Path.Combine(selectedInstance.StoragePath, SnapshotFolder);
+        // Check if the directory exists, if not, create it
+        if (!Directory.Exists(path))
+        {
+            Directory.CreateDirectory(path);
+        }
+        
         rootDirectorySize = GetDirectorySize(path);
         watcher = new FileSystemWatcher(path)
         {
