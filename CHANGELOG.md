@@ -7,6 +7,20 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.0.6] - 2024-05-08
+
+This version is mainly a UI cleanup and small bugfix
+
+### Changes
+- UI improvement for network settings. This is now a table with interfaces and their settings.
+- UI improvement for the storage dialog
+- Add timestamp to snapshots overview and order by timestamp
+
+### Fix
+- Fix bug when snapshot folder does not exit yet
+- Fix storage rename button
+- Delete snapshots folder when instance storage is cleaned up
+
 ## [0.0.5] - 2024-05-01
 
 ### Features
