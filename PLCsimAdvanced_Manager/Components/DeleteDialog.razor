@@ -30,6 +30,8 @@
     public List<IInstance> Instances { get; set; }
 
     public bool fullDeleteCheckbox { get; set; } = false;
+    static string SnapshotFolder = "Snapshots";
+
 
     void Submit()
     {
@@ -45,6 +47,8 @@
         {
             if(CleanupStoragePath)
             {
+                CheckAndRemoveSnapshotDirectory(Instance.StoragePath);
+                
                 Instance.CleanupStoragePath();
             }
             Instances.Remove(Instances.SingleOrDefault(v => Instance.ID == v.ID));
@@ -55,6 +59,16 @@
         {
             Snackbar.Add($"Issue with unregistering instance: {ex.Message}");
         }
+    }
+
+    void CheckAndRemoveSnapshotDirectory(string storagePath)
+    {
+        var path = Path.Combine(storagePath, SnapshotFolder);
+        if (Directory.Exists(path))
+        {
+            Directory.Delete(path, true);
+        }
+
     }
 
     void Cancel() => MudDialog.Cancel();
