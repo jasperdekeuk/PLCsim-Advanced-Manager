@@ -159,7 +159,7 @@
                 Snackbar.Add($"Network mode changed", Severity.Success, config => { config.HideIcon = true; });
                 break;
             default:
-                Snackbar.Add(e.ToString());
+                Snackbar.Add(e.ToString(), Severity.Warning);
                 break;
         }
 

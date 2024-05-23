@@ -100,25 +100,25 @@
             if (versionComparison < 0)
             {
                 //The version on GitHub is more up to date than this local release.
-                Snackbar.Add($"New version available on Github: {latestGitHubVersion}");
+                Snackbar.Add($"New version available on Github: {latestGitHubVersion}", Severity.Info);
                 newVersionAvailable = true;
             }
             else if (versionComparison > 0)
             {
                 //This local version is greater than the release version on GitHub.
-                Snackbar.Add("This local version is greater than the release version on GitHub");
+                Snackbar.Add("This local version is greater than the release version on GitHub", Severity.Info);
                 newVersionAvailable = false;
             }
             else
             {
                 //This local Version and the Version on GitHub are equal.
-                Snackbar.Add("You have the latest version");
+                Snackbar.Add("You have the latest version", Severity.Info);
                 newVersionAvailable = false;
             }
         }
         catch (Exception e)
         {
-            Snackbar.Add($"Issue with version check, make sure you have a network connection.");
+            Snackbar.Add($"Issue with version check, make sure you have a network connection.", Severity.Warning);
         }
     }
 

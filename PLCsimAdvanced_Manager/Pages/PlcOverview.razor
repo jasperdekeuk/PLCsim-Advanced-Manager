@@ -71,7 +71,7 @@
                         {
                             <MudIconButton Icon="@Icons.Material.Outlined.PlayArrow" Color="Color.Success" Size="Size.Small"
                                            Title="Run"
-                                           @onclick="() => { try { context.Run(); }catch (Exception e) { Snackbar.Add(e.Message); } }"/>
+                                           @onclick="() => { try { context.Run(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }"/>
                         }
                         else if (context.OperatingState == EOperatingState.Run)
                         {

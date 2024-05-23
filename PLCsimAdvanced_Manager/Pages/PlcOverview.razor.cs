@@ -28,7 +28,7 @@ public partial class PlcOverview
             }
             catch (Exception e)
             {
-                Snackbar.Add($"Issue with registered instance: {e.Message}");
+                Snackbar.Add($"Issue with registered instance: {e.Message}", Severity.Error);
             }
         }
     }
@@ -88,7 +88,7 @@ public partial class PlcOverview
     private void OnOperatingStateChanged(IInstance inst, ERuntimeErrorCode error, DateTime dateTime,
         EOperatingState operatingState, EOperatingState operatingState2)
     {
-        Snackbar.Add($"{inst.Name} changed from {operatingState} to {operatingState2}", Severity.Success,
+        Snackbar.Add($"{inst.Name} changed from {operatingState} to {operatingState2}", Severity.Info,
             config => { config.HideIcon = true; });
         InvokeAsync(() => StateHasChanged());
     }
@@ -115,7 +115,7 @@ public partial class PlcOverview
                 instances.Add(inst);
                 inst.OnOperatingStateChanged += OnOperatingStateChanged;
                 inst.OnIPAddressChanged += OnIpAddressChanged;
-                Snackbar.Add($"{inst.Name} is registered", Severity.Success, config => { config.HideIcon = true; });
+                Snackbar.Add($"{inst.Name} is registered", Severity.Info, config => { config.HideIcon = true; });
                 break;
             case ERuntimeConfigChanged.InstanceUnregistered:
                 instances.Remove(instances.SingleOrDefault(v => p3 == v.ID || v.ID == -1));

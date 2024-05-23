@@ -57,7 +57,7 @@
         }
         catch (Exception ex)
         {
-            Snackbar.Add($"Issue with unregistering instance: {ex.Message}");
+            Snackbar.Add($"Issue with unregistering instance: {ex.Message}", Severity.Error);
         }
     }
 

@@ -91,7 +91,7 @@ else
         }
         catch (Exception e)
         {
-            Snackbar.Add($"Error while selecting instance {name}: {e.Message}");
+            Snackbar.Add($"Error while selecting instance {name}: {e.Message}", Severity.Error);
             InstanceRegistered = false;
         }
     }
@@ -188,7 +188,7 @@ else
     {
         if (SelectedInstance == null)
         {
-            Snackbar.Add("Issue with reading data for the given instance");
+            Snackbar.Add("Issue with reading data for the given instance", Severity.Error);
             return;
         }
 

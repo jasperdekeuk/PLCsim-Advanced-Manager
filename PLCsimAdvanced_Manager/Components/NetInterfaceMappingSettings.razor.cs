@@ -34,7 +34,7 @@ public partial class NetInterfaceMappingSettings
             }
             catch (Exception e)
             {
-                Snackbar.Add($"Error setting interface mapping: {e.Message}");
+                Snackbar.Add($"Error setting interface mapping: {e.Message}", Severity.Error);
             }
         }
     }
@@ -60,7 +60,7 @@ public partial class NetInterfaceMappingSettings
             }
             catch (Exception e)
             {
-                Snackbar.Add($"Error setting interface mapping: {e.Message}");
+                Snackbar.Add($"Error setting interface mapping: {e.Message}", Severity.Error);
             }
         }
     }
@@ -85,7 +85,7 @@ public partial class NetInterfaceMappingSettings
             }
             catch (Exception e)
             {
-                Snackbar.Add($"Error setting interface mapping: {e.Message}");
+                Snackbar.Add($"Error setting interface mapping: {e.Message}",Severity.Error);
             }
         }
     }
@@ -95,7 +95,7 @@ public partial class NetInterfaceMappingSettings
         try{selectedInstance.SetNetInterfaceMapping(interfaceID, value);}
         catch (Exception e)
         {
-            Snackbar.Add($"Error setting interface mapping: {e.Message}");
+            Snackbar.Add($"Error setting interface mapping: {e.Message}", Severity.Error);
         }
     }    
     public void setInterface(EPLCInterface interfaceID, string value)
@@ -103,7 +103,7 @@ public partial class NetInterfaceMappingSettings
         try{selectedInstance.SetNetInterfaceMapping(interfaceID, value);}
         catch (Exception e)
         {
-            Snackbar.Add($"Error setting interface mapping: {e.Message}");
+            Snackbar.Add($"Error setting interface mapping: {e.Message}", Severity.Error);
         }
     }
     

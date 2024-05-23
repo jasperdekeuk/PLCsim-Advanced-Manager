@@ -76,7 +76,7 @@
         }
         catch (Exception e)
         {
-            Snackbar.Add($"Error while selecting instance {name}: {e.Message}");
+            Snackbar.Add($"Error while selecting instance {name}: {e.Message}",Severity.Error);
         }
     }
 

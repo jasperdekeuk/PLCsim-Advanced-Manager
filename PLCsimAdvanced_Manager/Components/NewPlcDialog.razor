@@ -128,7 +128,7 @@
         }
         catch (Exception e)
         {
-            Snackbar.Add($"Issue with creating instance: {e.Message}");
+            Snackbar.Add($"Issue with creating instance: {e.Message}", Severity.Error);
             return;
         }
 
@@ -140,7 +140,7 @@
             }
             catch (Exception e)
             {
-                Snackbar.Add($"Issue with powering on instance: {e.Message}");
+                Snackbar.Add($"Issue with powering on instance: {e.Message}", Severity.Error);
             }
         }
     }
