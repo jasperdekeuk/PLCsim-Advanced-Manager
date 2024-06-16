@@ -4,19 +4,19 @@ import type * as Preset from '@docusaurus/preset-classic';
 
 const config: Config = {
   title: 'PLCsim Advanced Manager',
-  tagline: 'Dinosaurs are cool',
-  favicon: 'img/favicon.ico',
+  tagline: 'Modern PLCsim Advanced Management',
+  favicon: 'img/psa_logo.png',
 
   // Set the production url of your site here
-  url: 'https://your-docusaurus-site.example.com',
+  url: 'https://github.com',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: '/',
+  baseUrl: 'jasperdekeuk/PLCsim-Advanced-Manager/',
 
   // GitHub pages deployment config.
   // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'facebook', // Usually your GitHub org/user name.
-  projectName: 'docusaurus', // Usually your repo name.
+  organizationName: 'jasperdekeuk', // Usually your GitHub org/user name.
+  projectName: 'PLCsim-Advanced-Manager', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
@@ -38,7 +38,7 @@ const config: Config = {
           // Please change this to your repo.
           // Remove this to remove the "edit this page" links.
           editUrl:
-            'https://github.com/facebook/docusaurus/tree/main/packages/create-docusaurus/templates/shared/',
+            'https://github.com/jasperdekeuk/PLCsim-Advanced-Manager/docs/docs-website/',
         },
         theme: {
           customCss: './src/css/custom.css',
@@ -47,14 +47,27 @@ const config: Config = {
     ],
   ],
 
+
+  plugins: [require.resolve("docusaurus-plugin-image-zoom")],
+
   themeConfig: {
     // Replace with your project's social card
     image: 'img/docusaurus-social-card.jpg',
+    zoom: {
+      selector: '.markdown :not(em) > img',
+      config: {
+        // options you can specify via https://github.com/francoischalifour/medium-zoom#usage
+        background: {
+          light: 'rgb(255, 255, 255)',
+          dark: 'rgb(50, 50, 50)'
+        }
+      }
+    },
     navbar: {
       title: 'PLCsim Advanced Manager',
       logo: {
         alt: 'My Site Logo',
-        src: 'img/logo.svg',
+        src: 'img/psa_logo.png',
       },
       items: [
         {
@@ -64,7 +77,7 @@ const config: Config = {
           label: 'Tutorial',
         },
         {
-          href: 'https://github.com/facebook/docusaurus',
+          href: 'https://github.com/jasperdekeuk/PLCsim-Advanced-Manager',
           label: 'GitHub',
           position: 'right',
         },
@@ -83,28 +96,11 @@ const config: Config = {
           ],
         },
         {
-          title: 'Community',
-          items: [
-            {
-              label: 'Stack Overflow',
-              href: 'https://stackoverflow.com/questions/tagged/docusaurus',
-            },
-            {
-              label: 'Discord',
-              href: 'https://discordapp.com/invite/docusaurus',
-            },
-            {
-              label: 'Twitter',
-              href: 'https://twitter.com/docusaurus',
-            },
-          ],
-        },
-        {
           title: 'More',
           items: [
             {
               label: 'GitHub',
-              href: 'https://github.com/facebook/docusaurus',
+              href: 'https://github.com/jasperdekeuk/PLCsim-Advanced-Manager',
             },
           ],
         },
