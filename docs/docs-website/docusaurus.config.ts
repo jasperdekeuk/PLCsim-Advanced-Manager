@@ -8,15 +8,15 @@ const config: Config = {
   favicon: 'img/psa_logo.png',
 
   // Set the production url of your site here
-  url: 'https://github.com',
+  url: 'https://jasperdekeuk.github.io',
   // Set the /<baseUrl>/ pathname under which your site is served
   // For GitHub pages deployment, it is often '/<projectName>/'
-  baseUrl: 'jasperdekeuk/PLCsim-Advanced-Manager/',
+  baseUrl: '/PLCsim-Advanced-Manager/',
 
-  // GitHub pages deployment config.
-  // If you aren't using GitHub pages, you don't need these.
-  organizationName: 'jasperdekeuk', // Usually your GitHub org/user name.
-  projectName: 'PLCsim-Advanced-Manager', // Usually your repo name.
+  // // GitHub pages deployment config.
+  // // If you aren't using GitHub pages, you don't need these.
+  // organizationName: 'jasperdekeuk', // Usually your GitHub org/user name.
+  // projectName: 'PLCsim-Advanced-Manager', // Usually your repo name.
 
   onBrokenLinks: 'throw',
   onBrokenMarkdownLinks: 'warn',
