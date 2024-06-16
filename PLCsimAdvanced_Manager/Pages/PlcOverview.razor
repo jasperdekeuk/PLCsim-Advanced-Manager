@@ -38,16 +38,18 @@
             <col/>
             <col/>
             <col/>
+            <col/>
         </ColGroup>
         <HeaderContent>
             <MudTh>PLC Name</MudTh>
             <MudTh>Status</MudTh>
             <MudTh>Controller IP</MudTh>
             <MudTh>CPU type</MudTh>
+            <MudTh>Controller Name</MudTh>
             <MudTh>Actions</MudTh>
         </HeaderContent>
         <GroupHeaderTemplate>
-            <MudTh Class="mud-table-cell-custom-group" colspan="5">
+            <MudTh Class="mud-table-cell-custom-group" colspan="6">
                 @($"{context.GroupName}: {context.Key}")
             </MudTh>
         </GroupHeaderTemplate>
@@ -130,6 +132,7 @@
                 </div>
             </MudTd>
             <MudTd DataLabel="CPU type">@context.CPUType</MudTd>
+            <MudTd DataLabel="Controller Name">@context.ControllerName</MudTd>
             <MudTd >
             
                 @if (context.CommunicationInterface == ECommunicationInterface.TCPIP)
