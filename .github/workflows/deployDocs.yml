@@ -10,7 +10,7 @@ on:
 defaults:
   run:
     shell: bash
-    working-directory: ./docs/docs-website
+    working-directory: docs/docs-website
 
 jobs:
   build:
