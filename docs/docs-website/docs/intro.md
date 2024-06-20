@@ -11,6 +11,11 @@ In the backend, it uses the API of PLCsim Advanced to communicate with the insta
 
 ![Overview.png](..%2F..%2Fimg%2FOverview.png)
 
+:::info project status
+The project is mostly trying to show functionalities. Code optimization and UI improvments are definitely a thing!
+
+If you have an issue or a feature request, don't hesitate to create an [issue](https://github.com/jasperdekeuk/PLCsim-Advanced-Manager/issues)
+:::
 
 ## Goals
 The goals of the project are:
@@ -31,18 +36,5 @@ The goals of the project are:
 The main focus is on Siemens PLCsim Advanced, but generally speaking, this could be extended to other PLC simulators as
 well. (if they provide an API)
 :::
-
-## Quick Start
-
-1. Download the last version of **PLCsim Advanced Manager** from the **[official website](https://github.com/jasperdekeuk/PLCsim-Advanced-Manager/releases)**.
-
-*optional: set up the url and port in the appsettings.json file*
-
-2. Run the **PLCsimAdvancedManager.exe** file to start the application. You will now be able to access the UI. On your
-localhost, you can access the UI by navigating to **http://localhost:5000**.
-
-### What you'll need
-
-- PLCsim Advanced (>v5) installed and licensed.
 
 
