@@ -7,6 +7,10 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+### Changes
+- Add controler name to overview table
+- IP settings dialog now has tabs for every interface
+
 ## [0.0.6] - 2024-05-08
 
 This version is mainly a UI cleanup and small bugfix
