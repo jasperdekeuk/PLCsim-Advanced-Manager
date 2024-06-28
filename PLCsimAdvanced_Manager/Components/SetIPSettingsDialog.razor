@@ -1,101 +1,255 @@
 @using Siemens.Simatic.Simulation.Runtime
 @using Color = MudBlazor.Color
+@inject ISnackbar Snackbar
 
 
 <MudDialog>
-    <DialogContent>
-        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-            @for (int i = 0; i < selectedInstance.ControllerIPSuite4.Length; i++)
+<DialogContent>
+<MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+@for (int i = 0; i < selectedInstance.ControllerIPSuite4.Length; i++)
+{
+    var index = i;
+    var t = $"X{i + 1}";
+    <MudTabPanel Text="@t">
+
+
+        <MudGrid Class="justify-space-between" Style="max-width: 600px;">
+            <MudItem xs="12" sm="10">
+                <MudTextField Mask="@ipv4Masks[index]" Label="IP address" HelperText="@ipv4Masks[index].Mask"
+                              @bind-Value="ips[index]" Variant="@Variant.Text" Clearable/>
+            </MudItem>
+        </MudGrid>
+        <MudGrid Class="justify-space-between" Style="max-width: 600px;">
+            <MudItem xs="12" sm="10">
+                <MudTextField Mask="@subnetMask[index]" Label="Subnet Mask" HelperText="@subnetMask[index].Mask"
+                              @bind-Value="subnets[index]" Variant="@Variant.Text" Clearable/>
+            </MudItem>
+        </MudGrid>
+        <MudGrid Class="justify-space-between" Style="max-width: 600px;">
+            <MudItem xs="12" sm="10">
+                <MudTextField Mask="@gatewayMask[index]" Label="Default Gateway" HelperText="@gatewayMask[index].Mask"
+                              @bind-Value="gateways[index]" Variant="@Variant.Text" Clearable/>
+            </MudItem>
+        </MudGrid>
+        @if (SimulationRuntimeManager.NetworkMode == ECommunicationMode.Non_Promiscuous)
+        {
+            switch (index+1)
             {
-            
-                var index = i;
-                var t = $"X{i+1}";
-                <MudTabPanel Text="@t">
-         
+                case 1:
+                    <MudSelect T="string" Label="Communication Interface" AnchorOrigin="Origin.BottomCenter" @bind-Value="@interface_1" EmptyValue="No mapping">
+                        @foreach (var v in SimulationRuntimeManager.NetInterfaces)
+                        {
+                            <MudSelectItem Value="@v.interfaceName">@v.interfaceName</MudSelectItem>
+                        }
+                        <MudSelectItem Value="@emptyString">NO MAPPING</MudSelectItem>
 
-                    <MudGrid Class="justify-space-between" Style="max-width: 600px;">
-                        <MudItem xs="12" sm="10">
-                            <MudTextField Mask="@ipv4Masks[index]" Label="IP address" HelperText="@ipv4Masks[index].Mask"
-                                          @bind-Value="ips[index]" Variant="@Variant.Text" Clearable/>
-                        </MudItem>
-                    </MudGrid>
-                    <MudGrid Class="justify-space-between" Style="max-width: 600px;">
-                        <MudItem xs="12" sm="10">
-                            <MudTextField Mask="@subnetMask[index]" Label="Subnet Mask" HelperText="@subnetMask[index].Mask"
-                                          @bind-Value="subnets[index]" Variant="@Variant.Text" Clearable/>
-                        </MudItem>
-                    </MudGrid>
-                    <MudGrid Class="justify-space-between" Style="max-width: 600px;">
-                        <MudItem xs="12" sm="10">
-                            <MudTextField Mask="@gatewayMask[index]" Label="Default Gateway" HelperText="@gatewayMask[index].Mask"
-                                          @bind-Value="gateways[index]" Variant="@Variant.Text" Clearable/>
-                        </MudItem>
-                    </MudGrid>
-                    <MudGrid Class="justify-space-between" Style="max-width: 600px;">
-                        <MudItem xs="12" sm="10">
-                            <MudField Label="Net Interface Mapping">@getInterfaceByIndex(selectedInstance.GetNetInterfaceMapping((EPLCInterface)index))</MudField>
-                        </MudItem>
-                    </MudGrid>
-                </MudTabPanel>
-            
+                    </MudSelect>
+                    break;
+                case 2:
+                    <MudSelect T="string" Label="Communication Interface" AnchorOrigin="Origin.BottomCenter" @bind-Value="@interface_2" EmptyValue="No mapping">
+                        @foreach (var v in SimulationRuntimeManager.NetInterfaces)
+                        {
+                            <MudSelectItem Value="@v.interfaceName">@v.interfaceName</MudSelectItem>
+                        }
+                        <MudSelectItem Value="@emptyString">NO MAPPING</MudSelectItem>
+                    </MudSelect>
+                    break;
+
+                case 3:
+                    <MudSelect T="string" Label="Communication Interface" AnchorOrigin="Origin.BottomCenter" @bind-Value="@interface_3" EmptyValue="No mapping">
+                    @foreach (var v in SimulationRuntimeManager.NetInterfaces)
+                    {
+                        <MudSelectItem Value="@v.interfaceName">@v.interfaceName</MudSelectItem>
+                    }
+                    <MudSelectItem Value="@emptyString">NO MAPPING</MudSelectItem>
+                    </MudSelect>
+                    break;
             }
-        </MudTabs>
 
-        <MudDivider></MudDivider>
-        <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="setIp"> Apply changes </MudButton>
-        
-    </DialogContent>
+            }
+    </MudTabPanel>
+    }
+    </MudTabs >
+        <MudDivider ></MudDivider >
+        <MudButton Color = "Color.Success" Variant = "Variant.Filled" OnClick = "setIp" > Apply changes </MudButton >
+        </DialogContent >
+        </MudDialog >
+        @code {
+        [CascadingParameter]
+        MudDialogInstance MudDialog
 
-</MudDialog>
-
-@code {
-
-    [CascadingParameter]
-    MudDialogInstance MudDialog { get; set; }
-
-    [Parameter]
-    public IInstance selectedInstance { get; set; }
-
-    public List<string> ips = new List<string>();
-    public List<string> subnets = new List<string>();
-    public List<string> gateways = new List<string>();
-
-    public List<IMask> ipv4Masks = new List<IMask>();
-    public List<IMask> subnetMask = new List<IMask>();
-    public List<IMask> gatewayMask = new List<IMask>();
-
-    protected override void OnInitialized()
-    {
-        base.OnInitialized();
-        foreach (var ipSuite in selectedInstance.ControllerIPSuite4)
         {
-            ips.Add(ipSuite.IPAddress.IPString);
-            subnets.Add(ipSuite.SubnetMask.IPString);
-            gateways.Add(ipSuite.DefaultGateway.IPString);
-            ipv4Masks.Add(RegexMask.IPv4());
-            subnetMask.Add(RegexMask.IPv4());
-            gatewayMask.Add(RegexMask.IPv4());
+            get;
+            set;
+        }
+
+        [Parameter]
+
+public IInstance selectedInstance { get; set; }
+
+public List<string> ips = new List<string>();
+public List<string> subnets = new List<string>();
+public List<string> gateways = new List<string>();
+
+public List<IMask> ipv4Masks = new List<IMask>();
+public List<IMask> subnetMask = new List<IMask>();
+public List<IMask> gatewayMask = new List<IMask>();
+
+protected override void OnInitialized()
+{
+    base.OnInitialized();
+    foreach (var ipSuite in selectedInstance.ControllerIPSuite4)
+    {
+        ips.Add(ipSuite.IPAddress.IPString);
+        subnets.Add(ipSuite.SubnetMask.IPString);
+        gateways.Add(ipSuite.DefaultGateway.IPString);
+        ipv4Masks.Add(RegexMask.IPv4());
+        subnetMask.Add(RegexMask.IPv4());
+        gatewayMask.Add(RegexMask.IPv4());
+    }
+}
+
+public string getInterfaceByIndex(int index)
+{
+    return SimulationRuntimeManager.NetInterfaces.FirstOrDefault(interf => interf.interfaceIndex == index).interfaceName;
+}
+
+public void setIp()
+{
+    for (int i = 0; i < selectedInstance.ControllerIPSuite4.Length; i++)
+    {
+        SIPSuite4 ipSuite = new SIPSuite4();
+        ipSuite.IPAddress = new SIP { IPString = ips[i] };
+        ipSuite.SubnetMask = new SIP { IPString = subnets[i] };
+        ipSuite.DefaultGateway = new SIP { IPString = gateways[i] };
+        selectedInstance.SetIPSuite((uint)i, ipSuite, true);
+    }
+
+    MudDialog.Close();
+}
+
+
+// NET INTERFACE MAPPING
+string emptyString = "";
+
+public string getInterface(int index)
+{
+    switch (index)
+    {
+        case 1:
+            return interface_1;
+
+        case 2:
+            return interface_2;
+        case 3:
+            return interface_3;
+        default:
+            return "";
+    }
+}
+
+private string _interface_1;
+
+public string interface_1
+{
+    get => SimulationRuntimeManager.NetInterfaces.FirstOrDefault(i => i.interfaceIndex == selectedInstance.GetNetInterfaceMapping(EPLCInterface.IE1)).interfaceName;
+    set
+    {
+        try
+        {
+            if (value == emptyString)
+            {
+                selectedInstance.SetNetInterfaceMapping(EPLCInterface.IE1, 0);
+            }
+            else
+            {
+                selectedInstance.SetNetInterfaceMapping(EPLCInterface.IE1, value);
+            }
+
+            _interface_1 = SimulationRuntimeManager.NetInterfaces.FirstOrDefault(i => i.interfaceIndex == selectedInstance.GetNetInterfaceMapping(EPLCInterface.IE1)).interfaceName;
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Error setting interface mapping: {e.Message}", Severity.Error);
         }
     }
+}
 
-    public string getInterfaceByIndex(int index)
-    {
-        return SimulationRuntimeManager.NetInterfaces.FirstOrDefault(interf => interf.interfaceIndex == index).interfaceName;
-    }
+private string _interface_2;
 
-    public void setIp()
+public string interface_2
+{
+    get => SimulationRuntimeManager.NetInterfaces.FirstOrDefault(i => i.interfaceIndex == selectedInstance.GetNetInterfaceMapping(EPLCInterface.IE2)).interfaceName;
+    set
     {
-        for (int i = 0; i < selectedInstance.ControllerIPSuite4.Length; i++)
+        try
         {
-            SIPSuite4 ipSuite = new SIPSuite4();
-            ipSuite.IPAddress = new SIP { IPString = ips[i] };
-            ipSuite.SubnetMask = new SIP { IPString = subnets[i] };
-            ipSuite.DefaultGateway = new SIP { IPString = gateways[i] };
-            selectedInstance.SetIPSuite((uint)i, ipSuite, true);
+            if (value == emptyString)
+            {
+                selectedInstance.SetNetInterfaceMapping(EPLCInterface.IE2, 0);
+            }
+            else
+            {
+                selectedInstance.SetNetInterfaceMapping(EPLCInterface.IE2, value);
+            }
 
+            _interface_2 = SimulationRuntimeManager.NetInterfaces.FirstOrDefault(i => i.interfaceIndex == selectedInstance.GetNetInterfaceMapping(EPLCInterface.IE2)).interfaceName;
         }
-        
-        MudDialog.Close();
+        catch (Exception e)
+        {
+            Snackbar.Add($"Error setting interface mapping: {e.Message}", Severity.Error);
+        }
     }
+}
 
+private string _interface_3;
+
+public string interface_3
+{
+    get => SimulationRuntimeManager.NetInterfaces.FirstOrDefault(i => i.interfaceIndex == selectedInstance.GetNetInterfaceMapping(EPLCInterface.IE3)).interfaceName;
+    set
+    {
+        try
+        {
+            if (value == emptyString)
+            {
+                selectedInstance.SetNetInterfaceMapping(EPLCInterface.IE3, 0);
+            }
+            else
+            {
+                selectedInstance.SetNetInterfaceMapping(EPLCInterface.IE3, value);
+            }
+
+            _interface_3 = SimulationRuntimeManager.NetInterfaces.FirstOrDefault(i => i.interfaceIndex == selectedInstance.GetNetInterfaceMapping(EPLCInterface.IE3)).interfaceName;
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Error setting interface mapping: {e.Message}", Severity.Error);
+        }
+    }
+}
+
+public void setInterface(EPLCInterface interfaceID, uint value)
+{
+    try
+    {
+        selectedInstance.SetNetInterfaceMapping(interfaceID, value);
+    }
+    catch (Exception e)
+    {
+        Snackbar.Add($"Error setting interface mapping: {e.Message}", Severity.Error);
+    }
+}
+
+public void setInterface(EPLCInterface interfaceID, string value)
+{
+    try
+    {
+        selectedInstance.SetNetInterfaceMapping(interfaceID, value);
+    }
+    catch (Exception e)
+    {
+        Snackbar.Add($"Error setting interface mapping: {e.Message}", Severity.Error);
+    }
+}
 }
