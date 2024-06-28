@@ -1,39 +1,51 @@
 @using Siemens.Simatic.Simulation.Runtime
+@using Color = MudBlazor.Color
 
 
 <MudDialog>
     <DialogContent>
-        @for (int i = 0; i < selectedInstance.ControllerIPSuite4.Length; i++)
-        {
-            var index = i;
-            <h3>X@(i+1) </h3>
-            <MudGrid Class="justify-space-between" Style="max-width: 600px;">
-                <MudItem xs="12" sm="6">
-                    <MudTextField Mask="@ipv4Masks[index]" Label="IP address [X1]" HelperText="@ipv4Masks[index].Mask"
-                                  @bind-Value="ips[index]" Variant="@Variant.Text" Clearable/>
-                </MudItem>
-            </MudGrid>
-            <MudGrid Class="justify-space-between" Style="max-width: 600px;">
-                <MudItem xs="12" sm="6">
-                    <MudTextField Mask="@subnetMask[index]" Label="Subnet Mask" HelperText="@subnetMask[index].Mask"
-                                  @bind-Value="subnets[index]" Variant="@Variant.Text" Clearable/>
-                </MudItem>
-            </MudGrid>
-            <MudGrid Class="justify-space-between" Style="max-width: 600px;">
-                <MudItem xs="12" sm="6">
-                    <MudTextField Mask="@gatewayMask[index]" Label="Default Gateway" HelperText="@gatewayMask[index].Mask"
-                                  @bind-Value="gateways[index]" Variant="@Variant.Text" Clearable/>
-                </MudItem>
-            </MudGrid>
-            <MudGrid Class="justify-space-between" Style="max-width: 600px;">
-                <MudItem xs="12" sm="6">
-                    <MudField Label="Net Interface Mapping">@selectedInstance.GetNetInterfaceMapping((EPLCInterface)index)</MudField>
-                </MudItem>
-            </MudGrid>
-        }
+        <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+            @for (int i = 0; i < selectedInstance.ControllerIPSuite4.Length; i++)
+            {
+            
+                var index = i;
+                var t = $"X{i+1}";
+                <MudTabPanel Text="@t">
+         
 
-        <MudButton OnClick="setIp"> Set IP </MudButton>
+                    <MudGrid Class="justify-space-between" Style="max-width: 600px;">
+                        <MudItem xs="12" sm="10">
+                            <MudTextField Mask="@ipv4Masks[index]" Label="IP address" HelperText="@ipv4Masks[index].Mask"
+                                          @bind-Value="ips[index]" Variant="@Variant.Text" Clearable/>
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid Class="justify-space-between" Style="max-width: 600px;">
+                        <MudItem xs="12" sm="10">
+                            <MudTextField Mask="@subnetMask[index]" Label="Subnet Mask" HelperText="@subnetMask[index].Mask"
+                                          @bind-Value="subnets[index]" Variant="@Variant.Text" Clearable/>
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid Class="justify-space-between" Style="max-width: 600px;">
+                        <MudItem xs="12" sm="10">
+                            <MudTextField Mask="@gatewayMask[index]" Label="Default Gateway" HelperText="@gatewayMask[index].Mask"
+                                          @bind-Value="gateways[index]" Variant="@Variant.Text" Clearable/>
+                        </MudItem>
+                    </MudGrid>
+                    <MudGrid Class="justify-space-between" Style="max-width: 600px;">
+                        <MudItem xs="12" sm="10">
+                            <MudField Label="Net Interface Mapping">@getInterfaceByIndex(selectedInstance.GetNetInterfaceMapping((EPLCInterface)index))</MudField>
+                        </MudItem>
+                    </MudGrid>
+                </MudTabPanel>
+            
+            }
+        </MudTabs>
+
+        <MudDivider></MudDivider>
+        <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="setIp"> Apply changes </MudButton>
+        
     </DialogContent>
+
 </MudDialog>
 
 @code {
@@ -66,6 +78,10 @@
         }
     }
 
+    public string getInterfaceByIndex(int index)
+    {
+        return SimulationRuntimeManager.NetInterfaces.FirstOrDefault(interf => interf.interfaceIndex == index).interfaceName;
+    }
 
     public void setIp()
     {

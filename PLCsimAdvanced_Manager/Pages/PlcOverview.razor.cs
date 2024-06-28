@@ -50,7 +50,7 @@ public partial class PlcOverview
     private void OpenDialogSetIPSettings(IInstance selectedInstance)
     {
         DialogOptions closeOnEscapeKey = new DialogOptions()
-            { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, FullWidth = true, CloseButton = true };
+            { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, CloseButton = true };
         var parameters = new DialogParameters();
         parameters.Add("selectedInstance", selectedInstance);
         DialogService.Show<SetIPSettingsDialog>($"IP Settings: {selectedInstance.Name}", parameters, closeOnEscapeKey);
