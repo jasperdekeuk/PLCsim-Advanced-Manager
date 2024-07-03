@@ -7,26 +7,25 @@
 <MudDialog>
     <DialogContent>
         <MudCard>
+            <MudAlert Severity="Severity.Warning">All instances need to be powered off to make changes here.</MudAlert>
+            
             <MudCardHeader>
                 <CardHeaderContent>
                     <MudText Typo="Typo.h6">Network Mode</MudText>
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent>
-                <MudTooltip Text="All instances need to be powered off to change this" ShowOnHover="!allInstancesPoweredOff" ShowOnClick="!allInstancesPoweredOff" ShowOnFocus="!allInstancesPoweredOff">
                     <MudSelect T="ECommunicationMode" Disabled="!allInstancesPoweredOff" @bind-Value="@SimulationRuntimeManager.NetworkMode" Label="Network Mode">
                         <MudSelectItem Value="@ECommunicationMode.Promiscuous">Single Adapter</MudSelectItem>
                         <MudSelectItem Value="@ECommunicationMode.Non_Promiscuous">Multiple Adapter</MudSelectItem>
                     </MudSelect>
-                </MudTooltip>
-
             </MudCardContent>
         </MudCard>
         <MudCard>
             <MudCardHeader>
                 <CardHeaderContent>
                     <MudText Typo="Typo.h6">Net Interfaces</MudText>
-                    <MudButton Variant="Variant.Outlined" Color="Color.Warning" OnClick="() => { try { SimulationRuntimeManager.ResetNetInterfaceBindings(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">Reset Interfaces</MudButton>
+                    <MudButton Disabled="!allInstancesPoweredOff" Variant="Variant.Outlined" Color="Color.Warning" OnClick="() => { try { SimulationRuntimeManager.ResetNetInterfaceBindings(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">Reset Interfaces</MudButton>
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent>
@@ -82,7 +81,7 @@
                             }
                         </MudTd>
                         <MudTd>
-                            <MudButton Variant="Variant.Outlined" Size="Size.Small" Color="Color.Primary" OnClick="() => { try { SimulationRuntimeManager.SetNetInterfaceBindings(v.interfaceIndex); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">Set Binding</MudButton>
+                            <MudButton Disabled="!allInstancesPoweredOff" Variant="Variant.Outlined" Size="Size.Small" Color="Color.Primary" OnClick="() => { try { SimulationRuntimeManager.SetNetInterfaceBindings(v.interfaceIndex); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">Set Binding</MudButton>
                         </MudTd>
                     </RowTemplate>
                 </MudTable>
