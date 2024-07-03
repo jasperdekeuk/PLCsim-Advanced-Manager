@@ -29,6 +29,10 @@
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent>
+                @if (SimulationRuntimeManager.NetworkMode == ECommunicationMode.Non_Promiscuous)
+                {
+                    <MudAlert Severity="Severity.Warning">First set the binding on an instance before enabling here.</MudAlert>
+                }
                 <MudTable Items="@SimulationRuntimeManager.NetInterfaces">
                     <HeaderContent>
                         <MudTh>Interface</MudTh>
