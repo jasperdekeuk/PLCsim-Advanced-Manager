@@ -13,10 +13,13 @@
                 </CardHeaderContent>
             </MudCardHeader>
             <MudCardContent>
-                <MudSelect T="ECommunicationMode" @bind-Value="@SimulationRuntimeManager.NetworkMode" Label="Network Mode">
-                    <MudSelectItem Value="@ECommunicationMode.Promiscuous">Single Adapter</MudSelectItem>
-                    <MudSelectItem Value="@ECommunicationMode.Non_Promiscuous">Multiple Adapter</MudSelectItem>
-                </MudSelect>
+                <MudTooltip Text="All instances need to be powered off to change this" ShowOnHover="!allInstancesPoweredOff" ShowOnClick="!allInstancesPoweredOff" ShowOnFocus="!allInstancesPoweredOff">
+                    <MudSelect T="ECommunicationMode" Disabled="!allInstancesPoweredOff" @bind-Value="@SimulationRuntimeManager.NetworkMode" Label="Network Mode">
+                        <MudSelectItem Value="@ECommunicationMode.Promiscuous">Single Adapter</MudSelectItem>
+                        <MudSelectItem Value="@ECommunicationMode.Non_Promiscuous">Multiple Adapter</MudSelectItem>
+                    </MudSelect>
+                </MudTooltip>
+
             </MudCardContent>
         </MudCard>
         <MudCard>
@@ -46,36 +49,36 @@
                         <MudTd>
                             @if (v.isConnected)
                             {
-                            <MudChip Variant="Variant.Text" Size="Size.Small"  Color="Color.Success">
-                                <MudIcon Icon="@Icons.Material.Filled.CheckCircleOutline" />
-                            </MudChip>
+                                <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Success">
+                                    <MudIcon Icon="@Icons.Material.Filled.CheckCircleOutline"/>
+                                </MudChip>
                             }
                             else
                             {
-                            <MudChip Variant="Variant.Text" Size="Size.Small" Disabled="true" Color="Color.Error">
-                                <MudIcon Icon="@Icons.Material.Filled.HighlightOff" />
-                            </MudChip>
+                                <MudChip Variant="Variant.Text" Size="Size.Small" Disabled="true" Color="Color.Error">
+                                    <MudIcon Icon="@Icons.Material.Filled.HighlightOff"/>
+                                </MudChip>
                             }
                         </MudTd>
                         <MudTd>
                             @if (v.vSwitchBindingEnabled)
                             {
-                            <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Success">
-                                <MudIcon Icon="@Icons.Material.Filled.CheckCircleOutline" />
-                            </MudChip>
+                                <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Success">
+                                    <MudIcon Icon="@Icons.Material.Filled.CheckCircleOutline"/>
+                                </MudChip>
                             }
                             else
                             {
-                            <MudChip Variant="Variant.Text" Size="Size.Small" Disabled="true" Color="Color.Error">
-                                <MudIcon Icon="@Icons.Material.Filled.HighlightOff" />
-                            </MudChip>
+                                <MudChip Variant="Variant.Text" Size="Size.Small" Disabled="true" Color="Color.Error">
+                                    <MudIcon Icon="@Icons.Material.Filled.HighlightOff"/>
+                                </MudChip>
                             }
                         </MudTd>
                         @* <MudTd>@v.MACAddress</MudTd> *@
                         <MudTd>
                             @foreach (var address in allNetworkInterfaces.Where(@interface => @interface.Name == v.interfaceName).SelectMany(@interface => @interface.GetIPProperties().UnicastAddresses).Where(@address => @address.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork))
                             {
-                            <div>@address.Address</div>
+                                <div>@address.Address</div>
                             }
                         </MudTd>
                         <MudTd>
@@ -123,12 +126,14 @@
 @code {
 
     NetworkInterface[] allNetworkInterfaces;
+    bool allInstancesPoweredOff;
 
     protected override void OnInitialized()
     {
         base.OnInitialized();
         allNetworkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
         SimulationRuntimeManager.OnConfigurationChanged += OnSoftwareConfigurationChanged;
+        checkNoInstancePoweredOn();
     }
 
 
@@ -164,6 +169,11 @@
         }
 
         InvokeAsync(() => StateHasChanged());
+    }
+
+    private void checkNoInstancePoweredOn()
+    {
+        allInstancesPoweredOff = SimulationRuntimeManager.RegisteredInstanceInfo.All(instance => SimulationRuntimeManager.CreateInterface(instance.ID).OperatingState == EOperatingState.Off);
     }
 
 }
