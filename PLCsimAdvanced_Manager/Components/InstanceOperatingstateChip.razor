@@ -1,0 +1,27 @@
+@using Siemens.Simatic.Simulation.Runtime
+@using Color = MudBlazor.Color
+
+@switch (SelectedInstance.OperatingState)
+{
+case EOperatingState.Off:
+<MudChip Icon="@Icons.Material.Outlined.HighlightOff" Variant="Variant.Text" Size="Size.Small" Disabled="true" Color="Color.Transparent"> @SelectedInstance.OperatingState </MudChip>
+break;
+case EOperatingState.Run:
+<MudChip Icon="@Icons.Material.Outlined.PlayCircleOutline" Variant="Variant.Text" Size="Size.Small" Color="Color.Success"> @SelectedInstance.OperatingState </MudChip>
+break;
+case EOperatingState.Stop:
+<MudChip Icon="@Icons.Material.Outlined.StopCircle" Variant="Variant.Text" Size="Size.Small" Color="Color.Warning"> @SelectedInstance.OperatingState </MudChip>
+break;
+case EOperatingState.InvalidOperatingState:
+<MudChip Icon="@Icons.Material.Outlined.ErrorOutline" Variant="Variant.Text" Size="Size.Small" Color="Color.Error"> @SelectedInstance.OperatingState </MudChip>
+break;
+default:
+<MudChip Icon="@Icons.Material.Outlined.Info" Variant="Variant.Text" Size="Size.Small" Color="Color.Info"> @SelectedInstance.OperatingState </MudChip>
+break;
+}
+
+@code {
+    
+    [Parameter] public IInstance SelectedInstance { get; set; }
+    
+}

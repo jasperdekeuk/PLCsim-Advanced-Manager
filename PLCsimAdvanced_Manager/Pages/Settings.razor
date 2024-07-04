@@ -1,0 +1,265 @@
+@page "/settings"
+@using Siemens.Simatic.Simulation.Runtime
+@using System.Net.NetworkInformation
+
+@using Color = MudBlazor.Color
+@inject ISnackbar Snackbar
+
+<div style="width: 100vw; min-width: 1000px; overflow-x: auto; justify-content: center; height:auto">
+    <div style="padding: 20px">
+        <MudText Typo="Typo.h6">Settings</MudText>
+        <MudGrid>
+            <MudItem style="padding: 20px" xs="6">
+                <MudGrid >
+                    <MudItem xs="12">
+                        <MudPaper>
+                            <MudGrid style="padding: 20px">
+                                <MudItem xs="4">
+                                    <MudStack>
+                                        <MudText Typo="Typo.subtitle2">Initialization</MudText>
+                                        @if (SimulationRuntimeManager.IsInitialized)
+                                        {
+                                            <MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircleOutline"/>
+                                        }
+                                        else
+                                        {
+                                            <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.HighlightOff"/>
+                                        }
+
+                                    </MudStack>
+                                </MudItem>
+                                <MudItem xs="4">
+                                    <MudStack>
+                                        <MudText Typo="Typo.subtitle2">Runtime Manager Available</MudText>
+                                        @if (SimulationRuntimeManager.IsRuntimeManagerAvailable)
+                                        {
+                                        <MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircleOutline"/>
+                                        }
+                                        else
+                                        {
+                                        <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.HighlightOff"/>
+                                        }
+                                    </MudStack>
+                                </MudItem>
+                                <MudItem xs="4">
+                                    <MudStack>
+                                        <MudText Typo="Typo.subtitle2">Strict Motion Timing</MudText>
+                                        <MudText Typo="Typo.body2"> @SimulationRuntimeManager.StrictMotionTiming</MudText>
+                                    </MudStack>
+                                </MudItem>
+
+                                <MudItem xs="4">
+                                    <MudStack>
+                                        <MudText Typo="Typo.subtitle2">Version</MudText>
+                                        <MudText Typo="Typo.body2"> @SimulationRuntimeManager.Version</MudText>
+                                    </MudStack>
+                                </MudItem>
+                                <MudItem xs="4">
+                                    <MudStack>
+                                        <MudText Typo="Typo.subtitle2">Default Storage Path</MudText>
+                                        <MudText Style="overflow: auto" Typo="Typo.body2"> @SimulationRuntimeManager.DefaultStoragePath</MudText>
+                                    </MudStack>
+                                </MudItem>
+                            </MudGrid>
+                        </MudPaper>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudItem xs="6">
+                            <MudPaper>
+                                <MudCard Style="overflow-wrap:break-word;">
+                                    <MudCardHeader>
+                                        <CardHeaderContent>
+                                            <MudText Typo="Typo.h6">Port</MudText>
+                                        </CardHeaderContent>
+                                    </MudCardHeader>
+                                    <MudCardContent>
+                                        <MudText>@SimulationRuntimeManager.Port </MudText>
+                                    </MudCardContent>
+                                </MudCard>
+                                <MudCard Style="overflow-wrap:break-word;">
+                                    <MudCardHeader>
+                                        <CardHeaderContent>
+                                            <MudText Typo="Typo.h6">Remote Connection Info</MudText>
+                                        </CardHeaderContent>
+                                    </MudCardHeader>
+                                    <MudCardContent>
+                                        <MudText>
+                                            @if (SimulationRuntimeManager.RemoteConnectionInfo.Length == 0)
+                                            {
+                                                <div>No Remote Connections</div>
+                                            }
+                                            else
+                                            {
+                                                foreach (var v in SimulationRuntimeManager.RemoteConnectionInfo)
+                                                {
+                                                    <div>@v.IP:@v.Port</div>
+                                                }
+                                            }
+                                        </MudText>
+                                    </MudCardContent>
+                                </MudCard>
+                            </MudPaper>
+
+
+                        </MudItem>
+
+                    </MudItem>
+
+                </MudGrid>
+
+            </MudItem>
+            <MudItem xs="6">
+                <MudGrid>
+                    <MudItem xs="12">
+                        <MudCard>
+                            <MudAlert Severity="Severity.Warning">All instances need to be powered off to make changes here.</MudAlert>
+
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.h6">Network Mode</MudText>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                <MudSelect T="ECommunicationMode" Disabled="!allInstancesPoweredOff" @bind-Value="@SimulationRuntimeManager.NetworkMode" Label="Network Mode">
+                                    <MudSelectItem Value="@ECommunicationMode.Promiscuous">Single Adapter</MudSelectItem>
+                                    <MudSelectItem Value="@ECommunicationMode.Non_Promiscuous">Multiple Adapter</MudSelectItem>
+                                </MudSelect>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+                    <MudItem xs="12">
+                        <MudCard>
+                            <MudCardHeader>
+                                <CardHeaderContent>
+                                    <MudText Typo="Typo.h6">Net Interfaces</MudText>
+                                    <MudButton Disabled="!allInstancesPoweredOff" Variant="Variant.Outlined" Color="Color.Warning" OnClick="() => { try { SimulationRuntimeManager.ResetNetInterfaceBindings(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">Reset Interfaces</MudButton>
+                                </CardHeaderContent>
+                            </MudCardHeader>
+                            <MudCardContent>
+                                @if (SimulationRuntimeManager.NetworkMode == ECommunicationMode.Non_Promiscuous)
+                                {
+                                    <MudAlert Severity="Severity.Warning">First set the binding on an instance before enabling here.</MudAlert>
+                                }
+                                <MudTable Items="@SimulationRuntimeManager.NetInterfaces">
+                                    <HeaderContent>
+                                        <MudTh>Interface</MudTh>
+                                        @* <MudTh>Interface Index</MudTh> *@
+                                        <MudTh>Is Connected</MudTh>
+                                        <MudTh>Binding Enabled</MudTh>
+                                        @* <MudTh>MAC</MudTh> *@
+                                        <MudTh>Address</MudTh>
+                                        <MudTh>Actions</MudTh>
+                                    </HeaderContent>
+                                    <RowTemplate Context="v">
+                                        <MudTd>
+                                            <strong>@v.interfaceName</strong><br/>
+                                            <small>@v.interfaceDescription</small>
+                                        </MudTd>
+                                        @* <MudTd>@v.interfaceIndex</MudTd> *@
+                                        <MudTd>
+                                            @if (v.isConnected)
+                                            {
+                                                <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Success">
+                                                    <MudIcon Icon="@Icons.Material.Filled.CheckCircleOutline"/>
+                                                </MudChip>
+                                            }
+                                            else
+                                            {
+                                                <MudChip Variant="Variant.Text" Size="Size.Small" Disabled="true" Color="Color.Error">
+                                                    <MudIcon Icon="@Icons.Material.Filled.HighlightOff"/>
+                                                </MudChip>
+                                            }
+                                        </MudTd>
+                                        <MudTd>
+                                            @if (v.vSwitchBindingEnabled)
+                                            {
+                                                <MudChip Variant="Variant.Text" Size="Size.Small" Color="Color.Success">
+                                                    <MudIcon Icon="@Icons.Material.Filled.CheckCircleOutline"/>
+                                                </MudChip>
+                                            }
+                                            else
+                                            {
+                                                <MudChip Variant="Variant.Text" Size="Size.Small" Disabled="true" Color="Color.Error">
+                                                    <MudIcon Icon="@Icons.Material.Filled.HighlightOff"/>
+                                                </MudChip>
+                                            }
+                                        </MudTd>
+                                        @* <MudTd>@v.MACAddress</MudTd> *@
+                                        <MudTd>
+                                            @foreach (var address in allNetworkInterfaces.Where(@interface => @interface.Name == v.interfaceName).SelectMany(@interface => @interface.GetIPProperties().UnicastAddresses).Where(@address => @address.Address.AddressFamily == System.Net.Sockets.AddressFamily.InterNetwork))
+                                            {
+                                                <div>@address.Address</div>
+                                            }
+                                        </MudTd>
+                                        <MudTd>
+                                            <MudButton Disabled="!allInstancesPoweredOff" Variant="Variant.Outlined" Size="Size.Small" Color="Color.Primary" OnClick="() => { try { SimulationRuntimeManager.SetNetInterfaceBindings(v.interfaceIndex); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">Set Binding</MudButton>
+                                        </MudTd>
+                                    </RowTemplate>
+                                </MudTable>
+                            </MudCardContent>
+                        </MudCard>
+                    </MudItem>
+
+                </MudGrid>
+
+
+            </MudItem>
+        </MudGrid>
+
+    </div>
+</div>
+
+@code {
+
+    NetworkInterface[] allNetworkInterfaces;
+    bool allInstancesPoweredOff;
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        allNetworkInterfaces = NetworkInterface.GetAllNetworkInterfaces();
+        SimulationRuntimeManager.OnConfigurationChanged += OnSoftwareConfigurationChanged;
+        checkNoInstancePoweredOn();
+    }
+
+
+    private void OnSoftwareConfigurationChanged(ERuntimeConfigChanged e, uint p1, uint p2, int p3)
+    {
+        switch (e)
+        {
+            case ERuntimeConfigChanged.ConnectionOpened:
+                Snackbar.Add($"Connection Opened to {p1}:{p2}", Severity.Success,
+                    config => { config.HideIcon = true; });
+                var ipRemoteRuntimeManager = p1;
+                var portRemoteRuntimeManager = p2;
+                break;
+            case ERuntimeConfigChanged.ConnectionClosed:
+                Snackbar.Add($"Connection closed {p1}:{p2}", Severity.Success, config => { config.HideIcon = true; });
+                var ipRemoteRuntimeManager_x = p1;
+                var portRemoteRuntimeManager_x = p2;
+                break;
+            case ERuntimeConfigChanged.PortOpened:
+                Snackbar.Add($"Runtime Manager Port Opened {p1}", Severity.Success,
+                    config => { config.HideIcon = true; });
+                var openPort = p1;
+                break;
+            case ERuntimeConfigChanged.PortClosed:
+                Snackbar.Add($"Runtime Manager Port Closed", Severity.Success, config => { config.HideIcon = true; });
+                break;
+            case ERuntimeConfigChanged.NetworkModeChanged:
+                Snackbar.Add($"Network mode changed", Severity.Success, config => { config.HideIcon = true; });
+                break;
+            default:
+                Snackbar.Add(e.ToString(), Severity.Warning);
+                break;
+        }
+
+        InvokeAsync(() => StateHasChanged());
+    }
+
+    private void checkNoInstancePoweredOn()
+    {
+        allInstancesPoweredOff = SimulationRuntimeManager.RegisteredInstanceInfo.All(instance => SimulationRuntimeManager.CreateInterface(instance.ID).OperatingState == EOperatingState.Off);
+    }
+
+}

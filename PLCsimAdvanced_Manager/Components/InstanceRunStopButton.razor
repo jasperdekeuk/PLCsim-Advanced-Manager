@@ -1,0 +1,21 @@
+@using Siemens.Simatic.Simulation.Runtime
+@using Color = MudBlazor.Color
+@inject ISnackbar Snackbar
+
+@if (SelectedInstance.OperatingState == EOperatingState.Stop)
+{
+<MudIconButton Icon="@Icons.Material.Outlined.PlayArrow" Color="Color.Success" Size="Size.Small"
+               Title="Run"
+               @onclick="() => { try { SelectedInstance.Run(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }"/>
+}
+else if (SelectedInstance.OperatingState == EOperatingState.Run)
+{
+<MudIconButton Icon="@Icons.Material.Outlined.Stop" Color="Color.Error" Size="Size.Small" Title="Stop" @onclick="() => { try { SelectedInstance.Stop(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }"/>
+}
+else
+{
+<MudIconButton Icon="@Icons.Material.Outlined.PlayArrow" Title="powerOff" Size="Size.Small" Disabled="true" @onclick="() => { try { SelectedInstance.PowerOff(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }" Color="Color.Error"></MudIconButton>
+}
+@code {
+    [Parameter] public IInstance SelectedInstance { get; set; }
+}

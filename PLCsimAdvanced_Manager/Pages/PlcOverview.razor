@@ -13,7 +13,7 @@
 
 <div style="width: 100vw; min-width: 1000px; overflow-x: auto; justify-content: center; height:auto">
     <div style="padding: 20px">
-        <MudText Typo="Typo.h6">PLC Instances </MudText>
+        <MudText Typo="Typo.h6">Overview </MudText>
 
         <MudAlert Severity="Severity.Warning">All instances that are powered on must have the same communication interface (softbus/TCPIP)</MudAlert>
     </div>
@@ -57,38 +57,13 @@
             <MudTd DataLabel="PLC Name">
                 <div style="display: flex; align-items: center; gap: 10px;">
                     <div>
-                        @if (context.OperatingState == EOperatingState.Off)
-                        {
-                            <MudIconButton Icon="@Icons.Material.Outlined.PowerSettingsNew" Title="powerOn" Size="Size.Small" @onclick="() => { try { context.PowerOn(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }"></MudIconButton>
-                        }
-                        else if (context.OperatingState == EOperatingState.Run || context.OperatingState == EOperatingState.Stop)
-                        {
-                            <MudIconButton Icon="@Icons.Material.Outlined.PowerSettingsNew" Title="powerOff" Size="Size.Small" @onclick="() => { try { context.PowerOff(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }" Color="Color.Error"></MudIconButton>
-                        }
-                        else
-                        {
-                            <MudProgressCircular Size="Size.Small" Indeterminate="true"/>
-                        }
-                        @if (context.OperatingState == EOperatingState.Stop)
-                        {
-                            <MudIconButton Icon="@Icons.Material.Outlined.PlayArrow" Color="Color.Success" Size="Size.Small"
-                                           Title="Run"
-                                           @onclick="() => { try { context.Run(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }"/>
-                        }
-                        else if (context.OperatingState == EOperatingState.Run)
-                        {
-                            <MudIconButton Icon="@Icons.Material.Outlined.Stop" Color="Color.Error" Size="Size.Small" Title="Stop" @onclick="() => { try { context.Stop(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }"/>
-                        }
-                        else
-                        {
-                            <MudIconButton Icon="@Icons.Material.Outlined.PlayArrow" Title="powerOff" Size="Size.Small" Disabled="true" @onclick="() => { try { context.PowerOff(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }" Color="Color.Error"></MudIconButton>
-                        }
+                        <InstancePowerButton SelectedInstance="context"></InstancePowerButton>
+                        <InstanceRunStopButton SelectedInstance="context"></InstanceRunStopButton>
                     </div>
                     <div>
                         @try
                         {
-                            @context.Name
-                            ;
+                            <MudLink Href="@($"instance/{context.Name}")">@context.Name</MudLink>
                         }
                         catch (Exception e)
                         {
@@ -97,25 +72,7 @@
                 </div>
             </MudTd>
             <MudTd DataLabel="Status" Width="200px">
-                @* <MudAlert Severity="Severity.Normal" Dense="true" ContentAlignment="HorizontalAlignment.Center" Variant="Variant.Text" NoIcon="true" Class="my-2">@context.OperatingState</MudAlert> *@
-                @switch (context.OperatingState)
-                {
-                    case EOperatingState.Off:
-                        <MudChip Icon="@Icons.Material.Outlined.HighlightOff" Variant="Variant.Text" Size="Size.Small" Disabled="true" Color="Color.Transparent"> @context.OperatingState </MudChip>
-                        break;
-                    case EOperatingState.Run:
-                        <MudChip Icon="@Icons.Material.Outlined.PlayCircleOutline" Variant="Variant.Text" Size="Size.Small" Color="Color.Success"> @context.OperatingState </MudChip>
-                        break;
-                    case EOperatingState.Stop:
-                        <MudChip Icon="@Icons.Material.Outlined.StopCircle" Variant="Variant.Text" Size="Size.Small" Color="Color.Warning"> @context.OperatingState </MudChip>
-                        break;
-                    case EOperatingState.InvalidOperatingState:
-                        <MudChip Icon="@Icons.Material.Outlined.ErrorOutline" Variant="Variant.Text" Size="Size.Small" Color="Color.Error"> @context.OperatingState </MudChip>
-                        break;
-                    default:
-                        <MudChip Icon="@Icons.Material.Outlined.Info" Variant="Variant.Text" Size="Size.Small" Color="Color.Info"> @context.OperatingState </MudChip>
-                        break;
-                }
+                <InstanceOperatingstateChip SelectedInstance="context"></InstanceOperatingstateChip>
             </MudTd>
             <MudTd DataLabel="Controller IP">
                 <div class="d-flex align-items-start">
