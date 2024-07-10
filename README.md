@@ -4,6 +4,8 @@ A webserver manager for Siemens Simatic PLCsim Advanced.
 
 Check the [**documentation**](https://jasperdekeuk.github.io/PLCsim-Advanced-Manager/)
 
+Download from [**releases**](https://github.com/jasperdekeuk/PLCsim-Advanced-Manager/releases)
+
 
 Goals:
 
