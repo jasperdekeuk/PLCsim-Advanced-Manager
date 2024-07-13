@@ -15,7 +15,7 @@ public class InstanceChangedEventArgs : EventArgs
 
 public class InstanceHandler
 {
-    public List<IInstance> _instances = new();
+    public List<IInstance> _instances = new(); // todo: concurrentbag might make sense here?
 
     public event EventHandler<InstanceChangedEventArgs> OnInstanceChanged;
     public event EventHandler<Exception> OnIssue;
@@ -85,6 +85,15 @@ public class InstanceHandler
     {
         OnInstanceChanged?.Invoke(this, new InstanceChangedEventArgs($"{inst.Name} IP setting changed"));
         AddLog(inst.ID, $"{inst.Name} IP setting changed");
+    }
+    
+    public void MemoryReset(int id)
+    {
+        var instance = _instances.SingleOrDefault(v => id == v.ID);
+        if (instance != null)
+        {
+            instance.MemoryReset();
+        }
     }
 
     public void InstanceUnregisteredCallback(int id)

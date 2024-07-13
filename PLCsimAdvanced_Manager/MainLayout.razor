@@ -30,7 +30,6 @@
         <MudSpacer/>
         <MudIconButton Icon="@Icons.Custom.Brands.GitHub" Color="Color.Inherit" aria-label="github" OnClick="OpenGithub"></MudIconButton>
         <MudMenu Icon="@Icons.Material.Filled.MoreVert" Color="Color.Inherit" Edge="Edge.End">
-            <MudMenuItem OnClick="@OpenPsaInfoDialog">PLCsim Adv. Information</MudMenuItem>
             <MudMenuItem OnClick="@OpenNetworkSettingsDialog">Network Settings</MudMenuItem>
             <MudMenuItem OnClick="@CheckGitHubNewerVersion">Check for update</MudMenuItem>
         </MudMenu>
@@ -81,13 +80,6 @@
     private string GetInstanceHref(string instanceName)
     {
         return $"instance/{instanceName}";
-    }
-
-    private void OpenPsaInfoDialog()
-    {
-        DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true, FullWidth = true };
-
-        DialogService.Show<PsaInfo>("PLCsim Advanced info", closeOnEscapeKey);
     }
 
     private void OpenNetworkSettingsDialog()

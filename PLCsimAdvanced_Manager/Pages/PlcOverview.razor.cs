@@ -95,11 +95,7 @@ public partial class PlcOverview
 
         DialogService.Show<DeleteDialog>("Delete Instance", parameters, options);
     }
-
-    public void CheckNetinterfaceMapping(IInstance instane)
-    {
-        OpenDialogNetInterfaceMapping(instane);
-    }
+    
 
     public void SeeSnapshots(IInstance instane)
     {

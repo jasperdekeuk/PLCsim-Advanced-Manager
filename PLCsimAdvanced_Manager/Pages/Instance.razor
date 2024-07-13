@@ -25,7 +25,8 @@
                     <InstancePowerButton SelectedInstance="SelectedInstance"></InstancePowerButton>
                     <InstanceRunStopButton SelectedInstance="SelectedInstance"></InstanceRunStopButton>
                     <MudSpacer/>
-                    <MudButton> MRES </MudButton>
+                    <MudButton @onclick="() => { try { managerFacade.InstanceHandler.MemoryReset(SelectedInstance.ID);  }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">MRES</MudButton>
+
 
                 </MudToolBar>
             </div>

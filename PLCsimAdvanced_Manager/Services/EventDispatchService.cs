@@ -12,8 +12,20 @@ public class EventDispatchService
     {
         _instanceHandler = instanceHandler;
         SimulationRuntimeManager.OnConfigurationChanged += OnSoftwareConfigurationChanged;
+        SimulationRuntimeManager.OnRunTimemanagerLost += OnRuntimeManagerLost;
+        SimulationRuntimeManager.OnAutodiscoverData += OnAutoDiscoveryData;
     }
-    
+
+    private void OnAutoDiscoveryData(EAutodiscoverType in_autodiscovertype, SAutodiscoverData in_autodiscoverdata)
+    {
+        throw new NotImplementedException();
+    }
+
+    private void OnRuntimeManagerLost()
+    {
+        throw new NotImplementedException();
+    }
+
     private void OnSoftwareConfigurationChanged(ERuntimeConfigChanged e, uint p1, uint p2, int p3)
     {
         if (p3 == -1)
