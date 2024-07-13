@@ -107,7 +107,6 @@
                         <MudChip Variant="Variant.Outlined" Color="Color.Dark" Size="Size.Small" OnClick="() => { if (context.OperatingState == EOperatingState.Off) context.CommunicationInterface = ECommunicationInterface.TCPIP; }">Softbus</MudChip>
                     </MudTooltip>
                 }
-                <MudIconButton Icon="@Icons.Material.Filled.OpenInNew" OnClick="() => OpenNewTab(context.Name)" Size="Size.Small" Title="Show variables in new tab"></MudIconButton>
                 <MudIconButton Icon="@Icons.Material.Outlined.History" Title="Snapshots" Size="Size.Small" @onclick="() => SeeSnapshots(context)" ></MudIconButton>
                 <MudIconButton Icon="@Icons.Material.Outlined.Delete" Title="Delete" Size="Size.Small"
                                @onclick="() => RemoveInstance(context)">
@@ -140,9 +139,5 @@
         Expandable = false,
         Selector = (e) => e.CommunicationInterface
     };
-
-    private void OpenNewTab(string instanceName)
-    {
-        JS.InvokeAsync<object>("open", $"/dataview/{instanceName}", "_blank");
-    }
+    
 }
