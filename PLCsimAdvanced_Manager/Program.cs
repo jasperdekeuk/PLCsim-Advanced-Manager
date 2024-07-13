@@ -5,6 +5,8 @@ using Microsoft.AspNetCore.Components.Web;
 using Microsoft.Win32;
 using MudBlazor;
 using MudBlazor.Services;
+using PLCsimAdvanced_Manager.Services;
+using PLCsimAdvanced_Manager.Services.Logger;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -30,7 +32,14 @@ if (useUrls != null && useUrls.Length > 0)
     builder.WebHost.UseUrls(useUrls);
 }
 
+builder.Services.AddSingleton<PsaGeneralLogger>();
+builder.Services.AddSingleton<InstanceLogger>();
+builder.Services.AddSingleton<InstanceHandler>();
+builder.Services.AddSingleton<EventDispatchService>();
+builder.Services.AddSingleton<ManagerFacade>();
+
 var app = builder.Build();
+app.Services.GetService<EventDispatchService>();
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())

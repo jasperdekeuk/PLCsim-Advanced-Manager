@@ -7,20 +7,32 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+This is a major update with a lot of new features and improvements, mainly for the UI.
+The single page approach was getting too cluttered.
+The UI now has a navigation panel and dedicate pages for each instance and settings.
+
+
 ### Changes
+
 - Add controler name to overview table
 - IP settings dialog now has tabs for every interface
+
+### Features
+
+- Logs (e.g. start/stop/ new download) of instances are collected and shown in the UI
 
 ## [0.0.6] - 2024-05-08
 
 This version is mainly a UI cleanup and small bugfix
 
 ### Changes
+
 - UI improvement for network settings. This is now a table with interfaces and their settings.
 - UI improvement for the storage dialog
 - Add timestamp to snapshots overview and order by timestamp
 
 ### Fix
+
 - Fix bug when snapshot folder does not exit yet
 - Fix storage rename button
 - Delete snapshots folder when instance storage is cleaned up
@@ -28,32 +40,39 @@ This version is mainly a UI cleanup and small bugfix
 ## [0.0.5] - 2024-05-01
 
 ### Features
+
 - Add basic options for snapshots (Create/Delete/Rename)
 
 ### Changes
+
 - Set colors to network buttons
 - Change network option to chips
 
 ## [0.0.4] - 2024-04-27
 
 ### Changes
+
 - Add icons to status
 
 ### Features
+
 - Add basic options for storage (Rename/Delete/Duplicate/Register)
 
 ## [0.0.3] - 2024-04-25
 
 ### Fix
+
 - Improve speed of Network config dialog
 - No longer crashes on creating new instance when default path does not exist yet
 - No longer crashes when trying to create more instances than PLCsim Advanced max allows
 
 ### Changes
+
 - Use Chips for instance status
-- Increase update frequency of dataview 
+- Increase update frequency of dataview
 
 ### Features
+
 - Add instance status to dataview page
 - Network mode now settable via network settings
 - Switch binding settable in network settings

@@ -1,15 +1,11 @@
 @page "/plcoverview"
-@using Siemens.Simatic.Simulation.Runtime
-@using System.Net.Http.Json
-@using System.Reflection.Metadata.Ecma335
-@using BootstrapBlazor.Components
+@using PLCsimAdvanced_Manager.Services
 @using Color = MudBlazor.Color
-@using Console = System.Console
 @using Size = MudBlazor.Size
 @inject NavigationManager NavigationManager
 @inject IJSRuntime JS
 @inject ISnackbar Snackbar
-
+@inject ManagerFacade managerFacade
 
 <div style="width: 100vw; min-width: 1000px; overflow-x: auto; justify-content: center; height:auto">
     <div style="padding: 20px">
@@ -17,7 +13,7 @@
 
         <MudAlert Severity="Severity.Warning">All instances that are powered on must have the same communication interface (softbus/TCPIP)</MudAlert>
     </div>
-    <MudTable Items="@instances" GroupBy="@_groupDefinition" T="IInstance" @ref="mudTable"
+    <MudTable Items="@managerFacade.InstanceHandler._instances" GroupBy="@_groupDefinition" T="IInstance" @ref="mudTable"
               Hover="true" Dense="true" Breakpoint="Breakpoint.Sm"
               FixedHeader="true" Height="400px" Style="padding: 20px"
               GroupHeaderStyle="background-color:var(--mud-palette-background-grey)">

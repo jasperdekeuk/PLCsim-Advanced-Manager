@@ -1,6 +1,8 @@
+@using PLCsimAdvanced_Manager.Services
 @using Color = MudBlazor.Color
 @using Siemens.Simatic.Simulation.Runtime
 @inject ISnackbar Snackbar
+@inject ManagerFacade managerFacade
 
 <MudDialog>
     <DialogContent>
@@ -20,17 +22,13 @@
 
 @code {
 
-    [CascadingParameter]
-    MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-    [Parameter]
-    public IInstance Instance { get; set; }
+    [Parameter] public IInstance Instance { get; set; }
 
-    [Parameter]
-    public List<IInstance> Instances { get; set; }
+    [Parameter] public List<IInstance> Instances { get; set; }
 
     public bool fullDeleteCheckbox { get; set; } = false;
-    static string SnapshotFolder = "Snapshots";
 
 
     void Submit()
@@ -43,33 +41,9 @@
 
     void unregisterInstance(bool CleanupStoragePath)
     {
-        try
-        {
-            if(CleanupStoragePath)
-            {
-                CheckAndRemoveSnapshotDirectory(Instance.StoragePath);
-                
-                Instance.CleanupStoragePath();
-            }
-            Instances.Remove(Instances.SingleOrDefault(v => Instance.ID == v.ID));
-            Instance.UnregisterInstance();
-            StateHasChanged();
-        }
-        catch (Exception ex)
-        {
-            Snackbar.Add($"Issue with unregistering instance: {ex.Message}", Severity.Error);
-        }
+        managerFacade.InstanceHandler.UnregisterInstance(Instance, CleanupStoragePath);
     }
 
-    void CheckAndRemoveSnapshotDirectory(string storagePath)
-    {
-        var path = Path.Combine(storagePath, SnapshotFolder);
-        if (Directory.Exists(path))
-        {
-            Directory.Delete(path, true);
-        }
-
-    }
 
     void Cancel() => MudDialog.Cancel();
 }

@@ -1,7 +1,10 @@
 @inject ISnackbar Snackbar
 @page "/instance/{instanceName}"
+@using PLCsimAdvanced_Manager.Services
 @using Siemens.Simatic.Simulation.Runtime
 @using Color = MudBlazor.Color
+@inject ManagerFacade managerFacade
+
 
 <div style="width: 100vw; min-width: 1000px; overflow-x: auto; justify-content: center; height:auto">
 <div style="padding: 20px;">
@@ -168,74 +171,87 @@
         <MudItem xs="6">
             <MudCard>
                 <MudStack>
-                <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-                    @for (int i = 0; i < SelectedInstance.ControllerIPSuite4.Length; i++)
-                    {
-                        var index = i;
-                        var t = $"X{i + 1}";
-                        <MudTabPanel Text="@t">
+                    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+                        @for (int i = 0; i < SelectedInstance.ControllerIPSuite4.Length; i++)
+                        {
+                            var index = i;
+                            var t = $"X{i + 1}";
+                            <MudTabPanel Text="@t">
 
 
-                            <MudGrid Class="justify-space-between" Style="max-width: 600px;">
-                                <MudItem xs="12" sm="10">
-                                    <MudTextField Mask="@ipv4Masks[index]" Label="IP address" HelperText="@ipv4Masks[index].Mask"
-                                                  @bind-Value="ips[index]" Variant="@Variant.Text" Clearable/>
-                                </MudItem>
-                            </MudGrid>
-                            <MudGrid Class="justify-space-between" Style="max-width: 600px;">
-                                <MudItem xs="12" sm="10">
-                                    <MudTextField Mask="@subnetMask[index]" Label="Subnet Mask" HelperText="@subnetMask[index].Mask"
-                                                  @bind-Value="subnets[index]" Variant="@Variant.Text" Clearable/>
-                                </MudItem>
-                            </MudGrid>
-                            <MudGrid Class="justify-space-between" Style="max-width: 600px;">
-                                <MudItem xs="12" sm="10">
-                                    <MudTextField Mask="@gatewayMask[index]" Label="Default Gateway" HelperText="@gatewayMask[index].Mask"
-                                                  @bind-Value="gateways[index]" Variant="@Variant.Text" Clearable/>
-                                </MudItem>
-                            </MudGrid>
-                            @if (SimulationRuntimeManager.NetworkMode == ECommunicationMode.Non_Promiscuous)
-                            {
-                                switch (index + 1)
+                                <MudGrid Class="justify-space-between" Style="max-width: 600px;">
+                                    <MudItem xs="12" sm="10">
+                                        <MudTextField Mask="@ipv4Masks[index]" Label="IP address" HelperText="@ipv4Masks[index].Mask"
+                                                      @bind-Value="ips[index]" Variant="@Variant.Text" Clearable/>
+                                    </MudItem>
+                                </MudGrid>
+                                <MudGrid Class="justify-space-between" Style="max-width: 600px;">
+                                    <MudItem xs="12" sm="10">
+                                        <MudTextField Mask="@subnetMask[index]" Label="Subnet Mask" HelperText="@subnetMask[index].Mask"
+                                                      @bind-Value="subnets[index]" Variant="@Variant.Text" Clearable/>
+                                    </MudItem>
+                                </MudGrid>
+                                <MudGrid Class="justify-space-between" Style="max-width: 600px;">
+                                    <MudItem xs="12" sm="10">
+                                        <MudTextField Mask="@gatewayMask[index]" Label="Default Gateway" HelperText="@gatewayMask[index].Mask"
+                                                      @bind-Value="gateways[index]" Variant="@Variant.Text" Clearable/>
+                                    </MudItem>
+                                </MudGrid>
+                                @if (SimulationRuntimeManager.NetworkMode == ECommunicationMode.Non_Promiscuous)
                                 {
-                                    case 1:
-                                        <MudSelect T="string" Label="Communication Interface" AnchorOrigin="Origin.BottomCenter" @bind-Value="@interface_1" EmptyValue="No mapping">
-                                            @foreach (var v in SimulationRuntimeManager.NetInterfaces)
-                                            {
-                                                <MudSelectItem Value="@v.interfaceName">@v.interfaceName</MudSelectItem>
-                                            }
-                                            <MudSelectItem Value="@emptyString">NO MAPPING</MudSelectItem>
+                                    switch (index + 1)
+                                    {
+                                        case 1:
+                                            <MudSelect T="string" Label="Communication Interface" AnchorOrigin="Origin.BottomCenter" @bind-Value="@interface_1" EmptyValue="No mapping">
+                                                @foreach (var v in SimulationRuntimeManager.NetInterfaces)
+                                                {
+                                                    <MudSelectItem Value="@v.interfaceName">@v.interfaceName</MudSelectItem>
+                                                }
+                                                <MudSelectItem Value="@emptyString">NO MAPPING</MudSelectItem>
 
-                                        </MudSelect>
-                                        break;
-                                    case 2:
-                                        <MudSelect T="string" Label="Communication Interface" AnchorOrigin="Origin.BottomCenter" @bind-Value="@interface_2" EmptyValue="No mapping">
-                                            @foreach (var v in SimulationRuntimeManager.NetInterfaces)
-                                            {
-                                                <MudSelectItem Value="@v.interfaceName">@v.interfaceName</MudSelectItem>
-                                            }
-                                            <MudSelectItem Value="@emptyString">NO MAPPING</MudSelectItem>
-                                        </MudSelect>
-                                        break;
+                                            </MudSelect>
+                                            break;
+                                        case 2:
+                                            <MudSelect T="string" Label="Communication Interface" AnchorOrigin="Origin.BottomCenter" @bind-Value="@interface_2" EmptyValue="No mapping">
+                                                @foreach (var v in SimulationRuntimeManager.NetInterfaces)
+                                                {
+                                                    <MudSelectItem Value="@v.interfaceName">@v.interfaceName</MudSelectItem>
+                                                }
+                                                <MudSelectItem Value="@emptyString">NO MAPPING</MudSelectItem>
+                                            </MudSelect>
+                                            break;
 
-                                    case 3:
-                                        <MudSelect T="string" Label="Communication Interface" AnchorOrigin="Origin.BottomCenter" @bind-Value="@interface_3" EmptyValue="No mapping">
-                                            @foreach (var v in SimulationRuntimeManager.NetInterfaces)
-                                            {
-                                                <MudSelectItem Value="@v.interfaceName">@v.interfaceName</MudSelectItem>
-                                            }
-                                            <MudSelectItem Value="@emptyString">NO MAPPING</MudSelectItem>
-                                        </MudSelect>
-                                        break;
+                                        case 3:
+                                            <MudSelect T="string" Label="Communication Interface" AnchorOrigin="Origin.BottomCenter" @bind-Value="@interface_3" EmptyValue="No mapping">
+                                                @foreach (var v in SimulationRuntimeManager.NetInterfaces)
+                                                {
+                                                    <MudSelectItem Value="@v.interfaceName">@v.interfaceName</MudSelectItem>
+                                                }
+                                                <MudSelectItem Value="@emptyString">NO MAPPING</MudSelectItem>
+                                            </MudSelect>
+                                            break;
+                                    }
                                 }
-                            }
-                        </MudTabPanel>
-                    }
-                </MudTabs >
-                <MudDivider ></MudDivider >
-                <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="setIp"> Apply changes </MudButton >
+                            </MudTabPanel>
+                        }
+                    </MudTabs >
+                    <MudDivider ></MudDivider >
+                    <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="setIp"> Apply changes </MudButton >
                 </MudStack>
             </MudCard>
+        </MudItem>
+        
+        <MudItem>
+            <MudTable Items="@logs" FixedHeader="true" Height="400px" Hover="true">
+                <HeaderContent>
+                    <MudTh>Timestamp</MudTh>
+                    <MudTh>Log</MudTh>
+                </HeaderContent>
+                <RowTemplate>
+                     <MudTd>@context.Timestamp</MudTd>
+                     <MudTd>@context.Message</MudTd>
+                </RowTemplate>
+            </MudTable>
         </MudItem>
     </MudGrid>
 
@@ -267,13 +283,17 @@
     [Parameter] public string InstanceName { get; set; }
 
     private IInstance SelectedInstance;
+    
+    private List<InstanceHandler._log> logs = new List<InstanceHandler._log>();
 
 
     protected override async Task OnInitializedAsync()
     {
         OnSelectInstance(InstanceName);
 
-
+        managerFacade.InstanceHandler.GetLogs(SelectedInstance.ID, out logs);
+        managerFacade.InstanceHandler.OnLogsUpdated += OnLogsUpdated;
+        
         base.OnInitialized();
         var path = Path.Combine(SelectedInstance.StoragePath, SnapshotFolder);
         // Check if the directory exists, if not, create it
@@ -305,6 +325,11 @@
             subnetMask.Add(RegexMask.IPv4());
             gatewayMask.Add(RegexMask.IPv4());
         }
+    }
+
+    private void OnLogsUpdated()
+    {
+        
     }
 
     private void OnSelectInstance(string name)
@@ -628,6 +653,13 @@
         {
             Snackbar.Add($"Error setting interface mapping: {e.Message}", Severity.Error);
         }
+    }
+
+    private void OnLogsUpdated(object? sender, EventArgs e)
+    {
+        managerFacade.InstanceHandler.GetLogs(SelectedInstance.ID, out logs);
+        InvokeAsync(StateHasChanged);
+        
     }
 
 }

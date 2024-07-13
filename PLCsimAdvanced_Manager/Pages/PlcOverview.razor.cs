@@ -1,37 +1,35 @@
 using MudBlazor;
 using PLCsimAdvanced_Manager.Components;
+using PLCsimAdvanced_Manager.Services;
 using Siemens.Simatic.Simulation.Runtime;
 
 namespace PLCsimAdvanced_Manager.Pages;
 
 public partial class PlcOverview
 {
-    private List<IInstance>? instances;
-    private IInstance? _selectedInstance;
+    // private List<IInstance>? instances;
+    // private IInstance? _selectedInstance;
     private MudTable<IInstance> mudTable;
     private bool IsEditingCommunicationInterface = false;
 
     protected override void OnInitialized()
     {
+        managerFacade.InstanceHandler.OnInstanceChanged += OnInstanceChanged;
+        managerFacade.InstanceHandler.OnIssue += OnIssue;
         base.OnInitialized();
-        SimulationRuntimeManager.OnConfigurationChanged += OnSoftwareConfigurationChanged;
-        instances = new List<IInstance>();
-        var instancesInfo = SimulationRuntimeManager.RegisteredInstanceInfo;
-        foreach (var info in instancesInfo)
-        {
-            try
-            {
-                IInstance inst = SimulationRuntimeManager.CreateInterface(info.Name);
-                inst.OnOperatingStateChanged += OnOperatingStateChanged;
-                inst.OnIPAddressChanged += OnIpAddressChanged;
-                instances.Add(inst);
-            }
-            catch (Exception e)
-            {
-                Snackbar.Add($"Issue with registered instance: {e.Message}", Severity.Error);
-            }
-        }
     }
+
+    private void OnInstanceChanged(object? sender, InstanceChangedEventArgs e)
+    {
+        InvokeAsync(StateHasChanged);
+        Snackbar.Add(e.Message, Severity.Success);
+    }
+
+    private void OnIssue(object? sender, Exception e)
+    {
+     Snackbar.Add(e.Message, Severity.Error);   
+    }
+
 
     private void OpenDialogNewPLC()
     {
@@ -39,10 +37,11 @@ public partial class PlcOverview
 
         DialogService.Show<NewPlcDialog>("Add PLC Instance", closeOnEscapeKey);
     }
-    
+
     private void OpenDialogStorage()
     {
-        DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true, FullWidth = true, CloseButton = true};
+        DialogOptions closeOnEscapeKey = new DialogOptions()
+            { CloseOnEscapeKey = true, FullWidth = true, CloseButton = true };
 
         DialogService.Show<StorageDialog>("Storage", closeOnEscapeKey);
     }
@@ -76,85 +75,21 @@ public partial class PlcOverview
         DialogService.Show<NetInterfaceMappingSettings>($"Net Interface Mapping: {selectedInstance.Name}", parameters,
             closeOnEscapeKey);
     }
+
     private void OpenDialogSnapshots(IInstance selectedInstance)
     {
-        DialogOptions closeOnEscapeKey = new DialogOptions() { CloseOnEscapeKey = true, FullWidth = true, CloseButton = true};
+        DialogOptions closeOnEscapeKey = new DialogOptions()
+            { CloseOnEscapeKey = true, FullWidth = true, CloseButton = true };
         var parameters = new DialogParameters();
         parameters.Add("selectedInstance", selectedInstance);
         DialogService.Show<SnapshotsDialog>("Snapshots", parameters, closeOnEscapeKey);
-    }
-
-
-    private void OnOperatingStateChanged(IInstance inst, ERuntimeErrorCode error, DateTime dateTime,
-        EOperatingState operatingState, EOperatingState operatingState2)
-    {
-        Snackbar.Add($"{inst.Name} changed from {operatingState} to {operatingState2}", Severity.Info,
-            config => { config.HideIcon = true; });
-        InvokeAsync(() => StateHasChanged());
-    }
-
-    private void OnIpAddressChanged(IInstance inst, ERuntimeErrorCode error, DateTime dateTime, byte inInterfaceId,
-        SIPSuite4 inSip)
-    {
-        Snackbar.Add($"{inst.Name} IP setting changed", Severity.Success,
-            config => { config.HideIcon = true; });
-        InvokeAsync(() => StateHasChanged());
-    }
-
-    private void OnSoftwareConfigurationChanged(ERuntimeConfigChanged e, uint p1, uint p2, int p3)
-    {
-        if (p3 == -1)
-        {
-            return;
-        }
-
-        switch (e)
-        {
-            case ERuntimeConfigChanged.InstanceRegistered:
-                var inst = SimulationRuntimeManager.CreateInterface(p3);
-                instances.Add(inst);
-                inst.OnOperatingStateChanged += OnOperatingStateChanged;
-                inst.OnIPAddressChanged += OnIpAddressChanged;
-                Snackbar.Add($"{inst.Name} is registered", Severity.Info, config => { config.HideIcon = true; });
-                break;
-            case ERuntimeConfigChanged.InstanceUnregistered:
-                instances.Remove(instances.SingleOrDefault(v => p3 == v.ID || v.ID == -1));
-                Snackbar.Add($"{p3} is unregistered", Severity.Info, config => { config.HideIcon = true; });
-                break;
-            case ERuntimeConfigChanged.ConnectionOpened:
-                Snackbar.Add($"Connection Opened to {p1}:{p2}", Severity.Success,
-                    config => { config.HideIcon = true; });
-                var ipRemoteRuntimeManager = p1;
-                var portRemoteRuntimeManager = p2;
-                break;
-            case ERuntimeConfigChanged.ConnectionClosed:
-                Snackbar.Add($"Connection closed {p1}:{p2}", Severity.Success, config => { config.HideIcon = true; });
-                var ipRemoteRuntimeManager_x = p1;
-                var portRemoteRuntimeManager_x = p2;
-                break;
-            case ERuntimeConfigChanged.PortOpened:
-                Snackbar.Add($"Runtime Manager Port Opened {p1}", Severity.Success,
-                    config => { config.HideIcon = true; });
-                var openPort = p1;
-                break;
-            case ERuntimeConfigChanged.PortClosed:
-                Snackbar.Add($"Runtime Manager Port Closed", Severity.Success, config => { config.HideIcon = true; });
-                break;
-            case ERuntimeConfigChanged.NetworkModeChanged:
-                Snackbar.Add($"Network mode changed", Severity.Success, config => { config.HideIcon = true; });
-                break;
-            default:
-                throw new ArgumentOutOfRangeException(nameof(e), e, null);
-        }
-
-        InvokeAsync(() => StateHasChanged());
     }
 
     public void RemoveInstance(IInstance instance)
     {
         var parameters = new DialogParameters<DeleteDialog>();
         parameters.Add(x => x.Instance, instance);
-        parameters.Add(x => x.Instances, instances);
+        parameters.Add(x => x.Instances, managerFacade.InstanceHandler._instances);
 
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
 
