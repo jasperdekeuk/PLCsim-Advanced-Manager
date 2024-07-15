@@ -4,6 +4,7 @@
 @using Siemens.Simatic.Simulation.Runtime
 @using Color = MudBlazor.Color
 @inject ManagerFacade managerFacade
+@inject IDialogService DialogService
 
 
 <div style="width: 100vw; min-width: 1000px; overflow-x: auto; justify-content: center; height:auto">
@@ -15,7 +16,7 @@
 <MudGrid>
 <MudItem xs="6">
     <MudGrid>
-        <MudItem xs="6">
+        <MudItem xs="12">
             <div style="padding: 20px; background-color: #D5E9F1;">
                 <MudToolBar>
                     <MudText Typo="Typo.h5" Color="Color.Primary">@InstanceName</MudText>
@@ -32,53 +33,10 @@
             </div>
         </MudItem>
 
-        <MudItem xs="6">
-            <MudPaper>
-                <MudText Typo="Typo.body2"> Size Snapshots: @rootDirectorySize </MudText>
-                <MudDivider></MudDivider>
-                <MudButton Size="Size.Small" Disabled="SelectedInstance.OperatingState != EOperatingState.Off" Variant="Variant.Outlined" Color="Color.Success" OnClick="() => setNameDialog = true"><MudText Typo="Typo.subtitle2">Create Snapshot</MudText> </MudButton>
-
-                <MudSimpleTable Dense="true">
-                    <MudTh>Name</MudTh>
-                    <MudTh>Timestamp</MudTh>
-                    <MudTh Style="text-align: right;">Actions</MudTh>
-
-                    @foreach (var snapshot in GetSnapshots())
-                    {
-                        var dir = snapshot; // Create a local copy to avoid issues with the foreach loop
-                        var isRunning = SelectedInstance.OperatingState != EOperatingState.Off;
-
-                        <MudTr>
-                            <MudTd>
-
-
-                                <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Text" Color="Color.Info">
-                                    <MudText Typo="Typo.subtitle1">
-                                        <strong>@Path.GetFileName(snapshot)</strong>
-                                    </MudText>
-                                </MudChip>
-                            </MudTd>
-                            <MudTd>
-                                <small>
-                                    @File.GetLastWriteTime(snapshot).ToShortDateString()<br/>@File.GetLastWriteTime(snapshot).ToShortTimeString()
-                                </small>
-                            </MudTd>
-                            <MudTd Style="text-align: right;">
-                                <MudButtonGroup Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Success" OverrideStyles="false">
-                                    <MudIconButton Title="Rollback" Icon="@Icons.Material.Outlined.SettingsBackupRestore" Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Success" OnClick="() => SelectedInstance.RetrieveStorage(snapshot)"> </MudIconButton>
-                                    <MudIconButton Title="Rename" Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Warning" OnClick="() => OpenRenameDialog(dir)"></MudIconButton>
-                                    <MudIconButton Title="Delete" Icon="@Icons.Material.Outlined.Delete" Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => DeleteFile(dir)"></MudIconButton>
-                                </MudButtonGroup>
-                            </MudTd>
-                        </MudTr>
-                    }
-                </MudSimpleTable>
-            </MudPaper>
-        </MudItem>
         <MudFlexBreak/>
-        <MudItem xs="6">
+        <MudItem xs="12">
             @* <MudPaper Class="d-flex align-center justify-center mud-width-full py-8"> *@
-            <MudCard>
+            <MudCard Style="padding: 20px">
                 <MudGrid>
                     <MudItem xs="4">
                         <MudStack>
@@ -120,6 +78,23 @@
                         <MudStack>
                             <MudText Typo="Typo.subtitle2">Communication Interface</MudText>
                             <MudText Typo="Typo.body2"> @SelectedInstance.CommunicationInterface.ToString()</MudText>
+                        </MudStack>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudStack>
+                            <MudText Typo="Typo.subtitle2">Controller IP</MudText>
+                            <div class="d-flex align-items-start">
+                                <div class="ml-2">
+                                    @foreach (var ip in SelectedInstance.ControllerIP)
+                                    {
+                                    <div>@ip</div>
+                                    }
+                                </div>
+                                @if (SelectedInstance.ControllerIP.Length != 0)
+                                {
+                                <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" OnClick="() => OpenDialogSetIPSettings(SelectedInstance)" Disabled="@(!(SelectedInstance.OperatingState == EOperatingState.Off || SelectedInstance.OperatingState == EOperatingState.Stop))"></MudIconButton>
+                                }
+                            </div>
                         </MudStack>
                     </MudItem>
                     <MudItem xs="4">
@@ -169,80 +144,8 @@
             </MudCard>
             @* </MudPaper> *@
         </MudItem>
-        <MudItem xs="6">
-            <MudCard>
-                <MudStack>
-                    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
-                        @for (int i = 0; i < SelectedInstance.ControllerIPSuite4.Length; i++)
-                        {
-                            var index = i;
-                            var t = $"X{i + 1}";
-                            <MudTabPanel Text="@t">
-
-
-                                <MudGrid Class="justify-space-between" Style="max-width: 600px;">
-                                    <MudItem xs="12" sm="10">
-                                        <MudTextField Mask="@ipv4Masks[index]" Label="IP address" HelperText="@ipv4Masks[index].Mask"
-                                                      @bind-Value="ips[index]" Variant="@Variant.Text" Clearable/>
-                                    </MudItem>
-                                </MudGrid>
-                                <MudGrid Class="justify-space-between" Style="max-width: 600px;">
-                                    <MudItem xs="12" sm="10">
-                                        <MudTextField Mask="@subnetMask[index]" Label="Subnet Mask" HelperText="@subnetMask[index].Mask"
-                                                      @bind-Value="subnets[index]" Variant="@Variant.Text" Clearable/>
-                                    </MudItem>
-                                </MudGrid>
-                                <MudGrid Class="justify-space-between" Style="max-width: 600px;">
-                                    <MudItem xs="12" sm="10">
-                                        <MudTextField Mask="@gatewayMask[index]" Label="Default Gateway" HelperText="@gatewayMask[index].Mask"
-                                                      @bind-Value="gateways[index]" Variant="@Variant.Text" Clearable/>
-                                    </MudItem>
-                                </MudGrid>
-                                @if (SimulationRuntimeManager.NetworkMode == ECommunicationMode.Non_Promiscuous)
-                                {
-                                    switch (index + 1)
-                                    {
-                                        case 1:
-                                            <MudSelect T="string" Label="Communication Interface" AnchorOrigin="Origin.BottomCenter" @bind-Value="@interface_1" EmptyValue="No mapping">
-                                                @foreach (var v in SimulationRuntimeManager.NetInterfaces)
-                                                {
-                                                    <MudSelectItem Value="@v.interfaceName">@v.interfaceName</MudSelectItem>
-                                                }
-                                                <MudSelectItem Value="@emptyString">NO MAPPING</MudSelectItem>
-
-                                            </MudSelect>
-                                            break;
-                                        case 2:
-                                            <MudSelect T="string" Label="Communication Interface" AnchorOrigin="Origin.BottomCenter" @bind-Value="@interface_2" EmptyValue="No mapping">
-                                                @foreach (var v in SimulationRuntimeManager.NetInterfaces)
-                                                {
-                                                    <MudSelectItem Value="@v.interfaceName">@v.interfaceName</MudSelectItem>
-                                                }
-                                                <MudSelectItem Value="@emptyString">NO MAPPING</MudSelectItem>
-                                            </MudSelect>
-                                            break;
-
-                                        case 3:
-                                            <MudSelect T="string" Label="Communication Interface" AnchorOrigin="Origin.BottomCenter" @bind-Value="@interface_3" EmptyValue="No mapping">
-                                                @foreach (var v in SimulationRuntimeManager.NetInterfaces)
-                                                {
-                                                    <MudSelectItem Value="@v.interfaceName">@v.interfaceName</MudSelectItem>
-                                                }
-                                                <MudSelectItem Value="@emptyString">NO MAPPING</MudSelectItem>
-                                            </MudSelect>
-                                            break;
-                                    }
-                                }
-                            </MudTabPanel>
-                        }
-                    </MudTabs >
-                    <MudDivider ></MudDivider >
-                    <MudButton Color="Color.Success" Variant="Variant.Filled" OnClick="setIp"> Apply changes </MudButton >
-                </MudStack>
-            </MudCard>
-        </MudItem>
         
-        <MudItem>
+        <MudItem xs="12">
             <MudTable Items="@logs" FixedHeader="true" Height="400px" Hover="true">
                 <HeaderContent>
                     <MudTh>Timestamp</MudTh>
@@ -274,6 +177,51 @@
         </MudTabPanel>
     </MudTabs>
 </MudItem>
+
+    <MudItem xs="6">
+        <MudPaper>
+            <MudText Typo="Typo.body2"> Size Snapshots: @rootDirectorySize </MudText>
+            <MudDivider></MudDivider>
+            <MudButton Size="Size.Small" Disabled="SelectedInstance.OperatingState != EOperatingState.Off" Variant="Variant.Outlined" Color="Color.Success" OnClick="() => setNameDialog = true"><MudText Typo="Typo.subtitle2">Create Snapshot</MudText> </MudButton>
+
+            <MudSimpleTable Dense="true">
+                <MudTh>Name</MudTh>
+                <MudTh>Timestamp</MudTh>
+                <MudTh Style="text-align: right;">Actions</MudTh>
+
+                @foreach (var snapshot in GetSnapshots())
+                {
+                var dir = snapshot; // Create a local copy to avoid issues with the foreach loop
+                var isRunning = SelectedInstance.OperatingState != EOperatingState.Off;
+
+                <MudTr>
+                    <MudTd>
+
+
+                        <MudChip Size="Size.Small" Disabled="@isRunning" Variant="Variant.Text" Color="Color.Info">
+                            <MudText Typo="Typo.subtitle1">
+                                <strong>@Path.GetFileName(snapshot)</strong>
+                            </MudText>
+                        </MudChip>
+                    </MudTd>
+                    <MudTd>
+                        <small>
+                            @File.GetLastWriteTime(snapshot).ToShortDateString()<br/>@File.GetLastWriteTime(snapshot).ToShortTimeString()
+                        </small>
+                    </MudTd>
+                    <MudTd Style="text-align: right;">
+                        <MudButtonGroup Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Success" OverrideStyles="false">
+                            <MudIconButton Title="Rollback" Icon="@Icons.Material.Outlined.SettingsBackupRestore" Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Success" OnClick="() => SelectedInstance.RetrieveStorage(snapshot)"> </MudIconButton>
+                            <MudIconButton Title="Rename" Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Warning" OnClick="() => OpenRenameDialog(dir)"></MudIconButton>
+                            <MudIconButton Title="Delete" Icon="@Icons.Material.Outlined.Delete" Size="Size.Small" Disabled="@isRunning" Variant="Variant.Outlined" Color="Color.Error" OnClick="() => DeleteFile(dir)"></MudIconButton>
+                        </MudButtonGroup>
+                    </MudTd>
+                </MudTr>
+                }
+            </MudSimpleTable>
+        </MudPaper>
+    </MudItem>
+
 
 </MudGrid>
 
@@ -356,6 +304,8 @@
 
         InvokeAsync(StateHasChanged);
     }
+    
+
 
 
     private bool renameDialog;
