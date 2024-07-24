@@ -1,10 +1,12 @@
-@using Siemens.Simatic.Simulation.Runtime
+@using PLCsimAdvanced_Manager.Services
 @using Color = MudBlazor.Color
 @inject ISnackbar Snackbar
 @inject IDialogService DialogService
 @implements IDisposable
+@inject ManagerFacade managerFacade
 
-@if (InstanceRegistered)
+
+@if (SelectedInstance.OperatingState!= EOperatingState.Off)
 {
     <MudTable ServerData="@(new Func<TableState, Task<TableData<SDataValueByName>>>(ServerReload))"
               Dense="true" Hover="true" @ref="table" Loading="false" LoadingProgressColor="Color.Transparent">
@@ -58,41 +60,75 @@ else
     [Parameter] public string InstanceName { get; set; }
     [Parameter] public EArea Area { get; set; }
     private IInstance SelectedInstance;
-    
 
-    public bool InstanceRegistered = false;
+
+    private bool InstanceRegistered = false;
 
 
     private SDataValueByName[] _DataValueByNames;
 
-
-
-    
     private System.Timers.Timer refreshTimer;
     protected override async Task OnInitializedAsync()
     {
         OnSelectInstance(InstanceName);
 
     // Set up the timer to refresh data every 500 milliseconds
+
         refreshTimer = new System.Timers.Timer(100);
         refreshTimer.Elapsed += async (sender, e) => await RefreshData();
         refreshTimer.AutoReset = true;
-        refreshTimer.Start();
+        
+        if (SelectedInstance.OperatingState == EOperatingState.Run)
+        {
+            refreshTimer.Start();
+
+        }
     }
     
     private void OnSelectInstance(string name)
     {
-        try
+        SelectedInstance = SimulationRuntimeManager.CreateInterface(name);
+        SelectedInstance.OnOperatingStateChanged += onOperatingStateChanged;
+
+        if (SelectedInstance.OperatingState == EOperatingState.Run)
         {
-            SelectedInstance = SimulationRuntimeManager.CreateInterface(name);
             InstanceRegistered = true;
             StateHasChanged();
             setDataValueByNames();
         }
-        catch (Exception e)
+    }
+
+    private void onOperatingStateChanged(IInstance in_sender, ERuntimeErrorCode in_errorcode, DateTime in_datetime, EOperatingState in_prevstate, EOperatingState in_operatingstate)
+    {
+        switch (in_operatingstate)
         {
-            Snackbar.Add($"Error while selecting instance {name}: {e.Message}", Severity.Error);
-            InstanceRegistered = false;
+            case EOperatingState.InvalidOperatingState:
+                break;
+            case EOperatingState.Off:
+                break;
+            case EOperatingState.Booting:
+                break;
+            case EOperatingState.Stop:
+                refreshTimer.Stop();
+                break;
+            case EOperatingState.Startup:
+                break;
+            case EOperatingState.Run:
+                refreshTimer = new System.Timers.Timer(100);
+                refreshTimer.Elapsed += async (sender, e) => await RefreshData();
+                refreshTimer.AutoReset = true;
+                refreshTimer.Start();
+                setDataValueByNames();
+                RefreshData();
+                break;
+            case EOperatingState.Freeze:
+                break;
+            case EOperatingState.ShuttingDown:
+                break;
+            case EOperatingState.Hold:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException(nameof(in_operatingstate), in_operatingstate, null);
         }
     }
 
@@ -103,9 +139,7 @@ else
     private int totalItems;
     private string searchString = null;
 
-    /// <summary>
-    /// Here we simulate getting the paged, filtered and ordered data from the server
-    /// </summary>
+
     private Task<TableData<SDataValueByName>> ServerReload(TableState state)
     {
         var _DataValueByNamesToGet = _DataValueByNames?.Where(element =>
@@ -193,6 +227,8 @@ else
         }
 
         SelectedInstance.UpdateTagList();
+        
+        InvokeAsync(StateHasChanged);
 
         _DataValueByNames = SelectedInstance.TagInfos.Where(e => e.Area == Area && e.PrimitiveDataType != EPrimitiveDataType.Struct)
             .Select(e => new SDataValueByName { Name = e.Name, DataValue = new SDataValue { Type = e.PrimitiveDataType } })
