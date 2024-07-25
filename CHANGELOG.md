@@ -7,19 +7,31 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
-This is a major update with a lot of new features and improvements, mainly for the UI.
+## [0.1.0] - 2024-07-25
+
+This is a major update with some new features and improvements, mainly for the UI.
 The single page approach was getting too cluttered.
-The UI now has a navigation panel and dedicate pages for each instance and settings.
+The UI now has a navigation panel and dedicate pages for every instance and the settings.
 
 
 ### Changes
 
 - Add controler name to overview table
 - IP settings dialog now has tabs for every interface
+- BREAKING: snapshots are now stored in the folder `/Manager/Snapshots` instead of `/Snapshots`. If you have created snapshots in the previous version, you can manually create the folder and move them.
 
 ### Features
 
 - Logs (e.g. start/stop/ new download) of instances are collected and shown in the UI
+- Navigation menu
+- Dedicated page for each instance (click on the instance or open the navigation panel on the left to get there)
+- Dedicated page for settings
+- When multiadapter is selected, you can select specific network interfaces for each adapter in the network settings of the instance now
+- some more smaller features
+
+### Fix
+
+- Data view more stable now
 
 ## [0.0.6] - 2024-05-08
 

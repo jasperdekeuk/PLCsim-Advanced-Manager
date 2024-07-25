@@ -72,6 +72,7 @@
 
     [Parameter] public IInstance selectedInstance { get; set; }
     static string SnapshotFolder = "Snapshots";
+    static string PlcManagerFolder = "Manager";
     static string label;
     private bool setNameDialog;
     private string directoryToRename;
@@ -82,7 +83,7 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        var path = Path.Combine(selectedInstance.StoragePath, SnapshotFolder);
+        var path = Path.Combine(selectedInstance.StoragePath, PlcManagerFolder, SnapshotFolder);
         // Check if the directory exists, if not, create it
         if (!Directory.Exists(path))
         {
@@ -105,7 +106,7 @@
 
     private string[] GetSnapshots()
     {
-        var path = Path.Combine(selectedInstance.StoragePath, SnapshotFolder);
+        var path = Path.Combine(selectedInstance.StoragePath, PlcManagerFolder, SnapshotFolder);
         label = Path.Combine(path, "test");
         if (!Directory.Exists(path))
         {
@@ -128,7 +129,7 @@
     {
         try
         {
-            var path = Path.Combine(selectedInstance.StoragePath, SnapshotFolder);
+            var path = Path.Combine(selectedInstance.StoragePath, PlcManagerFolder, SnapshotFolder);
             if (!Directory.Exists(path))
             {
                 Directory.CreateDirectory(path);

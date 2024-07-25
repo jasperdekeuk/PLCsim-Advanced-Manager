@@ -33,7 +33,7 @@
 
     void Submit()
     {
-        string pathToDirectory = Instance.StoragePath;
+        string pathToDirectory = Instance?.StoragePath;
         unregisterInstance(fullDeleteCheckbox);
 
         MudDialog.Close(DialogResult.Ok(true));

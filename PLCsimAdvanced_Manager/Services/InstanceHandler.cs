@@ -22,6 +22,7 @@ public class InstanceHandler
     public event EventHandler OnLogsUpdated;
 
     static string SnapshotFolder = "Snapshots";
+    static string PlcManagerFolder = "Manager";
 
 
     public record _log(DateTime Timestamp, string Message);
@@ -126,7 +127,7 @@ public class InstanceHandler
 
     void CheckAndRemoveSnapshotDirectory(string storagePath)
     {
-        var path = Path.Combine(storagePath, SnapshotFolder);
+        var path = Path.Combine(storagePath,PlcManagerFolder);
         if (Directory.Exists(path))
         {
             Directory.Delete(path, true);

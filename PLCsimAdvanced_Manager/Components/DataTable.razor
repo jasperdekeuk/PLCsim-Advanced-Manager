@@ -6,7 +6,7 @@
 @inject ManagerFacade managerFacade
 
 
-@if (SelectedInstance.OperatingState!= EOperatingState.Off)
+@if (SelectedInstance.OperatingState != EOperatingState.Off)
 {
     <MudTable ServerData="@(new Func<TableState, Task<TableData<SDataValueByName>>>(ServerReload))"
               Dense="true" Hover="true" @ref="table" Loading="false" LoadingProgressColor="Color.Transparent">
@@ -56,7 +56,7 @@ else
 }
 
 @code {
-    
+
     [Parameter] public string InstanceName { get; set; }
     [Parameter] public EArea Area { get; set; }
     private IInstance SelectedInstance;
@@ -68,32 +68,37 @@ else
     private SDataValueByName[] _DataValueByNames;
 
     private System.Timers.Timer refreshTimer;
+
     protected override async Task OnInitializedAsync()
     {
         OnSelectInstance(InstanceName);
 
-    // Set up the timer to refresh data every 500 milliseconds
+        SelectedInstance.OnOperatingStateChanged -= onOperatingStateChanged;
+        SelectedInstance.OnOperatingStateChanged += onOperatingStateChanged;
+        startDataValueByNames();
+    }
 
-        refreshTimer = new System.Timers.Timer(100);
-        refreshTimer.Elapsed += async (sender, e) => await RefreshData();
-        refreshTimer.AutoReset = true;
-        
+    private void startDataValueByNames()
+    {
+        OnSelectInstance(InstanceName);
+
         if (SelectedInstance.OperatingState == EOperatingState.Run)
         {
+            refreshTimer = new System.Timers.Timer(100);
+            refreshTimer.Elapsed += async (sender, e) => await RefreshData();
+            refreshTimer.AutoReset = true;
             refreshTimer.Start();
-
         }
     }
-    
+
     private void OnSelectInstance(string name)
     {
         SelectedInstance = SimulationRuntimeManager.CreateInterface(name);
-        SelectedInstance.OnOperatingStateChanged += onOperatingStateChanged;
 
-        if (SelectedInstance.OperatingState == EOperatingState.Run)
+
+        if (SelectedInstance.OperatingState != EOperatingState.Off)
         {
             InstanceRegistered = true;
-            StateHasChanged();
             setDataValueByNames();
         }
     }
@@ -103,29 +108,36 @@ else
         switch (in_operatingstate)
         {
             case EOperatingState.InvalidOperatingState:
+                refreshTimer?.Stop();
+                refreshTimer?.Dispose();
                 break;
             case EOperatingState.Off:
+                refreshTimer?.Stop();
+                refreshTimer?.Dispose();
                 break;
             case EOperatingState.Booting:
                 break;
             case EOperatingState.Stop:
-                refreshTimer.Stop();
+                startDataValueByNames();
+                refreshTimer?.Stop();
+                refreshTimer?.Dispose();
                 break;
             case EOperatingState.Startup:
                 break;
             case EOperatingState.Run:
-                refreshTimer = new System.Timers.Timer(100);
-                refreshTimer.Elapsed += async (sender, e) => await RefreshData();
-                refreshTimer.AutoReset = true;
-                refreshTimer.Start();
-                setDataValueByNames();
-                RefreshData();
+                startDataValueByNames();
                 break;
             case EOperatingState.Freeze:
+                refreshTimer?.Stop();
+                refreshTimer?.Dispose();
                 break;
             case EOperatingState.ShuttingDown:
+                refreshTimer?.Stop();
+                refreshTimer?.Dispose();
                 break;
             case EOperatingState.Hold:
+                refreshTimer?.Stop();
+                refreshTimer?.Dispose();
                 break;
             default:
                 throw new ArgumentOutOfRangeException(nameof(in_operatingstate), in_operatingstate, null);
@@ -164,6 +176,7 @@ else
                 OnSelectInstance(SelectedInstance.Name);
                 return Task.FromResult(new TableData<SDataValueByName>());
             }
+
             for (int i = 0; i < _DataValueByNamesToGet.Length; i++)
             {
                 try
@@ -181,9 +194,10 @@ else
 
             pagedData = _DataValueByNamesToGet.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
         }
+
         return Task.FromResult(new TableData<SDataValueByName>() { TotalItems = totalItems, Items = pagedData });
     }
-    
+
     private async Task RefreshData()
     {
         if (!InstanceRegistered)
@@ -192,7 +206,7 @@ else
             return;
         }
 
-    // Assuming _dbDataValueByNames is your source data
+        // Assuming _dbDataValueByNames is your source data
         for (int i = 0; i < _DataValueByNames.Length; i++)
         {
             try
@@ -208,7 +222,7 @@ else
             }
         }
 
-    // Update paged data and reload the table
+        // Update paged data and reload the table
         table.ReloadServerData();
     }
 
@@ -217,7 +231,7 @@ else
         searchString = text;
         // table.ReloadServerData();
     }
-    
+
     private void setDataValueByNames()
     {
         if (SelectedInstance == null)
@@ -227,14 +241,14 @@ else
         }
 
         SelectedInstance.UpdateTagList();
-        
+
         InvokeAsync(StateHasChanged);
 
         _DataValueByNames = SelectedInstance.TagInfos.Where(e => e.Area == Area && e.PrimitiveDataType != EPrimitiveDataType.Struct)
             .Select(e => new SDataValueByName { Name = e.Name, DataValue = new SDataValue { Type = e.PrimitiveDataType } })
             .ToArray();
     }
-    
+
     public object parseData(SDataValue dataValue)
     {
         switch (dataValue.Type)
@@ -274,7 +288,7 @@ else
         }
     }
 
-    
+
     public void ChangeData(SDataValueByName dataValueByName)
     {
         var parameters = new DialogParameters<ChangeDataDialog>();
@@ -288,8 +302,8 @@ else
 
     public void Dispose()
     {
-        SelectedInstance.Dispose();
-        refreshTimer.Dispose();
+        SelectedInstance?.Dispose();
+        refreshTimer?.Dispose();
         Snackbar?.Dispose();
     }
 

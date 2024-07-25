@@ -5,115 +5,67 @@
 @using Color = MudBlazor.Color
 @inject ISnackbar Snackbar
 
-<div style="width: 100vw; min-width: 1000px; overflow-x: auto; justify-content: center; height:auto">
+<div style="width: 100vw; min-width: 1000px;overflow-x: auto; justify-content: center; height:92vh">
     <div style="padding: 20px">
-        <MudText Typo="Typo.h6">Settings</MudText>
-        <MudGrid>
-            <MudItem style="padding: 20px" xs="6">
-                <MudGrid >
-                    <MudItem xs="12">
-                        <MudPaper>
-                            <MudGrid style="padding: 20px">
-                                <MudItem xs="4">
-                                    <MudStack>
-                                        <MudText Typo="Typo.subtitle2">Initialization</MudText>
-                                        @if (SimulationRuntimeManager.IsInitialized)
-                                        {
-                                            <MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircleOutline"/>
-                                        }
-                                        else
-                                        {
-                                            <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.HighlightOff"/>
-                                        }
-
-                                    </MudStack>
-                                </MudItem>
-                                <MudItem xs="4">
-                                    <MudStack>
-                                        <MudText Typo="Typo.subtitle2">Runtime Manager Available</MudText>
-                                        @if (SimulationRuntimeManager.IsRuntimeManagerAvailable)
-                                        {
-                                        <MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircleOutline"/>
-                                        }
-                                        else
-                                        {
-                                        <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.HighlightOff"/>
-                                        }
-                                    </MudStack>
-                                </MudItem>
-                                <MudItem xs="4">
-                                    <MudStack>
-                                        <MudText Typo="Typo.subtitle2">Strict Motion Timing</MudText>
-                                        <MudText Typo="Typo.body2"> @SimulationRuntimeManager.StrictMotionTiming</MudText>
-                                    </MudStack>
-                                </MudItem>
-
-                                <MudItem xs="4">
-                                    <MudStack>
-                                        <MudText Typo="Typo.subtitle2">Version</MudText>
-                                        <MudText Typo="Typo.body2"> @SimulationRuntimeManager.Version</MudText>
-                                    </MudStack>
-                                </MudItem>
-                                <MudItem xs="4">
-                                    <MudStack>
-                                        <MudText Typo="Typo.subtitle2">Default Storage Path</MudText>
-                                        <MudText Style="overflow: auto" Typo="Typo.body2"> @SimulationRuntimeManager.DefaultStoragePath</MudText>
-                                    </MudStack>
-                                </MudItem>
-                            </MudGrid>
-                        </MudPaper>
-                    </MudItem>
-                    <MudItem xs="12">
-                        <MudItem xs="6">
-                            <MudPaper>
-                                <MudCard Style="overflow-wrap:break-word;">
-                                    <MudCardHeader>
-                                        <CardHeaderContent>
-                                            <MudText Typo="Typo.h6">Port</MudText>
-                                        </CardHeaderContent>
-                                    </MudCardHeader>
-                                    <MudCardContent>
-                                        <MudText>@SimulationRuntimeManager.Port </MudText>
-                                    </MudCardContent>
-                                </MudCard>
-                                <MudCard Style="overflow-wrap:break-word;">
-                                    <MudCardHeader>
-                                        <CardHeaderContent>
-                                            <MudText Typo="Typo.h6">Remote Connection Info</MudText>
-                                        </CardHeaderContent>
-                                    </MudCardHeader>
-                                    <MudCardContent>
-                                        <MudText>
-                                            @if (SimulationRuntimeManager.RemoteConnectionInfo.Length == 0)
-                                            {
-                                                <div>No Remote Connections</div>
-                                            }
-                                            else
-                                            {
-                                                foreach (var v in SimulationRuntimeManager.RemoteConnectionInfo)
-                                                {
-                                                    <div>@v.IP:@v.Port</div>
-                                                }
-                                            }
-                                        </MudText>
-                                    </MudCardContent>
-                                </MudCard>
-                            </MudPaper>
-
-
+        <div>
+            <MudText Typo="Typo.h6">Settings</MudText>
+        </div>
+        <MudTabs Outlined="true" Position="Position.Left" Rounded="true" Border="true" ApplyEffectsToContainer="true" Class="mt-8" PanelClass="px-4 py-6" KeepPanelsAlive="false">
+            <MudTabPanel Text="General">
+                <MudPaper Style="padding: 20px; flex: auto">
+                    <MudGrid style="padding: 20px">
+                        <MudItem xs="4">
+                            <MudStack>
+                                <MudText Typo="Typo.subtitle2">Initialization</MudText>
+                                @if (SimulationRuntimeManager.IsInitialized)
+                                {
+                                    <MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircleOutline"/>
+                                }
+                                else
+                                {
+                                    <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.HighlightOff"/>
+                                }
+                            </MudStack>
                         </MudItem>
-
-                    </MudItem>
-
-                </MudGrid>
-
-            </MudItem>
-            <MudItem xs="6">
-                <MudGrid>
+                        <MudItem xs="4">
+                            <MudStack>
+                                <MudText Typo="Typo.subtitle2">Runtime Manager Available</MudText>
+                                @if (SimulationRuntimeManager.IsRuntimeManagerAvailable)
+                                {
+                                    <MudIcon Color="Color.Success" Icon="@Icons.Material.Filled.CheckCircleOutline"/>
+                                }
+                                else
+                                {
+                                    <MudIcon Color="Color.Error" Icon="@Icons.Material.Filled.HighlightOff"/>
+                                }
+                            </MudStack>
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudStack>
+                                <MudText Typo="Typo.subtitle2">Strict Motion Timing</MudText>
+                                <MudText Typo="Typo.body2"> @SimulationRuntimeManager.StrictMotionTiming</MudText>
+                            </MudStack>
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudStack>
+                                <MudText Typo="Typo.subtitle2">Version</MudText>
+                                <MudText Typo="Typo.body2"> @SimulationRuntimeManager.Version</MudText>
+                            </MudStack>
+                        </MudItem>
+                        <MudItem xs="4">
+                            <MudStack>
+                                <MudText Typo="Typo.subtitle2">Default Storage Path</MudText>
+                                <MudText Style="overflow: auto" Typo="Typo.body2"> @SimulationRuntimeManager.DefaultStoragePath</MudText>
+                            </MudStack>
+                        </MudItem>
+                    </MudGrid>
+                </MudPaper>
+            </MudTabPanel>
+            <MudTabPanel Text="Network" Style="flex: 1">
+                <MudGrid Style="padding: 20px; overflow-y: auto ">
                     <MudItem xs="12">
                         <MudCard>
                             <MudAlert Severity="Severity.Warning">All instances need to be powered off to make changes here.</MudAlert>
-
                             <MudCardHeader>
                                 <CardHeaderContent>
                                     <MudText Typo="Typo.h6">Network Mode</MudText>
@@ -152,7 +104,8 @@
                                     </HeaderContent>
                                     <RowTemplate Context="v">
                                         <MudTd>
-                                            <strong>@v.interfaceName</strong><br/>
+                                            <strong>@v.interfaceName</strong>
+                                            <br/>
                                             <small>@v.interfaceDescription</small>
                                         </MudTd>
                                         @* <MudTd>@v.interfaceIndex</MudTd> *@
@@ -199,14 +152,50 @@
                             </MudCardContent>
                         </MudCard>
                     </MudItem>
-
                 </MudGrid>
+            </MudTabPanel>
+            <MudTabPanel Text="Remote">
+                <MudPaper Style="padding: 20px; flex: auto">
+                    <MudCard Style="overflow-wrap:break-word;">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Port</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudText>@SimulationRuntimeManager.Port </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                    <MudCard Style="overflow-wrap:break-word;">
+                        <MudCardHeader>
+                            <CardHeaderContent>
+                                <MudText Typo="Typo.h6">Remote Connection Info</MudText>
+                            </CardHeaderContent>
+                        </MudCardHeader>
+                        <MudCardContent>
+                            <MudText>
+                                @if (SimulationRuntimeManager.RemoteConnectionInfo.Length == 0)
+                                {
+                                    <div>No Remote Connections</div>
+                                }
+                                else
+                                {
+                                    foreach (var v in SimulationRuntimeManager.RemoteConnectionInfo)
+                                    {
+                                        <div>@v.IP:@v.Port</div>
+                                    }
+                                }
+                            </MudText>
+                        </MudCardContent>
+                    </MudCard>
+                </MudPaper>
 
 
-            </MudItem>
-        </MudGrid>
+            </MudTabPanel>
 
+        </MudTabs>
     </div>
+
 </div>
 
 @code {
