@@ -7,6 +7,8 @@ using MudBlazor;
 using MudBlazor.Services;
 using PLCsimAdvanced_Manager.Services;
 using PLCsimAdvanced_Manager.Services.Logger;
+using PLCsimAdvanced_Manager.Services.Persistence;
+using PLCsimAdvanced_Manager.Shared;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -37,6 +39,7 @@ builder.Services.AddSingleton<InstanceLogger>();
 builder.Services.AddSingleton<InstanceHandler>();
 builder.Services.AddSingleton<EventDispatchService>();
 builder.Services.AddSingleton<ManagerFacade>();
+builder.Services.AddSingleton<PersistenceHandler>();
 
 var app = builder.Build();
 app.Services.GetService<EventDispatchService>();
@@ -53,6 +56,8 @@ if (!app.Environment.IsDevelopment())
     // The default HSTS value is 30 days. You may want to change this for production scenarios, see https://aka.ms/aspnetcore-hsts.
     app.UseHsts();
 }
+
+StartupTasks.GetPersistantSettings();
 
 
 app.UseHttpsRedirection();

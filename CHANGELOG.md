@@ -7,6 +7,12 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.1] - 2024-08-02
+
+### Features
+- Add a settings tab in the instance view. It is now possible to enable "Register On Startup" and "Power On Startup". When this is enabled the instance will be registered or started when the manager exe is started.
+- Add a persistence.json file in the manager folder to store the settings. 
+
 ## [0.1.0] - 2024-07-25
 
 This is a major update with some new features and improvements, mainly for the UI.

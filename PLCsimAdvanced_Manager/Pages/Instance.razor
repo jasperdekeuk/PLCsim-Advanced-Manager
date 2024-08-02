@@ -1,10 +1,12 @@
 @inject ISnackbar Snackbar
 @page "/instance/{instanceName}"
 @using PLCsimAdvanced_Manager.Services
+@using PLCsimAdvanced_Manager.Services.Persistence
 @using Siemens.Simatic.Simulation.Runtime
 @using Color = MudBlazor.Color
 @inject ManagerFacade managerFacade
 @inject IDialogService DialogService
+@inject PersistenceHandler persistenceHandler
 
 
 <div style="width: 100vw; min-width: 1000px; overflow-x: auto; justify-content: center; height:93vh">
@@ -247,12 +249,12 @@
                                 case "Invalid":
                                     <MudChip Icon="@Icons.Material.Outlined.ErrorOutline" Variant="Variant.Text" Size="Size.Small" Color="Color.Error"> @word </MudChip>
                                     break;
-                                    case "ShuttingDown":
+                                case "ShuttingDown":
                                     <MudChip Icon="@Icons.Material.Outlined.Info" Variant="Variant.Text" Size="Size.Small" Color="Color.Info"> @word </MudChip>
                                     break;
-                                    case "Startup":
-                                        <MudChip Icon="@Icons.Material.Outlined.Info" Variant="Variant.Text" Size="Size.Small" Color="Color.Info"> @word </MudChip>
-                                        break;
+                                case "Startup":
+                                    <MudChip Icon="@Icons.Material.Outlined.Info" Variant="Variant.Text" Size="Size.Small" Color="Color.Info"> @word </MudChip>
+                                    break;
                                 case "Booting":
                                     <MudChip Icon="@Icons.Material.Outlined.Info" Variant="Variant.Text" Size="Size.Small" Color="Color.Info"> @word </MudChip>
                                     break;
@@ -271,12 +273,80 @@
         </MudTable>
     </MudCard>
 </MudTabPanel>
+<MudTabPanel Text="Settings">
+    <MudStack>
+        <MudItem>
+            <MudText Typo="Typo.h5"> On Startup</MudText>
+            <MudText Typo="Typo.body1"> Actions to be taken on this instance, when starting up PLCsim Advanced Manager</MudText>
+            <MudCard Style="padding: 20px; flex: auto">
+
+                <MudGrid>
+                    <MudItem xs="4">
+                        <MudStack>
+                            <MudText Typo="Typo.subtitle2">Register On Startup</MudText>
+                            <MudCheckBox @bind-Checked="RegisterOnStartup"></MudCheckBox>
+                        </MudStack>
+                    </MudItem>
+                    <MudItem xs="4">
+                        <MudStack>
+                            <MudText Typo="Typo.subtitle2">Power On Startup</MudText>
+                            <MudCheckBox @bind-Checked="PowerOnStartup"></MudCheckBox>
+                        </MudStack>
+                    </MudItem>
+                </MudGrid>
+            </MudCard>
+            
+            
+        </MudItem>
+    </MudStack>
+</MudTabPanel>
 </MudTabs>
 
 </div>
 </div>
 
 @code {
+    
+    private bool _registerOnStartup;
+    private bool _powerOnStartup;
+    private bool _runOnStartup;
+
+    public bool RegisterOnStartup
+    {
+        get => _registerOnStartup;
+        set
+        {
+            if (_registerOnStartup != value)
+            {
+                _registerOnStartup = value;
+                if (!value)
+                {
+                    PowerOnStartup = false;
+                }
+            }
+            persistenceHandler.UpdateSettings(SelectedInstance.StoragePath, RegisterOnStartup, PowerOnStartup);
+        }
+    }
+
+    public bool PowerOnStartup
+    {
+        get => _powerOnStartup;
+        set
+        {
+            if (_powerOnStartup != value)
+            {
+                _powerOnStartup = value;
+                if (value)
+                {
+                    RegisterOnStartup = true;
+                }
+            }
+            persistenceHandler.UpdateSettings(SelectedInstance.StoragePath, RegisterOnStartup, PowerOnStartup);
+        }
+    }
+
+    
+    
     [Parameter] public string InstanceName { get; set; }
 
     private IInstance SelectedInstance;
@@ -322,6 +392,15 @@
             subnetMask.Add(RegexMask.IPv4());
             gatewayMask.Add(RegexMask.IPv4());
         }
+
+        var settings = persistenceHandler.ReadSettings(SelectedInstance.StoragePath);
+        if (settings != null)
+        {
+            _registerOnStartup = settings.RegisterOnStartup;
+            _powerOnStartup = settings.PowerOnOnStartup;
+        }
+
+        
     }
 
     private void OnLogsUpdated()

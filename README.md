@@ -6,8 +6,10 @@ Check the [**documentation**](https://jasperdekeuk.github.io/PLCsim-Advanced-Man
 
 Download from [**releases**](https://github.com/jasperdekeuk/PLCsim-Advanced-Manager/releases)
 
+> [!WARNING]
+> The documentation is always behind. Download the latest version to see and play with all the features.
 
-Goals:
+Features:
 
 - [x] Manage your PLCSIM Advanced instances remote in a **webserver**. This way you don't have to log in to the target PC, but can start
   instances over the network
@@ -15,6 +17,7 @@ Goals:
 - [x] **Read and write variables** from the PLC (DB/Inputs/Outputs)
 - [x] **Advanced network setting**. Being able to set every interface of the instance to an interface of the host machine
 - [x] Create **snapshots** and restore them
+- [x] Option for **auto start** instances on startup of PLCsim Advanced Manager. Either just register or completely start the instance when starting the manager application. (see instance settings)
 - [ ] Easy **virtual commissioning** by e.g. setting buttons and lights in the UI to the PLC variables
 - [ ] **Traces** on the variables for analysis
 
