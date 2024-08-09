@@ -6,7 +6,7 @@ namespace PLCsimAdvanced_Manager.Shared;
 
 public static class StartupTasks
 {
-    public static void GetPersistantSettings()
+    public static async Task GetPersistantSettings()
     {
         var directories = Directory.GetDirectories(@SimulationRuntimeManager.DefaultStoragePath);
         foreach (var directory in directories)

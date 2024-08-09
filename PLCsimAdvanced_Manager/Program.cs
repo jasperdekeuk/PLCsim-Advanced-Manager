@@ -57,7 +57,7 @@ if (!app.Environment.IsDevelopment())
     app.UseHsts();
 }
 
-StartupTasks.GetPersistantSettings();
+_ = Task.Run(StartupTasks.GetPersistantSettings);
 
 
 app.UseHttpsRedirection();
