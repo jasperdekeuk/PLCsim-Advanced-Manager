@@ -6,11 +6,11 @@
 
 @if (SelectedInstance.OperatingState == EOperatingState.Off)
 {
-<MudIconButton Icon="@Icons.Material.Outlined.PowerSettingsNew" Title="powerOn" Size="Size.Small" @onclick="() => { try { SelectedInstance.PowerOn(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }"></MudIconButton>
+<MudIconButton Icon="@Icons.Material.Outlined.PowerSettingsNew" Title="powerOn" Size="Size.Small" @onclick="() => { try { Task.Run(() =>  SelectedInstance.PowerOn()); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }"></MudIconButton>
 }
 else if (SelectedInstance.OperatingState == EOperatingState.Run || SelectedInstance.OperatingState == EOperatingState.Stop)
 {
-<MudIconButton Icon="@Icons.Material.Outlined.PowerSettingsNew" Title="powerOff" Size="Size.Small" @onclick="() => { try { SelectedInstance.PowerOff(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }" Color="Color.Error"></MudIconButton>
+<MudIconButton Icon="@Icons.Material.Outlined.PowerSettingsNew" Title="powerOff" Size="Size.Small" @onclick="() => { try { Task.Run(() => SelectedInstance.PowerOff()); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }" Color="Color.Error"></MudIconButton>
 }
 else
 {

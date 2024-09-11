@@ -6,6 +6,10 @@ Check the [**documentation**](https://jasperdekeuk.github.io/PLCsim-Advanced-Man
 
 Download from [**releases**](https://github.com/jasperdekeuk/PLCsim-Advanced-Manager/releases)
 
+If you have a feature request or problem, create an [**issue**](https://github.com/jasperdekeuk/PLCsim-Advanced-Manager/issues/new)
+
+
+
 > [!WARNING]
 > The documentation is always behind. Download the latest version to see and play with all the features.
 
@@ -18,8 +22,13 @@ Features:
 - [x] **Advanced network setting**. Being able to set every interface of the instance to an interface of the host machine
 - [x] Create **snapshots** and restore them
 - [x] Option for **auto start** instances on startup of PLCsim Advanced Manager. Either just register or completely start the instance when starting the manager application. (see instance settings)
+
+Future feature ideas:
 - [ ] Easy **virtual commissioning** by e.g. setting buttons and lights in the UI to the PLC variables
 - [ ] **Traces** on the variables for analysis
+- [ ] **Desktop version** so no webbrowser is needed for a local setup
+- [ ] Connect to **remote PLCsim Advance APIs**
+- [ ] Test **IO module events**
 
 ## Overview
 ![](docs/img/Overview.png)

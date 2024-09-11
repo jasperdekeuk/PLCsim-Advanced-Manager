@@ -136,7 +136,7 @@
         {
             try
             {
-                instance.PowerOn();
+                await Task.Run(() => instance.PowerOn());
             }
             catch (Exception e)
             {

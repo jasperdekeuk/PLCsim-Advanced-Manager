@@ -14,7 +14,7 @@ else if (SelectedInstance.OperatingState == EOperatingState.Run)
 }
 else
 {
-<MudIconButton Icon="@Icons.Material.Outlined.PlayArrow" Title="powerOff" Size="Size.Small" Disabled="true" @onclick="() => { try { SelectedInstance.PowerOff(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }" Color="Color.Error"></MudIconButton>
+<MudIconButton Icon="@Icons.Material.Outlined.PlayArrow" Title="powerOff" Size="Size.Small" Disabled="true" @onclick="() => { try { Task.Run(() => SelectedInstance.PowerOff()); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }" Color="Color.Error"></MudIconButton>
 }
 @code {
     [Parameter] public IInstance SelectedInstance { get; set; }
