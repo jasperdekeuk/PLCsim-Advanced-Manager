@@ -31,7 +31,9 @@ Future feature ideas:
 - [ ] Test **IO module events**
 
 ## Overview
-![](docs/img/Overview.png)
+![](docs/img/overviewPage.png)
+
+![](docs/img/instancePage.png)
 
 
 # Quickstart
