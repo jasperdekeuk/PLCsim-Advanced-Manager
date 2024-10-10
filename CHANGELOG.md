@@ -7,6 +7,15 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.2] - 2024-10-10
+Minor update, mainly annoying bugfix and some small performance improvements
+
+### Changes
+- In instance view, the buttons (Power On, Power Off, Run, Stop) are now more expressive
+
+### Fix
+- Fix the bug of not seeing every instance in the overview when having instances on autostartup
+
 ## [0.1.1] - 2024-08-02
 
 ### Features
