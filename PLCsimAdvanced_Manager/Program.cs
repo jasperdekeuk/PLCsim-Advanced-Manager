@@ -38,8 +38,11 @@ builder.Services.AddSingleton<PsaGeneralLogger>();
 builder.Services.AddSingleton<InstanceLogger>();
 builder.Services.AddSingleton<InstanceHandler>();
 builder.Services.AddSingleton<EventDispatchService>();
-builder.Services.AddSingleton<ManagerFacade>();
 builder.Services.AddSingleton<PersistenceHandler>();
+
+//hosted services
+builder.Services.AddSingleton<ManagerFacade>();
+builder.Services.AddHostedService(sp => sp.GetRequiredService<ManagerFacade>()); // TODO -> split hosted services and singleton part
 
 var app = builder.Build();
 app.Services.GetService<EventDispatchService>();

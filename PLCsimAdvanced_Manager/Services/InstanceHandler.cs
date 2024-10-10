@@ -48,9 +48,31 @@ public class InstanceHandler
             OnIssue?.Invoke(this, e);
         }
     }
+    
+    public void UpdateExistingInstances()
+    {
+        try
+        {
+            foreach (var instanceInfo in SimulationRuntimeManager.RegisteredInstanceInfo)
+            {
+                // Check if the instance already exists
+                if (_instances.Any(instance => instance.ID == instanceInfo.ID))
+                {
+                    // Instance already exists, no need to add it again
+                    continue;
+                }
+                InstanceRegisteredCallback(instanceInfo.ID);
+            }
+        }
+        catch (Exception e)
+        {
+            OnIssue?.Invoke(this, e);
+        }
+    }
 
     public void InstanceRegisteredCallback(int id)
     {
+
         var instance = SimulationRuntimeManager.CreateInterface(id);
         _instances.Add(instance);
         OnInstanceChanged?.Invoke(this, new InstanceChangedEventArgs($"Instance {instance.Name} registered"));

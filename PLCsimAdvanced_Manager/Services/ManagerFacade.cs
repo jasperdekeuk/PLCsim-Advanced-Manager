@@ -1,13 +1,26 @@
 namespace PLCsimAdvanced_Manager.Services;
 
-public class ManagerFacade
+public class ManagerFacade: IHostedService, IDisposable
 {
-    private readonly EventDispatchService _eventDispatchService;
-    public readonly InstanceHandler InstanceHandler;
+    private  EventDispatchService _eventDispatchService;
+    public  InstanceHandler InstanceHandler;
     
-    public ManagerFacade()
+
+
+    public Task StartAsync(CancellationToken cancellationToken)
     {
         this.InstanceHandler = new InstanceHandler();
-        this._eventDispatchService = new EventDispatchService(this.InstanceHandler);
+        this._eventDispatchService = new EventDispatchService(this.InstanceHandler);    
+        return Task.CompletedTask;
+    }
+
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        throw new NotImplementedException();
+    }
+
+    public void Dispose()
+    {
+        // throw new NotImplementedException();
     }
 }

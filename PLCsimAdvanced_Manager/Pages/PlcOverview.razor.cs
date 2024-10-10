@@ -14,6 +14,7 @@ public partial class PlcOverview
 
     protected override void OnInitialized()
     {
+        managerFacade.InstanceHandler.UpdateExistingInstances();
         managerFacade.InstanceHandler.OnInstanceChanged += OnInstanceChanged;
         managerFacade.InstanceHandler.OnIssue += OnIssue;
         base.OnInitialized();
