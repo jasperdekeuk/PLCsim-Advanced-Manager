@@ -27,7 +27,6 @@
         <PackageReference Include="Microsoft.AspNetCore.Identity.UI" Version="7.0.9" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="7.0.9" />
         <PackageReference Include="Microsoft.EntityFrameworkCore.Tools" Version="7.0.9" />
-        <PackageReference Include="Microsoft.Fast.Components.FluentUI" Version="2.4.1" />
         <PackageReference Include="MudBlazor" Version="6.8.0" />
         <PackageReference Include="Octokit" Version="9.1.0" />
         <PackageReference Include="Z.Blazor.Diagrams" Version="3.0.3" />
@@ -38,6 +37,8 @@
         <Content Include="..\.dockerignore">
             <Link>.dockerignore</Link>
         </Content>
+        <Content Remove="wwwroot\Identity\lib\bootstrap\dist\js\bootstrap.esm.js.map" />
+        <Content Remove="wwwroot\Identity\lib\bootstrap\dist\css\bootstrap-utilities.css" />
     </ItemGroup>
 
     <ItemGroup>
@@ -50,6 +51,68 @@
 
     <ItemGroup>
       <_ContentIncludedByDefault Remove="Services\Nodegraph\InOutNode\InOutNodeWidget.razor" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\Components\Anchor\FluentAnchor.razor.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\Components\DataGrid\FluentDataGrid.razor.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\Components\HorizontalScroll\FluentHorizontalScroll.razor.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\css\reboot.css" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\css\variables.css" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\ArrowSortDown\20_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\ArrowSortUp\20_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\ChevronDoubleLeft\20_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\ChevronDoubleRight\20_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\ChevronLeft\20_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\ChevronRight\20_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\Dismiss\12_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\Filter\20_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\Info\20_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\Info\32_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\Info\48_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceAvailable\10_f.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceAvailable\10_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceAvailable\12_f.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceAvailable\12_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceAvailable\16_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceAvailable\20_f.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceAvailable\20_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceAvailable\24_f.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceAvailable\24_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceAway\10_f.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceAway\12_f.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceAway\16_f.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceAway\20_f.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceAway\24_f.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceBusy\10_f.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceBusy\12_f.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceBusy\16_f.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceBusy\20_f.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceBusy\24_f.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceDND\10_f.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceDND\10_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceDND\12_f.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceDND\12_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceDND\16_f.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceDND\16_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceDND\20_f.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceDND\20_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceDND\24_f.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceDND\24_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceOffline\10_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceOffline\12_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceOffline\16_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceOffline\20_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceOffline\24_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceOOF\10_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceOOF\12_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceOOF\16_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceOOF\20_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceOOF\24_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceUnknown\10_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceUnknown\12_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceUnknown\16_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceUnknown\20_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\icons\PresenceUnknown\24_r.svg" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\js\CacheStorageAccessor.js" />
+      <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\js\web-components.min.js" />
     </ItemGroup>
 
 
