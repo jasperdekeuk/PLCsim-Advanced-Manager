@@ -7,6 +7,7 @@ using MudBlazor;
 using MudBlazor.Services;
 using PLCsimAdvanced_Manager.Services;
 using PLCsimAdvanced_Manager.Services.Logger;
+using PLCsimAdvanced_Manager.Services.Nodegraph;
 using PLCsimAdvanced_Manager.Services.Persistence;
 using PLCsimAdvanced_Manager.Shared;
 
@@ -39,6 +40,8 @@ builder.Services.AddSingleton<InstanceLogger>();
 builder.Services.AddSingleton<InstanceHandler>();
 builder.Services.AddSingleton<EventDispatchService>();
 builder.Services.AddSingleton<PersistenceHandler>();
+
+builder.Services.AddSingleton<NodegraphServiceFactory>();
 
 //hosted services
 builder.Services.AddSingleton<ManagerFacade>();

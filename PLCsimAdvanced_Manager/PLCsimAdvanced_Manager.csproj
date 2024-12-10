@@ -8,6 +8,7 @@
 <!--        <PublishSingleFile>true</PublishSingleFile>-->
 <!--        <SelfContained>true</SelfContained>-->
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <LangVersion>12</LangVersion>
     </PropertyGroup>
 
     <ItemGroup>
@@ -16,6 +17,10 @@
 
     <ItemGroup>
         <PackageReference Include="bootstrapBlazor" Version="7.9.0" />
+        <PackageReference Include="GitInfo" Version="3.5.0">
+          <PrivateAssets>all</PrivateAssets>
+          <IncludeAssets>runtime; build; native; contentfiles; analyzers; buildtransitive</IncludeAssets>
+        </PackageReference>
         <PackageReference Include="MatBlazor" Version="2.10.0" />
         <PackageReference Include="Microsoft.AspNetCore.Diagnostics.EntityFrameworkCore" Version="7.0.9" />
         <PackageReference Include="Microsoft.AspNetCore.Identity.EntityFrameworkCore" Version="7.0.9" />
@@ -25,10 +30,11 @@
         <PackageReference Include="Microsoft.Fast.Components.FluentUI" Version="2.4.1" />
         <PackageReference Include="MudBlazor" Version="6.8.0" />
         <PackageReference Include="Octokit" Version="9.1.0" />
+        <PackageReference Include="Z.Blazor.Diagrams" Version="3.0.3" />
     </ItemGroup>
 
     <ItemGroup>
-        <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never"/>
+        <Content Update="appsettings.Development.json" CopyToPublishDirectory="Never" />
         <Content Include="..\.dockerignore">
             <Link>.dockerignore</Link>
         </Content>
@@ -40,6 +46,10 @@
             <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
             <ExcludeFromSingleFile>true</ExcludeFromSingleFile>
         </Reference>
+    </ItemGroup>
+
+    <ItemGroup>
+      <_ContentIncludedByDefault Remove="Services\Nodegraph\InOutNode\InOutNodeWidget.razor" />
     </ItemGroup>
 
 

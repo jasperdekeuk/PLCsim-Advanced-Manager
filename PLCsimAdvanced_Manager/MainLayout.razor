@@ -58,6 +58,12 @@
     {
         _open = !_open;
     }
+    
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        version = ThisAssembly.Git.BaseTag;
+    }
 
     string version = "0.1.1";
     bool newVersionAvailable = false;

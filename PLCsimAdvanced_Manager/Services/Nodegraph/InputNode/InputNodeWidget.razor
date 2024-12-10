@@ -1,0 +1,52 @@
+@typeparam T
+@using Blazor.Diagrams.Core.Models
+@using Blazor.Diagrams.Components.Renderers
+
+<div class="card @(Node.Selected ? "selected" : "")" style="width: 18rem;">
+    <div class="card-header">
+        <h6 class="mb-0">@Node.Title</h6>
+    </div>
+    <div style="padding: 1px">
+        <text>@Node.Value?.GetType()</text>
+    </div>
+    @foreach (var port in Node.Ports)
+    {
+        <PortRenderer @key="port" Port="port" style="@portColor"/>
+    }
+</div>
+
+
+@code {
+    [Parameter] public InputNodeModel<T> Node { get; set; }
+
+    private string portColor;
+    
+
+    protected override void OnInitialized()
+    {
+        portColor = GetPortColor();
+    }
+
+    private string GetPortColor()
+    {
+        return typeof(T) switch
+        {
+            Type t when t == typeof(bool) => "background-color:#6C757D ",
+            Type t when t == typeof(byte) => "background-color:#A4C3B2 ",
+            Type t when t == typeof(sbyte) => "background-color:#C5A880 ",
+            Type t when t == typeof(short) => "background-color:#B7B8A3 ",
+            Type t when t == typeof(ushort) => "background-color:#899DA4 ",
+            Type t when t == typeof(int) => "background-color:#D4A5A5 ",
+            Type t when t == typeof(uint) => "background-color:#B5CDA3 ",
+            Type t when t == typeof(long) => "background-color:#A3C9D9 ",
+            Type t when t == typeof(ulong) => "background-color:#D9C3A3 ",
+            Type t when t == typeof(float) => "background-color:#A3B9C9 ",
+            Type t when t == typeof(double) => "background-color:#C9A3B9 ",
+            Type t when t == typeof(decimal) => "background-color:#A3D9C9 ",
+            Type t when t == typeof(char) => "background-color:#D9A3A3 ",
+            Type t when t == typeof(string) => "background-color:#B3B3A3 ",
+            _ => "background-color:#cccccc"
+        };
+    }
+
+}

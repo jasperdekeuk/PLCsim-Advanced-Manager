@@ -1,0 +1,465 @@
+@using Blazor.Diagrams
+@using Blazor.Diagrams.Core.Controls.Default
+@using Blazor.Diagrams.Core.Geometry
+@using PLCsimAdvanced_Manager.Services
+@using PLCsimAdvanced_Manager.Services.Nodegraph.InputNode
+@using PLCsimAdvanced_Manager.Services.Nodegraph.OutputNode
+@using Size = MudBlazor.Size
+@using Color = MudBlazor.Color
+@inject ISnackbar Snackbar
+@inject IDialogService DialogService
+@implements IDisposable
+@inject ManagerFacade managerFacade
+
+
+@if (SelectedInstance.OperatingState != EOperatingState.Off)
+{
+    <MudTable ServerData="@(new Func<TableState, Task<TableData<SDataValueByName>>>(ServerReload))"
+              Dense="true" Hover="true" @ref="table" Loading="false" LoadingProgressColor="Color.Transparent">
+        <ToolBarContent>
+            <MudText Typo="Typo.h6">Values</MudText>
+            <MudSpacer/>
+            <MudTextField T="string" ValueChanged="@(s => OnSearch(s))" Placeholder="Search" Adornment="Adornment.Start"
+                          AdornmentIcon="@Icons.Material.Filled.Search" IconSize="Size.Small" Class="mt-0">
+            </MudTextField>
+        </ToolBarContent>
+        <HeaderContent>
+            <MudTh>Name</MudTh>
+            <MudTh>Type</MudTh>
+        </HeaderContent>
+        <GroupHeaderTemplate>
+            <MudTh Class="mud-table-cell-custom-group" colspan="5">@($"{context.Key}") </MudTh>
+        </GroupHeaderTemplate>
+        <RowTemplate>
+            <MudTd DataLabel="Name">
+                @context.Name
+            </MudTd>
+            <MudTd DataLabel="Type">
+                @context.DataValue.Type
+            </MudTd>
+            <MudTd>
+                @switch (Area)
+                {
+                    case (EArea.Input):
+                        <MudIconButton Icon="@Icons.Material.Outlined.Add" @onclick="() => AddVariableToDiagram(context, ENodeType.Output)"></MudIconButton>
+                        break;
+                    case (EArea.Output):
+                        <MudIconButton Icon="@Icons.Material.Outlined.Add" @onclick="() => AddVariableToDiagram(context, ENodeType.Input)"></MudIconButton>
+                        break;
+                    case (EArea.DataBlock):
+                        <MudMenu Icon="@Icons.Material.Outlined.Add">
+                            <MudMenuItem @onclick="() => AddVariableToDiagram(context, ENodeType.Input)">Read from</MudMenuItem>
+                            <MudMenuItem @onclick="() => AddVariableToDiagram(context, ENodeType.Output)">Write to</MudMenuItem>
+                        </MudMenu>
+                        break;
+                }
+            </MudTd>
+        </RowTemplate>
+        <NoRecordsContent>
+            <MudText>No matching records found</MudText>
+        </NoRecordsContent>
+        <LoadingContent>
+            <MudText>Not found</MudText>
+        </LoadingContent>
+        <PagerContent>
+            <MudTablePager/>
+        </PagerContent>
+    </MudTable>
+}
+else
+{
+    <MudAlert Severity="Severity.Error">Instance not registered</MudAlert>
+}
+
+@code {
+
+    [Parameter] public string InstanceName { get; set; }
+    [Parameter] public EArea Area { get; set; }
+    [Parameter] public BlazorDiagram Diagram { get; set; }
+    private IInstance SelectedInstance;
+
+
+    private bool InstanceRegistered = false;
+
+
+    private SDataValueByName[] _DataValueByNames;
+
+
+    protected override async Task OnInitializedAsync()
+    {
+        OnSelectInstance(InstanceName);
+    }
+
+    private void OnSelectInstance(string name)
+    {
+        SelectedInstance = SimulationRuntimeManager.CreateInterface(name);
+        SelectedInstance.UpdateTagList();
+
+
+        if (SelectedInstance.OperatingState != EOperatingState.Off)
+        {
+            InstanceRegistered = true;
+            setDataValueByNames();
+        }
+    }
+
+
+    // -------------------------------
+    private IEnumerable<SDataValueByName> pagedData;
+    private MudTable<SDataValueByName> table;
+
+    private int totalItems;
+    private string searchString = null;
+
+
+    private Task<TableData<SDataValueByName>> ServerReload(TableState state)
+    {
+        var _DataValueByNamesToGet = _DataValueByNames?.Where(element =>
+            {
+                if (string.IsNullOrWhiteSpace(searchString))
+                    return true;
+                if (element.Name.Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                    return true;
+                if (element.DataValue.Type.ToString().Contains(searchString, StringComparison.OrdinalIgnoreCase))
+                    return true;
+                if ($"{element.Name} {element.DataValue.Type} {element.DataValue.ToString()}".Contains(searchString))
+                    return true;
+                return false;
+            })
+            .Where(element => Diagram.Nodes.All(node => node.Title != element.Name))
+            .ToArray();
+        if (_DataValueByNamesToGet != null)
+        {
+            totalItems = _DataValueByNamesToGet.Count();
+
+
+            if (!InstanceRegistered)
+            {
+                OnSelectInstance(SelectedInstance.Name);
+                return Task.FromResult(new TableData<SDataValueByName>());
+            }
+
+
+            pagedData = _DataValueByNamesToGet.Skip(state.Page * state.PageSize).Take(state.PageSize).ToArray();
+        }
+
+        return Task.FromResult(new TableData<SDataValueByName>() { TotalItems = totalItems, Items = pagedData });
+    }
+
+    private void OnSearch(string text)
+    {
+        searchString = text;
+        // table.ReloadServerData();
+    }
+
+    private void setDataValueByNames()
+    {
+        if (SelectedInstance == null)
+        {
+            Snackbar.Add("Issue with reading data for the given instance", Severity.Error);
+            return;
+        }
+
+        SelectedInstance.UpdateTagList();
+
+        InvokeAsync(StateHasChanged);
+
+        _DataValueByNames = SelectedInstance.TagInfos.Where(e => e.Area == Area && e.PrimitiveDataType != EPrimitiveDataType.Struct)
+            .Select(e => new SDataValueByName { Name = e.Name, DataValue = new SDataValue { Type = e.PrimitiveDataType } })
+            .ToArray();
+    }
+
+    public object parseData(SDataValue dataValue)
+    {
+        switch (dataValue.Type)
+        {
+            case EPrimitiveDataType.Unspecific:
+                return "Unspecific type, value not avaliable";
+            case EPrimitiveDataType.Struct:
+                return "Struct type, not implemented"; // not yet implemented for now
+            case EPrimitiveDataType.Bool:
+                return dataValue.Bool;
+            case EPrimitiveDataType.Int8:
+                return dataValue.Int8;
+            case EPrimitiveDataType.Int16:
+                return dataValue.Int16;
+            case EPrimitiveDataType.Int32:
+                return dataValue.Int32;
+            case EPrimitiveDataType.Int64:
+                return dataValue.Int64;
+            case EPrimitiveDataType.UInt8:
+                return dataValue.UInt8;
+            case EPrimitiveDataType.UInt16:
+                return dataValue.UInt16;
+            case EPrimitiveDataType.UInt32:
+                return dataValue.UInt32;
+            case EPrimitiveDataType.UInt64:
+                return dataValue.UInt64;
+            case EPrimitiveDataType.Float:
+                return dataValue.Float;
+            case EPrimitiveDataType.Double:
+                return dataValue.Double;
+            case EPrimitiveDataType.Char:
+                return dataValue.Char;
+            case EPrimitiveDataType.WChar:
+                return dataValue.WChar;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+
+    public void AddVariableToDiagram(SDataValueByName dataValueByName, ENodeType nodeType)
+    {
+        Point position;
+        if (Diagram.Nodes.Count == 0)
+        {
+            position = new Point(100, 200);
+        }
+        else
+        {
+            var oldPos = Diagram.Nodes.Last().Position;
+            position = new Point(oldPos.X + 20, oldPos.Y + 20);
+        }
+
+
+        if (nodeType == ENodeType.Input)
+        {
+            AddInputNodeToDiagram(dataValueByName, position);
+        }
+        else if (nodeType == ENodeType.Output)
+        {
+            AddOutputNodeToDiagram(dataValueByName, position);
+        }
+
+
+        InvokeAsync(StateHasChanged);
+        table.ReloadServerData();
+    }
+
+    public void Dispose()
+    {
+        SelectedInstance?.Dispose();
+        Snackbar?.Dispose();
+    }
+
+    private void AddInputNodeToDiagram(SDataValueByName dataValueByName, Point position)
+    {
+        InputNodeModel node;
+        switch (dataValueByName.DataValue.Type)
+        {
+            case EPrimitiveDataType.Unspecific:
+                break;
+            case EPrimitiveDataType.Struct:
+                break;
+            case EPrimitiveDataType.Bool:
+                node = Diagram.Nodes.Add(new InputNodeModel<bool>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.Int8:
+                node = Diagram.Nodes.Add(new InputNodeModel<byte>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.Int16:
+                node = Diagram.Nodes.Add(new InputNodeModel<short>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.Int32:
+                node = Diagram.Nodes.Add(new InputNodeModel<int>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.Int64:
+                node = Diagram.Nodes.Add(new InputNodeModel<long>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.UInt8:
+                node = Diagram.Nodes.Add(new InputNodeModel<byte>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.UInt16:
+                node = Diagram.Nodes.Add(new InputNodeModel<ushort>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.UInt32:
+                node = Diagram.Nodes.Add(new InputNodeModel<uint>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.UInt64:
+                node = Diagram.Nodes.Add(new InputNodeModel<ulong>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.Float:
+                node = Diagram.Nodes.Add(new InputNodeModel<float>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.Double:
+                node = Diagram.Nodes.Add(new InputNodeModel<double>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.Char:
+                break;
+            case EPrimitiveDataType.WChar:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+    private void AddOutputNodeToDiagram(SDataValueByName dataValueByName, Point position)
+    {
+        OutputNodeModel node;
+        switch (dataValueByName.DataValue.Type)
+        {
+            case EPrimitiveDataType.Unspecific:
+                break;
+            case EPrimitiveDataType.Struct:
+                break;
+            case EPrimitiveDataType.Bool:
+                node = Diagram.Nodes.Add(new OutputNodeModel<bool>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.Int8:
+                node = Diagram.Nodes.Add(new OutputNodeModel<byte>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.Int16:
+                node = Diagram.Nodes.Add(new OutputNodeModel<short>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.Int32:
+                node = Diagram.Nodes.Add(new OutputNodeModel<int>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.Int64:
+                node = Diagram.Nodes.Add(new OutputNodeModel<long>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.UInt8:
+                node = Diagram.Nodes.Add(new OutputNodeModel<byte>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.UInt16:
+                node = Diagram.Nodes.Add(new OutputNodeModel<ushort>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.UInt32:
+                node = Diagram.Nodes.Add(new OutputNodeModel<uint>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.UInt64:
+                node = Diagram.Nodes.Add(new OutputNodeModel<ulong>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.Float:
+                node = Diagram.Nodes.Add(new OutputNodeModel<float>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.Double:
+                node = Diagram.Nodes.Add(new OutputNodeModel<double>(position: position)
+                {
+                    Title = dataValueByName.Name
+                });
+                Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+
+                break;
+            case EPrimitiveDataType.Char:
+                break;
+            case EPrimitiveDataType.WChar:
+                break;
+            default:
+                throw new ArgumentOutOfRangeException();
+        }
+    }
+
+
+    public enum ENodeType
+    {
+        Input,
+        Output
+    }
+
+}

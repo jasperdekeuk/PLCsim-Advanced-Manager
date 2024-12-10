@@ -22,9 +22,10 @@ Features:
 - [x] **Advanced network setting**. Being able to set every interface of the instance to an interface of the host machine
 - [x] Create **snapshots** and restore them
 - [x] Option for **auto start** instances on startup of PLCsim Advanced Manager. Either just register or completely start the instance when starting the manager application. (see instance settings)
+- [x] A **nodegraph** to link variables and do basic virtual commissioning
+
 
 Future feature ideas:
-- [ ] Easy **virtual commissioning** by e.g. setting buttons and lights in the UI to the PLC variables
 - [ ] **Traces** on the variables for analysis
 - [ ] **Desktop version** so no webbrowser is needed for a local setup
 - [ ] Connect to **remote PLCsim Advance APIs**
@@ -34,6 +35,8 @@ Future feature ideas:
 ![](docs/img/overviewPage.png)
 
 ![](docs/img/instancePage.png)
+
+![](docs/img/nodegraph.png)
 
 
 # Quickstart
