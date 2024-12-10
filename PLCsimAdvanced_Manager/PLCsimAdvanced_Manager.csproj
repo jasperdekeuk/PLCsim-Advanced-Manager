@@ -8,6 +8,8 @@
 <!--        <PublishSingleFile>true</PublishSingleFile>-->
 <!--        <SelfContained>true</SelfContained>-->
         <RuntimeIdentifier>win-x64</RuntimeIdentifier>
+        <LangVersion>preview</LangVersion>
+
     </PropertyGroup>
 
     <ItemGroup>
