@@ -1,4 +1,5 @@
 ﻿@using System.Reflection
+@using System.Text.RegularExpressions
 @using Octokit
 @using Color = MudBlazor.Color
 @inherits LayoutComponentBase
@@ -61,10 +62,14 @@
     protected override void OnInitialized()
     {
         base.OnInitialized();
-        version = ThisAssembly.Git.BaseTag;
+        // version = ThisAssembly.Git.BaseTag;
         version = Assembly.GetExecutingAssembly()
             .GetCustomAttribute<AssemblyInformationalVersionAttribute>()?
             .InformationalVersion;
+        if (version != null)
+        {
+            version = Regex.Match(version, @"^\d+\.\d+\.\d+").Value;
+        }
     }
 
     string version = "0.1.1";
