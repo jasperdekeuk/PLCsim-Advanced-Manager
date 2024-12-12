@@ -1,0 +1,92 @@
+@page "/instance/{instanceName}/logs"
+@layout InstanceLayout
+@using PLCsimAdvanced_Manager.Services
+@inject ManagerFacade managerFacade
+
+
+<MudCard Style="padding: 20px; flex: auto">
+    <MudTable Items="@logs" FixedHeader="true" Height="400px" Hover="true">
+        <HeaderContent>
+            <MudTh>Timestamp</MudTh>
+            <MudTh>Log</MudTh>
+        </HeaderContent>
+        <RowTemplate>
+            <MudTd>@context.Timestamp</MudTd>
+            @* <MudTd>@context.Message</MudTd> *@
+            <MudTd>
+                @{
+                    var words = context.Message.Split(' ');
+                    foreach (var word in words)
+                    {
+                        switch (word)
+                        {
+                            case "Off":
+                                <MudChip Icon="@Icons.Material.Outlined.HighlightOff"
+                                         Variant="Variant.Text" Size="Size.Small" Disabled="true"
+                                         Color="Color.Transparent"> @word </MudChip>
+                                break;
+                            case "Run":
+                                <MudChip Icon="@Icons.Material.Outlined.PlayCircleOutline"
+                                         Variant="Variant.Text" Size="Size.Small"
+                                         Color="Color.Success"> @word </MudChip>
+                                break;
+                            case "Stop":
+                                <MudChip Icon="@Icons.Material.Outlined.StopCircle"
+                                         Variant="Variant.Text" Size="Size.Small"
+                                         Color="Color.Warning"> @word </MudChip>
+                                break;
+                            case "Invalid":
+                                <MudChip Icon="@Icons.Material.Outlined.ErrorOutline"
+                                         Variant="Variant.Text" Size="Size.Small"
+                                         Color="Color.Error"> @word </MudChip>
+                                break;
+                            case "ShuttingDown":
+                                <MudChip Icon="@Icons.Material.Outlined.Info" Variant="Variant.Text"
+                                         Size="Size.Small" Color="Color.Info"> @word </MudChip>
+                                break;
+                            case "Startup":
+                                <MudChip Icon="@Icons.Material.Outlined.Info" Variant="Variant.Text"
+                                         Size="Size.Small" Color="Color.Info"> @word </MudChip>
+                                break;
+                            case "Booting":
+                                <MudChip Icon="@Icons.Material.Outlined.Info" Variant="Variant.Text"
+                                         Size="Size.Small" Color="Color.Info"> @word </MudChip>
+                                break;
+                            default:
+                                @word
+                                break;
+                        }
+
+                        <text>&nbsp;</text>
+                        // add space after each word
+                    }
+                }
+            </MudTd>
+        </RowTemplate>
+    </MudTable>
+</MudCard>
+
+
+@code {
+    [Parameter] public string InstanceName { get; set; }
+
+
+    private List<InstanceHandler._log> logs = new List<InstanceHandler._log>();
+    private IInstance SelectedInstance;
+
+    protected override Task OnInitializedAsync()
+    {
+        SelectedInstance = SimulationRuntimeManager.CreateInterface(InstanceName);
+
+        managerFacade.InstanceHandler.GetLogs(SelectedInstance.ID, out logs);
+        managerFacade.InstanceHandler.OnLogsUpdated += OnLogsUpdated;
+        return base.OnInitializedAsync();
+    }
+
+    private void OnLogsUpdated(object? sender, EventArgs e)
+    {
+        managerFacade.InstanceHandler.GetLogs(SelectedInstance.ID, out logs);
+        InvokeAsync(StateHasChanged);
+    }
+
+}

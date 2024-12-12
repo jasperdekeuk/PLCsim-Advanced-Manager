@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.4] - 2024-12-12
+### Changes
+- added menu with routing for the instance view
+
+### Fix
+- new attempt for auto tag versioning
+
 ## [0.1.3] - 2024-12-10
 This update adds a **NODEGRAPH** functionality to the instance view (Simit-alike). This is a very first beta version for the early adopters. Linking outputs to inputs and datablock values is possible.
 ![](docs/img/nodegraph.png)

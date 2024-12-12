@@ -1,0 +1,144 @@
+﻿@using PLCsimAdvanced_Manager.Services
+@inherits LayoutComponentBase
+@using Color = MudBlazor.Color
+@layout MainLayout
+@inject ManagerFacade managerFacade
+@inject ISnackbar Snackbar
+
+<MudDialogProvider/>
+<MudSnackbarProvider/>
+
+<CascadingValue Value="this">
+    <MudLayout Style="height: 100%;">
+        <MudDrawerContainer Class="full-height" Style="height: 100%">
+            <MudPaper style="display: flex; align-content: center; justify-content: stretch" Class="blue lighten-5">
+                <div style="align-items: center; display: flex; justify-content: center; padding: 20px; ">
+                    <MudText Typo="Typo.h5" Color="Color.Primary"><b>@InstanceName</b></MudText>
+                    @* <MudSpacer/> *@
+                    <InstanceOperatingstateChip SelectedInstance="SelectedInstance"></InstanceOperatingstateChip>
+
+                </div>
+                <MudToolBar style=" flex-grow: 1">
+
+                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.PowerSettingsNew"
+                               Title="powerOn"
+                               Disabled="SelectedInstance.OperatingState != EOperatingState.Off" Color="Color.Success"
+                               Size="Size.Small"
+                               @onclick="() => { try { Task.Run(() => SelectedInstance.PowerOn()); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }"
+                               Style="margin-right: 10px;">Power On
+                    </MudButton>
+
+                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.PowerSettingsNew"
+                               Title="powerOff"
+                               Disabled="SelectedInstance.OperatingState != EOperatingState.Run && SelectedInstance.OperatingState != EOperatingState.Stop"
+                               Color="Color.Error" Size="Size.Small"
+                               @onclick="() => { try { Task.Run(() => SelectedInstance.PowerOff()); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">
+                        Power Off
+                    </MudButton>
+
+
+
+                    <MudSpacer/>
+                    @* <InstanceRunStopButton SelectedInstance="SelectedInstance"></InstanceRunStopButton> *@
+                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.PlayArrow"
+                               Color="Color.Success"
+                               Size="Size.Small"
+                               Title="Run" Disabled="SelectedInstance.OperatingState != EOperatingState.Stop"
+                               @onclick="() => { try { SelectedInstance.Run(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }"
+                               Style="margin-right: 10px;">Run
+                    </MudButton>
+
+                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Stop" Color="Color.Error"
+                               Size="Size.Small"
+                               Title="Stop" Disabled="SelectedInstance.OperatingState != EOperatingState.Run"
+                               @onclick="() => { try { SelectedInstance.Stop(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">
+                        Stop
+                    </MudButton>
+
+
+                    <MudSpacer/>
+                    <MudButton
+                        @onclick="() => { try { managerFacade.InstanceHandler.MemoryReset(SelectedInstance.ID); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">
+                        MRES
+                    </MudButton>
+
+
+                </MudToolBar>
+            </MudPaper>
+            <MudDrawer Fixed="true" Style="height: 100%;" @bind-Open="@_open" Elevation="1" Variant="@DrawerVariant.Mini" 
+                       OpenMiniOnHover="true">
+                <MudNavMenu Color="Color.Info">
+                    <MudNavLink Href="@($"instance/{InstanceName}/general")" Match="NavLinkMatch.All"
+                                Icon="@Icons.Material.Filled.Dashboard" IconColor="Color.Inherit">General
+                    </MudNavLink>
+                    <MudNavLink Href="@($"instance/{InstanceName}/dataview")" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.DataObject"
+                                IconColor="Color.Inherit">Data
+                    </MudNavLink>
+                    <MudNavLink Href="@($"instance/{InstanceName}/snapshots")" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.History"
+                                IconColor="Color.Inherit">
+                        Snapshots
+                    </MudNavLink>
+                    <MudNavLink Href="@($"instance/{InstanceName}/logs")" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Timeline"
+                                IconColor="Color.Inherit">
+                        Logs
+                    </MudNavLink>
+                    <MudNavLink Href="@($"instance/{InstanceName}/settings")" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Settings"
+                                IconColor="Color.Inherit">
+                        Settings
+                    </MudNavLink>
+                    <MudNavLink Href="@($"instance/{InstanceName}/nodegraph")" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.ViewInAr"
+                                IconColor="Color.Inherit">
+                        Nodegraph
+                    </MudNavLink>
+                </MudNavMenu>
+            </MudDrawer>
+
+            <MudMainContent>
+                @Body
+            </MudMainContent>
+        </MudDrawerContainer>
+    </MudLayout>
+</CascadingValue>
+
+
+@code {
+    public string InstanceName { get; set; }
+    private IInstance SelectedInstance;
+
+    private bool _open = false;
+
+
+    [CascadingParameter] RouteData RouteData { get; set; }
+
+    protected override async Task OnInitializedAsync()
+    {
+        base.OnInitialized();
+        InstanceName = RouteData.RouteValues["instanceName"].ToString();
+        OnSelectInstance(InstanceName);
+    }
+
+    private void OnSelectInstance(string name)
+    {
+        try
+        {
+            SelectedInstance = SimulationRuntimeManager.CreateInterface(name);
+            SelectedInstance.OnOperatingStateChanged += OnSelectedInstanceOnOnOperatingStateChanged;
+            StateHasChanged();
+        }
+        catch (Exception e)
+        {
+            Snackbar.Add($"Error while selecting instance {name}: {e.Message}", Severity.Error);
+        }
+    }
+
+    private void OnSelectedInstanceOnOnOperatingStateChanged(IInstance inSender, ERuntimeErrorCode inErrorCode, DateTime inDateTime, EOperatingState inPrevState, EOperatingState inOperatingState)
+    {
+        if (inSender != SelectedInstance)
+        {
+            return;
+        }
+
+        InvokeAsync(StateHasChanged);
+    }
+
+}

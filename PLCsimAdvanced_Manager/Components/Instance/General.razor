@@ -1,0 +1,132 @@
+@page "/instance/{instanceName}/general"
+@layout InstanceLayout
+
+
+
+<MudCard Style="padding: 20px; flex: auto; height: 100%">
+    <MudGrid>
+        <MudItem xs="4">
+            <MudStack>
+                <MudText Typo="Typo.subtitle2">PLC Family</MudText>
+                <MudText Typo="Typo.body2"> @SelectedInstance.CPUType.ToString()</MudText>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="4">
+            <MudStack>
+                <MudText Typo="Typo.subtitle2">Name</MudText>
+                <MudText Typo="Typo.body2"> @SelectedInstance.Info.Name</MudText>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="4">
+            <MudStack>
+                <MudText Typo="Typo.subtitle2">ID</MudText>
+                <MudText Typo="Typo.body2"> @SelectedInstance.Info.ID</MudText>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="4">
+            <MudStack>
+                <MudText Typo="Typo.subtitle2">Controller Name</MudText>
+                <MudText Typo="Typo.body2"> @SelectedInstance.ControllerName</MudText>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="4">
+            <MudStack>
+                <MudText Typo="Typo.subtitle2">License Status</MudText>
+                <MudText Typo="Typo.body2"> @SelectedInstance.LicenseStatus</MudText>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="4">
+            <MudStack>
+                <MudText Typo="Typo.subtitle2">Controller Short Designation</MudText>
+                <MudText Typo="Typo.body2"> @SelectedInstance.ControllerShortDesignation</MudText>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="4">
+            <MudStack>
+                <MudText Typo="Typo.subtitle2">Communication Interface</MudText>
+                <MudText Typo="Typo.body2"> @SelectedInstance.CommunicationInterface.ToString()</MudText>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="4">
+            <MudStack>
+                <MudText Typo="Typo.subtitle2">Controller IP</MudText>
+                <div class="d-flex align-items-start">
+                    <div class="ml-2">
+                        @foreach (var ip in SelectedInstance.ControllerIP)
+                        {
+                        <div>@ip</div>
+                        }
+                    </div>
+                    @if (SelectedInstance.ControllerIP.Length != 0)
+                    {
+                    <MudIconButton Icon="@Icons.Material.Outlined.Edit" Size="Size.Small" OnClick="() => OpenDialogSetIPSettings(SelectedInstance)" Disabled="@(!(SelectedInstance.OperatingState == EOperatingState.Off || SelectedInstance.OperatingState == EOperatingState.Stop))"></MudIconButton>
+                    }
+                </div>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="4">
+            <MudStack>
+                <MudText Typo="Typo.subtitle2">Strict Motion Timing</MudText>
+                <MudText Typo="Typo.body2"> @SelectedInstance.StrictMotionTiming.ToString()</MudText>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="4">
+            <MudStack>
+                <MudText Typo="Typo.subtitle2">Operating Mode</MudText>
+                <MudText Typo="Typo.body2"> @SelectedInstance.OperatingMode.ToString()</MudText>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="4">
+            <MudStack>
+                <MudText Typo="Typo.subtitle2">System Time</MudText>
+                <MudText Typo="Typo.body2"> @SelectedInstance.SystemTime</MudText>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="4">
+            <MudStack>
+                <MudText Typo="Typo.subtitle2">Scale Factor </MudText>
+                <MudText Typo="Typo.body2"> @SelectedInstance.ScaleFactor.ToString()</MudText>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="4">
+            <MudStack>
+                <MudText Typo="Typo.subtitle2">Overwrite Minimum Cycle Time</MudText>
+                <MudText Typo="Typo.body2"> @SelectedInstance.OverwrittenMinimalCycleTime_ns.ToString()</MudText>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="6">
+            <MudStack>
+                <MudText Typo="Typo.subtitle2">Send Sync Event in Default Mode Enabled</MudText>
+                <MudText Typo="Typo.body2"> @SelectedInstance.IsSendSyncEventInDefaultModeEnabled.ToString()</MudText>
+            </MudStack>
+        </MudItem>
+        <MudItem xs="6">
+            <MudStack>
+                <MudText Typo="Typo.subtitle2">Storage Path</MudText>
+                <MudText Style="overflow: auto" Typo="Typo.body2"> @SelectedInstance.StoragePath</MudText>
+            </MudStack>
+        </MudItem>
+    </MudGrid>
+
+</MudCard>
+@code {
+    [Parameter] public string InstanceName { get; set; }
+    private IInstance SelectedInstance;
+
+
+    protected override void OnInitialized()
+    {
+        base.OnInitialized();
+        SelectedInstance = SimulationRuntimeManager.CreateInterface(InstanceName);
+    }
+    
+    public void OpenDialogSetIPSettings(IInstance selectedInstance)
+    {
+        DialogOptions closeOnEscapeKey = new DialogOptions()
+            { CloseOnEscapeKey = true, MaxWidth = MaxWidth.Medium, CloseButton = true };
+        var parameters = new DialogParameters();
+        parameters.Add("selectedInstance", selectedInstance);
+        // DialogService.Show<SetIPSettingsDialog>($"IP Settings: {selectedInstance.Name}", parameters, closeOnEscapeKey);
+    }
+
+}

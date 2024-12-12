@@ -1,0 +1,23 @@
+@page "/instance/{instanceName}/dataview"
+@layout InstanceLayout
+
+<MudCard Style="padding: 20px; flex: auto">
+    <MudTabs Elevation="2" Rounded="true" ApplyEffectsToContainer="true" PanelClass="pa-6">
+
+        <MudTabPanel Text="Datablocks">
+            <DataTable Area="EArea.DataBlock" InstanceName="@InstanceName"></DataTable>
+        </MudTabPanel>
+        <MudTabPanel Text="Inputs">
+            <DataTable Area="EArea.Input" InstanceName="@InstanceName"></DataTable>
+
+        </MudTabPanel>
+        <MudTabPanel Text="Outputs">
+            <DataTable Area="EArea.Output" InstanceName="@InstanceName"></DataTable>
+        </MudTabPanel>
+    </MudTabs>
+</MudCard>
+
+@code {
+    [Parameter] public string InstanceName { get; set; }
+
+}
