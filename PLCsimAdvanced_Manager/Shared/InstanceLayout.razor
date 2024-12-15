@@ -73,7 +73,7 @@
     <MudDrawer Anchor="Anchor.Start" Fixed="true" Breakpoint="Breakpoint.Sm" Style="height: calc(100vh - 128px); margin-top: 64px;" @bind-Open="@_open" Elevation="1" Variant="@DrawerVariant.Mini"
                OpenMiniOnHover="true">
         <MudNavMenu Color="Color.Info">
-            <MudNavLink Href="@($"instance/{InstanceName}/general")" Match="NavLinkMatch.All"
+            <MudNavLink Href="@($"instance/{InstanceName}")" Match="NavLinkMatch.All"
                         Icon="@Icons.Material.Filled.Dashboard" IconColor="Color.Inherit">General
             </MudNavLink>
             <MudNavLink Href="@($"instance/{InstanceName}/dataview")" Match="NavLinkMatch.All"
