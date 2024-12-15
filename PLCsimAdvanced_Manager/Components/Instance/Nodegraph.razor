@@ -6,11 +6,23 @@
 @using PLCsimAdvanced_Manager.Services.Nodegraph
 @inject NodegraphServiceFactory NodegraphServiceFactory
 
-<MudPaper Style="overflow:hidden; position:relative;">
-    <MudDrawerContainer Class="mud-height-full" Style="height: calc(100vh - 128px)">
+<MudPaper Style="overflow:hidden; position:sticky; height: calc(100vh - 128px)">
+    @* <MudDrawerContainer Class="mud-height-full" Style="height: calc(100vh - 128px)"> *@
 
-        <MudDrawer Width="510px" Height="100%" @bind-Open="@_drawerToggle" Anchor="Anchor.End" Elevation="5"
-                   Variant="@DrawerVariant.Persistent">
+    <div style="display: flex">
+        <div style="display: inline-block" class="diagram-container @(simulationRunning ? "border-yellow" : "")">
+            <CascadingValue Value="Diagram" IsFixed="true">
+
+                <DiagramCanvas>
+                    <Widgets>
+                        <SelectionBoxWidget/>
+                    </Widgets>
+                </DiagramCanvas>
+            </CascadingValue>
+
+        </div>
+
+        <div style="display: inline-block">
             @if (simulationRunning)
             {
                 <MudText>Stop simulation to change nodegraph</MudText>
@@ -34,29 +46,33 @@
                     </MudTabPanel>
                 </MudTabs>
             }
-
-        </MudDrawer>
-
-        <div class="diagram-container @(simulationRunning ? "border-yellow" : "")">
-            <CascadingValue Value="Diagram" IsFixed="true">
-
-                <DiagramCanvas>
-                    <Widgets>
-                        <NavigatorWidget Width="200"
-                                         Class="border border-black bg-white absolute"
-                                         Style="bottom: 15px; right: 15px;" />
-                        <SelectionBoxWidget/>
-                    </Widgets>
-                </DiagramCanvas>
-            </CascadingValue>
-
         </div>
-        <MudButton @onclick="_nodegraphService.ExecuteSimulation" Disabled="simulationRunning">Start simulation
+
+    </div>
+    <div>
+        @* <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.PowerSettingsNew" Title="runSimulation" Size="Size.Small" Style="margin-right: 10px" @onclick="_nodegraphService.ExecuteSimulation" Disabled="simulationRunning">Start simulation *@
+        @* </MudButton> *@
+        @* *@
+        @* <MudButton @onclick="_nodegraphService.StopSimulation" Disabled="!simulationRunning">Stop simulation *@
+        @* </MudButton> *@
+
+
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.PlayArrow"
+                   Color="Color.Success"
+                   Size="Size.Small"
+                   Title="Run" Disabled="simulationRunning"
+                   @onclick="_nodegraphService.ExecuteSimulation"
+                   Style="margin-right: 10px; margin-left: 10px">
+            Run Simulation
         </MudButton>
-        <MudButton @onclick="_nodegraphService.StopSimulation" Disabled="!simulationRunning">Stop simulation
+
+        <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Stop" Color="Color.Error"
+                   Size="Size.Small"
+                   Title="Stop" Disabled="!simulationRunning"
+                   @onclick="_nodegraphService.StopSimulation">
+                   Stop Simulation
         </MudButton>
-        <MudButton @onclick="ToggleDrawer">Toggle drawer</MudButton>
-    </MudDrawerContainer>
+    </div>
 </MudPaper>
 
 
@@ -72,7 +88,6 @@
     private BlazorDiagram Diagram;
 
     private bool simulationRunning;
-    private bool _drawerToggle = true;
 
 
     protected override void OnInitialized()
@@ -82,7 +97,6 @@
         _nodegraphService.OnSimulationStarted += OnSimulationStarted;
         _nodegraphService.OnSimulationStopped += OnSimulationStopped;
         simulationRunning = _nodegraphService.IsSimulationRunning;
-        Diagram.ZoomToFit(100);
     }
 
     private void OnSimulationStarted(object sender, EventArgs e)
@@ -95,11 +109,6 @@
     {
         simulationRunning = false;
         InvokeAsync(StateHasChanged);
-    }
-
-    private void ToggleDrawer()
-    {
-        _drawerToggle = !_drawerToggle;
     }
 
 }

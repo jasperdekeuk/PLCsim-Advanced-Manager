@@ -1,6 +1,6 @@
 .diagram-container{
     width: 100%;
-    height: 400px;
+    height: calc(100vh - 128px - 50px);
     border: 1px solid lightgray;
 }
 

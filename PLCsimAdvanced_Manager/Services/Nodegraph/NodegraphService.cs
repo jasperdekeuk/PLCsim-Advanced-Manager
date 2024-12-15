@@ -21,7 +21,7 @@ public class NodegraphService
         AllowMultiSelection = true,
         Zoom =
         {
-            Enabled = false,
+            Enabled = true,
         },
         Links =
         {
