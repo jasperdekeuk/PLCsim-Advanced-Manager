@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.5] - 2024-12-15
+Stabilizing the features of the last version
+
+### Fixes
+- Some UI fixes that came in the last versions with the UI changes
+- Some routing issues that came with the new routing
+
 ## [0.1.4] - 2024-12-12
 ### Changes
 - added menu with routing for the instance view
