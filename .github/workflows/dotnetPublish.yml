@@ -33,7 +33,7 @@ jobs:
         run: dotnet restore ./PLCsimAdvanced_Manager/PLCsimAdvanced_Manager.csproj
         
       - name: Publish
-        run: dotnet publish -c Release -o PLCsimAdvanced_manager --self-contained true -p:PublishSingleFile=true -p:Version=${{ steps.get_version.outputs.VERSION }}
+        run: dotnet publish -c Release -o PLCsimAdvanced_manager --self-contained true -p:PublishSingleFile=true -p:Version=${{ steps.get_version.outputs.VERSION }} -p:DebugType=None
 
       - name: Archive Release
         uses: thedoctor0/zip-release@0.7.5
