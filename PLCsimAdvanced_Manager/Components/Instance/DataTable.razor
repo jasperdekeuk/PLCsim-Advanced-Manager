@@ -1,3 +1,4 @@
+@using PLCsimAdvanced_Manager.Components.Instance
 @using PLCsimAdvanced_Manager.Services
 @using Color = MudBlazor.Color
 @inject ISnackbar Snackbar
@@ -289,7 +290,7 @@ else
     }
 
 
-    public void ChangeData(SDataValueByName dataValueByName)
+    public Task ChangeData(SDataValueByName dataValueByName)
     {
         var parameters = new DialogParameters<ChangeDataDialog>();
         parameters.Add("Instance", SelectedInstance);
@@ -297,7 +298,7 @@ else
 
         var options = new DialogOptions() { CloseButton = true, MaxWidth = MaxWidth.ExtraSmall };
 
-        DialogService.Show<ChangeDataDialog>("Change value", parameters, options);
+       return DialogService.ShowAsync<ChangeDataDialog>("Change value", parameters, options);
     }
 
     public void Dispose()

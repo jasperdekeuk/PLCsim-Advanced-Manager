@@ -1,104 +1,119 @@
 ﻿@using PLCsimAdvanced_Manager.Services
-@inherits LayoutComponentBase
+@inherits MainLayout
 @using Color = MudBlazor.Color
 @layout MainLayout
 @inject ManagerFacade managerFacade
 @inject ISnackbar Snackbar
+@inject IDialogService DialogService
 
-<MudDialogProvider/>
+
+@* <MudDialogProvider/> *@
 <MudSnackbarProvider/>
 
-<CascadingValue Value="this">
-    <MudLayout Style="height: 100%;">
-        <MudDrawerContainer Class="full-height" Style="height: 100%">
-            <MudPaper style="display: flex; align-content: center; justify-content: stretch" Class="blue lighten-5">
-                <div style="align-items: center; display: flex; justify-content: center; padding: 20px; ">
-                    <MudText Typo="Typo.h5" Color="Color.Primary"><b>@InstanceName</b></MudText>
-                    @* <MudSpacer/> *@
-                    <InstanceOperatingstateChip SelectedInstance="SelectedInstance"></InstanceOperatingstateChip>
+@* <CascadingValue Value="this"> *@
+<MudLayout Style="display: flex; flex-direction: column; height: 100vh;">
+    @* <MudAppBar Style="z-index: 5; padding-top: 64px" Class="blue lighten-5"> *@
+    <div style="border-bottom : 3px #5e9393 solid; position: fixed; width: 100vw;  display: flex; background-color: #cae5eb; z-index: 6; height: 64px">
+        <div style="align-items: center; display: flex; justify-content: center; padding: 20px; ">
+            <MudText Typo="Typo.h5" Color="Color.Primary"><b>@InstanceName</b></MudText>
+            @* <MudSpacer/> *@
+            <InstanceOperatingstateChip SelectedInstance="SelectedInstance"></InstanceOperatingstateChip>
+    
+        </div>
+        <MudToolBar style=" flex-grow: 1">
+    
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.PowerSettingsNew"
+                       Title="powerOn"
+                       Disabled="SelectedInstance.OperatingState != EOperatingState.Off" Color="Color.Success"
+                       Size="Size.Small"
+                       @onclick="() => { try { Task.Run(() => SelectedInstance.PowerOn()); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }"
+                       Style="margin-right: 10px;">Power On
+            </MudButton>
+    
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.PowerSettingsNew"
+                       Title="powerOff"
+                       Disabled="SelectedInstance.OperatingState != EOperatingState.Run && SelectedInstance.OperatingState != EOperatingState.Stop"
+                       Color="Color.Error" Size="Size.Small"
+                       @onclick="() => { try { Task.Run(() => SelectedInstance.PowerOff()); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">
+                Power Off
+            </MudButton>
+    
+    
+    
+            <MudSpacer/>
+            @* <InstanceRunStopButton SelectedInstance="SelectedInstance"></InstanceRunStopButton> *@
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.PlayArrow"
+                       Color="Color.Success"
+                       Size="Size.Small"
+                       Title="Run" Disabled="SelectedInstance.OperatingState != EOperatingState.Stop"
+                       @onclick="() => { try { SelectedInstance.Run(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }"
+                       Style="margin-right: 10px;">Run
+            </MudButton>
+    
+            <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Stop" Color="Color.Error"
+                       Size="Size.Small"
+                       Title="Stop" Disabled="SelectedInstance.OperatingState != EOperatingState.Run"
+                       @onclick="() => { try { SelectedInstance.Stop(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">
+                Stop
+            </MudButton>
+    
+    
+            <MudSpacer/>
+            <MudButton
+                @onclick="() => { try { managerFacade.InstanceHandler.MemoryReset(SelectedInstance.ID); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">
+                MRES
+            </MudButton>
+    
+    
+        </MudToolBar>
+        @* </MudAppBar> *@
+    </div>
 
-                </div>
-                <MudToolBar style=" flex-grow: 1">
 
-                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.PowerSettingsNew"
-                               Title="powerOn"
-                               Disabled="SelectedInstance.OperatingState != EOperatingState.Off" Color="Color.Success"
-                               Size="Size.Small"
-                               @onclick="() => { try { Task.Run(() => SelectedInstance.PowerOn()); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }"
-                               Style="margin-right: 10px;">Power On
-                    </MudButton>
+    <MudDrawer Anchor="Anchor.Start" Fixed="true" Breakpoint="Breakpoint.Sm" Style="height: calc(100vh - 128px); margin-top: 64px;" @bind-Open="@_open" Elevation="1" Variant="@DrawerVariant.Mini"
+               OpenMiniOnHover="true">
+        <MudNavMenu Color="Color.Info">
+            <MudNavLink Href="@($"instance/{InstanceName}/general")" Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.Filled.Dashboard" IconColor="Color.Inherit">General
+            </MudNavLink>
+            <MudNavLink Href="@($"instance/{InstanceName}/dataview")" Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.Filled.DataObject"
+                        IconColor="Color.Inherit">Data
+            </MudNavLink>
+            <MudNavLink Href="@($"instance/{InstanceName}/snapshots")" Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.Filled.History"
+                        IconColor="Color.Inherit">
+                Snapshots
+            </MudNavLink>
+            <MudNavLink Href="@($"instance/{InstanceName}/logs")" Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.Filled.Timeline"
+                        IconColor="Color.Inherit">
+                Logs
+            </MudNavLink>
+            <MudNavLink Href="@($"instance/{InstanceName}/settings")" Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.Filled.Settings"
+                        IconColor="Color.Inherit">
+                Settings
+            </MudNavLink>
+            <MudNavLink Href="@($"instance/{InstanceName}/nodegraph")" Match="NavLinkMatch.All"
+                        Icon="@Icons.Material.Filled.ViewInAr"
+                        IconColor="Color.Inherit">
+                Nodegraph
+            </MudNavLink>
+        </MudNavMenu>
+    </MudDrawer>
 
-                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.PowerSettingsNew"
-                               Title="powerOff"
-                               Disabled="SelectedInstance.OperatingState != EOperatingState.Run && SelectedInstance.OperatingState != EOperatingState.Stop"
-                               Color="Color.Error" Size="Size.Small"
-                               @onclick="() => { try { Task.Run(() => SelectedInstance.PowerOff()); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">
-                        Power Off
-                    </MudButton>
+    <MudMainContent >
+        
+        @* <div style="height: calc(100vh - 128px);"> *@
+            @Body
+            
+        @* </div> *@
+            
+    </MudMainContent>
+</MudLayout>
 
-
-
-                    <MudSpacer/>
-                    @* <InstanceRunStopButton SelectedInstance="SelectedInstance"></InstanceRunStopButton> *@
-                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.PlayArrow"
-                               Color="Color.Success"
-                               Size="Size.Small"
-                               Title="Run" Disabled="SelectedInstance.OperatingState != EOperatingState.Stop"
-                               @onclick="() => { try { SelectedInstance.Run(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }"
-                               Style="margin-right: 10px;">Run
-                    </MudButton>
-
-                    <MudButton Variant="Variant.Filled" StartIcon="@Icons.Material.Outlined.Stop" Color="Color.Error"
-                               Size="Size.Small"
-                               Title="Stop" Disabled="SelectedInstance.OperatingState != EOperatingState.Run"
-                               @onclick="() => { try { SelectedInstance.Stop(); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">
-                        Stop
-                    </MudButton>
-
-
-                    <MudSpacer/>
-                    <MudButton
-                        @onclick="() => { try { managerFacade.InstanceHandler.MemoryReset(SelectedInstance.ID); }catch (Exception e) { Snackbar.Add(e.Message, Severity.Error); } }">
-                        MRES
-                    </MudButton>
-
-
-                </MudToolBar>
-            </MudPaper>
-            <MudDrawer Fixed="true" Style="height: 100%;" @bind-Open="@_open" Elevation="1" Variant="@DrawerVariant.Mini" 
-                       OpenMiniOnHover="true">
-                <MudNavMenu Color="Color.Info">
-                    <MudNavLink Href="@($"instance/{InstanceName}/general")" Match="NavLinkMatch.All"
-                                Icon="@Icons.Material.Filled.Dashboard" IconColor="Color.Inherit">General
-                    </MudNavLink>
-                    <MudNavLink Href="@($"instance/{InstanceName}/dataview")" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.DataObject"
-                                IconColor="Color.Inherit">Data
-                    </MudNavLink>
-                    <MudNavLink Href="@($"instance/{InstanceName}/snapshots")" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.History"
-                                IconColor="Color.Inherit">
-                        Snapshots
-                    </MudNavLink>
-                    <MudNavLink Href="@($"instance/{InstanceName}/logs")" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Timeline"
-                                IconColor="Color.Inherit">
-                        Logs
-                    </MudNavLink>
-                    <MudNavLink Href="@($"instance/{InstanceName}/settings")" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.Settings"
-                                IconColor="Color.Inherit">
-                        Settings
-                    </MudNavLink>
-                    <MudNavLink Href="@($"instance/{InstanceName}/nodegraph")" Match="NavLinkMatch.All" Icon="@Icons.Material.Filled.ViewInAr"
-                                IconColor="Color.Inherit">
-                        Nodegraph
-                    </MudNavLink>
-                </MudNavMenu>
-            </MudDrawer>
-
-            <MudMainContent>
-                @Body
-            </MudMainContent>
-        </MudDrawerContainer>
-    </MudLayout>
-</CascadingValue>
+@* </CascadingValue> *@
 
 
 @code {

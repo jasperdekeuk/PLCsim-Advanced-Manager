@@ -1,5 +1,6 @@
 using MudBlazor;
 using PLCsimAdvanced_Manager.Components;
+using PLCsimAdvanced_Manager.Components.Instance;
 using PLCsimAdvanced_Manager.Services;
 using Siemens.Simatic.Simulation.Runtime;
 

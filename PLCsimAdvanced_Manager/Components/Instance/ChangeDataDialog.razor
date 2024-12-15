@@ -1,7 +1,4 @@
 @using Color = MudBlazor.Color
-@using Siemens.Simatic.Simulation.Runtime
-@using PLCsimAdvanced_Manager.Pages
-@inject ISnackbar Snackbar
 
 <MudDialog>
     <DialogContent>
@@ -64,14 +61,11 @@
 
 @code {
 
-    [CascadingParameter]
-    MudDialogInstance MudDialog { get; set; }
+    [CascadingParameter] MudDialogInstance MudDialog { get; set; }
 
-    [Parameter]
-    public SDataValueByName DataValueByName { get; set; }
+    [Parameter] public SDataValueByName DataValueByName { get; set; }
 
-    [Parameter]
-    public IInstance Instance { get; set; }
+    [Parameter] public IInstance Instance { get; set; }
 
     bool newBool;
     sbyte newSByte;
@@ -197,4 +191,5 @@
 
 
     void Cancel() => MudDialog.Cancel();
+
 }

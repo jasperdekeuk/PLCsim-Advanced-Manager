@@ -116,6 +116,13 @@
       <_ContentIncludedByDefault Remove="wwwroot\_content\Microsoft.Fast.Components.FluentUI\js\web-components.min.js" />
     </ItemGroup>
 
+    <ItemGroup>
+      <AdditionalFiles Include="Components\Instance\ChangeDataDialog.razor" />
+      <AdditionalFiles Include="Components\Instance\DataTable.razor" />
+      <AdditionalFiles Include="Components\Instance\PlcSettings.razor" />
+      <AdditionalFiles Include="Components\Instance\VariablesTable.razor" />
+    </ItemGroup>
+
 
 
 
