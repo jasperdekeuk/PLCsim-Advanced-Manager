@@ -10,7 +10,6 @@ public abstract class BaseNodeModel(Point position) : NodeModel(position)
 
 public class BaseNodeModel<T>(Point position) : BaseNodeModel(position)
 {
-    public T? Value { get; set; }
 
     public override void Calculate()
     {

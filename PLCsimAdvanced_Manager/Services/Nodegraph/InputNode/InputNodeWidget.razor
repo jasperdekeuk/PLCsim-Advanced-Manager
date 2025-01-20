@@ -6,9 +6,9 @@
     <div class="card-header">
         <h6 class="mb-0">@Node.Title</h6>
     </div>
-    <div style="padding: 1px">
-        <text>@Node.Value?.GetType()</text>
-    </div>
+    @* <div style="padding: 1px"> *@
+    @*     $1$ <text>@OutputPort?.GetType()</text> #1# *@
+    @* </div> *@
     @foreach (var port in Node.Ports)
     {
         <PortRenderer @key="port" Port="port" style="@portColor"/>

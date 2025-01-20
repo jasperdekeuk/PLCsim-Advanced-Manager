@@ -1,0 +1,38 @@
+.card{
+    width: 80px;
+    border: 1px solid #ccc;
+    border-radius: 10px;
+    padding: 1px;
+    background-color:#f9f9f9;
+}
+
+.card.selected{
+    border-color: #4949bd;
+    /*background-color: #e0e0ff;*/
+}
+
+::deep .diagram-port.right{
+    width: 15px;
+    height: 15px;
+    background-color: #0a53be;
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    border-bottom-left-radius: 50%;
+    border-bottom-right-radius: 50%;
+    position: absolute;
+    right: -7px;
+    top: 10px;
+}
+
+::deep .diagram-port.left{
+    width: 15px;
+    height: 15px;
+    background-color: #0a53be;
+    border-top-left-radius: 50%;
+    border-top-right-radius: 50%;
+    border-bottom-left-radius: 50%;
+    border-bottom-right-radius: 50%;
+    position: absolute;
+    left: -7px;
+    top: 10px;
+}

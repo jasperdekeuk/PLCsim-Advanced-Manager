@@ -5,7 +5,7 @@ namespace PLCsimAdvanced_Manager.Services.Nodegraph.PortModel;
 
 public abstract class OutputPortModel(NodeModel parent)
     : Blazor.Diagrams.Core.Models.PortModel(parent, PortAlignment.Right, null, null);
-public class OutputPortModel<T>(NodeModel paretn): Blazor.Diagrams.Core.Models.PortModel(paretn, PortAlignment.Right, null, null)
+public class OutputPortModel<T>(NodeModel paretn): BasePortModel(paretn, PortAlignment.Right, null, null)
 {
     public T? Value { get; set; }
 

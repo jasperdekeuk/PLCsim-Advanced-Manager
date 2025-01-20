@@ -1,0 +1,32 @@
+@using PLCsimAdvanced_Manager.Services.Nodegraph.InputNode
+@using Blazor.Diagrams.Components.Renderers
+
+<div class="card @(Node.Selected ? "selected" : "")" style="width: 18rem;">
+    <div class="card-header">
+        <h6 class="mb-0">@Node.Title</h6>
+    </div>    
+    @* <div style="padding: 1px"> *@
+    @*     <text>bool</text> *@
+    @* </div> *@
+    @foreach (var port in Node.Ports)
+    {
+        <PortRenderer @key="port" Port="port" style="@portColor"/>
+    }
+</div>
+
+@code {
+    [Parameter] public BoolInverseNodeModel Node { get; set; }
+    private string portColor;
+
+
+    protected override void OnInitialized()
+    {
+        portColor = GetPortColor();
+    }
+
+    private string GetPortColor()
+    {
+        return "background-color:#6C757D ";
+
+    }
+}

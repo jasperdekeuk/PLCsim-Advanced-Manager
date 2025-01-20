@@ -8,6 +8,7 @@ public class PersistenceHandler
 {
     private Persistence _persistence = new Persistence();
     private PersistenceSettings _settings = new PersistenceSettings();
+    private NodegraphJson _nodegraph = new NodegraphJson();
     private string _filePath;
 
     public PersistenceHandler()
@@ -26,13 +27,22 @@ public class PersistenceHandler
         if (!File.Exists(_filePath))
         {
             _settings = new PersistenceSettings();
+            _nodegraph = new NodegraphJson();
             // create persistence.json file
             _persistence = new Persistence
             {
-                PersistenceSettings = _settings
+                PersistenceSettings = _settings,
+                NodegraphJson = _nodegraph
             };
             var jsonString = JsonSerializer.Serialize(_persistence, new JsonSerializerOptions { WriteIndented = true });
             File.WriteAllText(_filePath, jsonString);
+        }
+        else
+        {
+            var settingContent = File.ReadAllText(_filePath);
+            _persistence = JsonSerializer.Deserialize<Persistence>(settingContent);
+            _settings = _persistence.PersistenceSettings;
+            _nodegraph = _persistence.NodegraphJson;
         }
     }
 
@@ -65,6 +75,29 @@ public class PersistenceHandler
         var jsonString = JsonSerializer.Serialize(_persistence, new JsonSerializerOptions { WriteIndented = true });
         File.WriteAllText(_filePath, jsonString);
     }
+    
+    public void SaveNodegraphJson(string nodegraphJson,string directory)
+    {
+        setStuffRight(directory);
+
+        _persistence.NodegraphJson = new NodegraphJson { NodegraphJsonString = nodegraphJson };
+        var jsonString = JsonSerializer.Serialize(_persistence, new JsonSerializerOptions { WriteIndented = true });
+        File.WriteAllText(_filePath, jsonString);
+    }
+    
+    public string ReadNodegraphJson(string directory)
+    {
+        setStuffRight(directory);
+        
+        if (File.Exists(_filePath))
+        {
+            var settingContent = File.ReadAllText(_filePath);
+            var persistence = JsonSerializer.Deserialize<Persistence>(settingContent);
+            return persistence?.NodegraphJson?.NodegraphJsonString;
+        }
+
+        return string.Empty;
+    }
 }
 
 public class PersistenceSettings
@@ -75,7 +108,13 @@ public class PersistenceSettings
     [JsonPropertyName("PowerOnOnStartup")] public bool PowerOnOnStartup { get; set; } = false;
 }
 
+public class NodegraphJson
+{
+    [JsonPropertyName("NodegraphJson")] public string NodegraphJsonString { get; set; } = string.Empty;
+}
+
 public class Persistence
 {
     [JsonPropertyName("Settings")] public PersistenceSettings PersistenceSettings { get; set; } = null;
+    [JsonPropertyName("NodegraphJson")] public NodegraphJson NodegraphJson { get; set; } = null;
 }

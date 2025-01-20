@@ -4,16 +4,21 @@ using PLCsimAdvanced_Manager.Services.Nodegraph.PortModel;
 
 namespace PLCsimAdvanced_Manager.Services.Nodegraph.InputNode;
 
-public abstract class InputNodeModel(Point position) : BaseNodeModel(position)
+public class InputNodeModel(Point position) : BaseNodeModel(position)
 {
+    public override void Calculate()
+    {
+        throw new NotImplementedException();
+    }
 }
-public class InputNodeModel<T> : InputNodeModel
-{
-    public T? Value { get; set; }
 
+public class InputNodeModel<T>: InputNodeModel
+{
+    public OutputPortModel<T> OutputPort { get; set; }
     public InputNodeModel(Point position) : base(position)
     {
-        AddPort(new OutputPortModel<T>(this));
+        OutputPort = new OutputPortModel<T>(this);
+        AddPort(OutputPort);
     }
 
     public override void Calculate()

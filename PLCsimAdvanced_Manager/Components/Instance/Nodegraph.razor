@@ -3,8 +3,14 @@
 @using Blazor.Diagrams
 @using Blazor.Diagrams.Components
 @using Blazor.Diagrams.Components.Widgets
+@using Blazor.Diagrams.Core.Controls.Default
+@using Blazor.Diagrams.Core.Geometry
 @using PLCsimAdvanced_Manager.Services.Nodegraph
+@using PLCsimAdvanced_Manager.Services.Nodegraph.BasicLib.BoolInverse
+@using PLCsimAdvanced_Manager.Services.Persistence
+@using Size = MudBlazor.Size
 @inject NodegraphServiceFactory NodegraphServiceFactory
+@inject PersistenceHandler PersistenceHandler
 
 <MudPaper Style="overflow:hidden; position:sticky; height: calc(100vh - 128px)">
     @* <MudDrawerContainer Class="mud-height-full" Style="height: calc(100vh - 128px)"> *@
@@ -21,8 +27,11 @@
             </CascadingValue>
 
         </div>
+        
 
-        <div style="display: inline-block">
+
+
+        <div style="display: inline-block; max-width: 500px">
             @if (simulationRunning)
             {
                 <MudText>Stop simulation to change nodegraph</MudText>
@@ -44,6 +53,7 @@
                         <VariablesTable Area="EArea.Output" InstanceName="@InstanceName"
                                         Diagram="Diagram"></VariablesTable>
                     </MudTabPanel>
+                    <MudTabPanel Text="Basic Lib"></MudTabPanel>
                 </MudTabs>
             }
         </div>
@@ -70,8 +80,10 @@
                    Size="Size.Small"
                    Title="Stop" Disabled="!simulationRunning"
                    @onclick="_nodegraphService.StopSimulation">
-                   Stop Simulation
+            Stop Simulation
         </MudButton>
+        
+        @* <MudButton OnClick="AddBoolInverse">Add boolInverse</MudButton> *@
     </div>
 </MudPaper>
 
@@ -88,6 +100,7 @@
     private BlazorDiagram Diagram;
 
     private bool simulationRunning;
+    
 
 
     protected override void OnInitialized()
@@ -97,11 +110,13 @@
         _nodegraphService.OnSimulationStarted += OnSimulationStarted;
         _nodegraphService.OnSimulationStopped += OnSimulationStopped;
         simulationRunning = _nodegraphService.IsSimulationRunning;
+        JsonToGraph(); // load existing graph
     }
 
     private void OnSimulationStarted(object sender, EventArgs e)
     {
         simulationRunning = true;
+        GraphToJson(); // save graph
         InvokeAsync(StateHasChanged);
     }
 
@@ -111,4 +126,37 @@
         InvokeAsync(StateHasChanged);
     }
 
+    public void AddBoolInverse()
+    {
+        Point position;
+        if (Diagram.Nodes.Count == 0)
+        {
+            position = new Point(100, 200);
+        }
+        else
+        {
+            var oldPos = Diagram.Nodes.Last().Position;
+            position = new Point(oldPos.X + 20, oldPos.Y + 20);
+        }
+        
+        var node = Diagram.Nodes.Add(new BoolInverseNodeModel(position: position)
+        {
+            Title = "Bool Inverse"
+        });
+        Diagram.Controls.AddFor(node).Add(new RemoveControl(0.5, 0));
+    }
+
+    public void GraphToJson()
+    {
+        var json = _nodegraphService.GraphToJson();
+        PersistenceHandler.SaveNodegraphJson(json, _nodegraphService.SelectedInstance.StoragePath);
+    }
+
+    public void JsonToGraph()
+    {
+        var json = PersistenceHandler.ReadNodegraphJson(_nodegraphService.SelectedInstance.StoragePath);
+        if(json is "" or null) return;
+        _nodegraphService.JsonToGraph(json);
+    }
+        
 }

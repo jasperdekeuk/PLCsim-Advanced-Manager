@@ -1,12 +1,17 @@
+using System.Text.Json;
+using System.Text.Json.Serialization;
 using Blazor.Diagrams;
 using Blazor.Diagrams.Core;
 using Blazor.Diagrams.Core.Anchors;
+using Blazor.Diagrams.Core.Geometry;
 using Blazor.Diagrams.Core.Models;
+using Blazor.Diagrams.Core.Models.Base;
 using Blazor.Diagrams.Core.PathGenerators;
 using Blazor.Diagrams.Core.Routers;
 using Blazor.Diagrams.Options;
 using MatBlazor;
 using PLCsimAdvanced_Manager.Services.Nodegraph;
+using PLCsimAdvanced_Manager.Services.Nodegraph.BasicLib.BoolInverse;
 using PLCsimAdvanced_Manager.Services.Nodegraph.InputNode;
 using PLCsimAdvanced_Manager.Services.Nodegraph.OutputNode;
 using PLCsimAdvanced_Manager.Services.Nodegraph.PortModel;
@@ -30,7 +35,7 @@ public class NodegraphService
         },
     });
 
-    private IInstance SelectedInstance;
+    public IInstance SelectedInstance;
     private List<BaseNodeModel> sorted = new List<BaseNodeModel>();
     private HashSet<string> visited = new HashSet<string>();
     private SDataValueByName[] inputnodes;
@@ -65,10 +70,11 @@ public class NodegraphService
         Diagram.RegisterComponent<OutputNodeModel<float>, OutputNodeWidget<float>>();
         Diagram.RegisterComponent<OutputNodeModel<double>, OutputNodeWidget<double>>();
 
-        SelectedInstance = SimulationRuntimeManager.CreateInterface(plcInstanceName);
-        
-        _timer = new Timer(_ => GraphExecution(), null, Timeout.Infinite, 10);
+        Diagram.RegisterComponent<BoolInverseNodeModel, BoolInverseNodeWidget>();
 
+        SelectedInstance = SimulationRuntimeManager.CreateInterface(plcInstanceName);
+
+        _timer = new Timer(_ => GraphExecution(), null, Timeout.Infinite, 10);
     }
 
     private void graphCompilation()
@@ -81,7 +87,8 @@ public class NodegraphService
             .Where(node => node is InputNodeModel)
             .ToList();
         var outputDataValueByName = SelectedInstance.TagInfos
-            .Where(e => (e.Area == EArea.Output || e.Area == EArea.DataBlock) && e.PrimitiveDataType != EPrimitiveDataType.Struct)
+            .Where(e => (e.Area == EArea.Output || e.Area == EArea.DataBlock) &&
+                        e.PrimitiveDataType != EPrimitiveDataType.Struct)
             .Select(e => new SDataValueByName
                 { Name = e.Name, DataValue = new SDataValue { Type = e.PrimitiveDataType } })
             .ToArray();
@@ -95,7 +102,8 @@ public class NodegraphService
             .Where(node => node is OutputNodeModel)
             .ToList();
         var inputDataValueByName = SelectedInstance.TagInfos
-            .Where(e => (e.Area == EArea.Input || e.Area == EArea.DataBlock) && e.PrimitiveDataType != EPrimitiveDataType.Struct)
+            .Where(e => (e.Area == EArea.Input || e.Area == EArea.DataBlock) &&
+                        e.PrimitiveDataType != EPrimitiveDataType.Struct)
             .Select(e => new SDataValueByName
                 { Name = e.Name, DataValue = new SDataValue { Type = e.PrimitiveDataType } })
             .ToArray();
@@ -144,43 +152,43 @@ public class NodegraphService
             {
                 if (baseNode is InputNodeModel<bool> boolNode)
                 {
-                    boolNode.Value = inputnode.DataValue.Bool;
+                    boolNode.OutputPort.Value = inputnode.DataValue.Bool;
                 }
                 else if (baseNode is InputNodeModel<byte> byteNode)
                 {
-                    byteNode.Value = inputnode.DataValue.UInt8;
+                    byteNode.OutputPort.Value = inputnode.DataValue.UInt8;
                 }
                 else if (baseNode is InputNodeModel<short> shortNode)
                 {
-                    shortNode.Value = inputnode.DataValue.Int16;
+                    shortNode.OutputPort.Value = inputnode.DataValue.Int16;
                 }
                 else if (baseNode is InputNodeModel<int> intNode)
                 {
-                    intNode.Value = inputnode.DataValue.Int32;
+                    intNode.OutputPort.Value = inputnode.DataValue.Int32;
                 }
                 else if (baseNode is InputNodeModel<long> longNode)
                 {
-                    longNode.Value = inputnode.DataValue.Int64;
+                    longNode.OutputPort.Value = inputnode.DataValue.Int64;
                 }
                 else if (baseNode is InputNodeModel<ushort> ushortNode)
                 {
-                    ushortNode.Value = inputnode.DataValue.UInt16;
+                    ushortNode.OutputPort.Value = inputnode.DataValue.UInt16;
                 }
                 else if (baseNode is InputNodeModel<uint> uintNode)
                 {
-                    uintNode.Value = inputnode.DataValue.UInt32;
+                    uintNode.OutputPort.Value = inputnode.DataValue.UInt32;
                 }
                 else if (baseNode is InputNodeModel<ulong> ulongNode)
                 {
-                    ulongNode.Value = inputnode.DataValue.UInt64;
+                    ulongNode.OutputPort.Value = inputnode.DataValue.UInt64;
                 }
                 else if (baseNode is InputNodeModel<float> floatNode)
                 {
-                    floatNode.Value = inputnode.DataValue.Float;
+                    floatNode.OutputPort.Value = inputnode.DataValue.Float;
                 }
                 else if (baseNode is InputNodeModel<double> doubleNode)
                 {
-                    doubleNode.Value = inputnode.DataValue.Double;
+                    doubleNode.OutputPort.Value = inputnode.DataValue.Double;
                 }
                 else
                 {
@@ -266,19 +274,19 @@ public class NodegraphService
     public void ExecuteSimulation()
     {
         graphCompilation();
-        if (Diagram.Nodes.Count==0)
+        if (Diagram.Nodes.Count == 0)
         {
             return;
         }
-        
-        
+
+
         LockDiagram();
         PlcStartSetup();
         _timer.Change(0, 100);
         IsSimulationRunning = true;
         OnSimulationStarted?.Invoke(this, EventArgs.Empty);
     }
-    
+
     public void StopSimulation()
     {
         _timer.Change(Timeout.Infinite, Timeout.Infinite);
@@ -286,7 +294,7 @@ public class NodegraphService
         IsSimulationRunning = false;
         OnSimulationStopped?.Invoke(this, EventArgs.Empty);
     }
-    
+
     public void Dispose()
     {
         _timer?.Dispose();
@@ -295,7 +303,7 @@ public class NodegraphService
     private async void PlcStartSetup()
     {
         if (SelectedInstance.OperatingState == EOperatingState.Off)
-        { 
+        {
             SelectedInstance.PowerOn();
             SelectedInstance.Run();
         }
@@ -304,4 +312,120 @@ public class NodegraphService
             SelectedInstance.Run();
         }
     }
+
+    public string GraphToJson()
+    {
+        var serializableDiagram = new SerializableDiagram
+        {
+            Nodes = Diagram.Nodes.Select(ToSerializableNode).ToList(),
+            Links = Diagram.Links.Select(ToSerializableLink).ToList()
+        };
+
+        var options = new JsonSerializerOptions
+        {
+            WriteIndented = true,
+            ReferenceHandler = ReferenceHandler.IgnoreCycles
+        };
+        return JsonSerializer.Serialize(serializableDiagram, options);
+    }
+
+    public void JsonToGraph(string json)
+    {
+        if(json is "" or null)
+            return;
+        var options = new JsonSerializerOptions
+        {
+            ReferenceHandler = ReferenceHandler.IgnoreCycles
+        };
+        var serializableDiagram = JsonSerializer.Deserialize<SerializableDiagram>(json, options);
+        if (serializableDiagram != null)
+        {
+            Diagram.Nodes.Clear();
+            Diagram.Links.Clear();
+            foreach (var node in serializableDiagram.Nodes)
+            {
+                var type = Type.GetType(node.Type);
+                if (type == null)
+                    continue;
+
+                var instance = Activator.CreateInstance(type, node.Position) as NodeModel;
+                if (instance == null)
+                    continue;
+
+                // instance.Id = node.Id;
+                instance.Title = node.Title;
+                for (int i = 0; i < instance.Ports.Count; i++)
+                {
+                    var port = instance.Ports[i] as BasePortModel;
+                    if (port == null)
+                        continue;
+                    port.RefId = node.Ports[i].Id;
+                }
+                Diagram.Nodes.Add(instance);
+            }
+
+            foreach (var link in serializableDiagram.Links)
+            {
+                var parent = serializableDiagram.Nodes;
+                var source = Diagram.Nodes.FirstOrDefault(e => e.Ports.Any(p => ((BasePortModel)p).RefId == link.SourceId));
+                var target = Diagram.Nodes.FirstOrDefault(e => e.Ports.Any(p => ((BasePortModel)p).RefId == link.TargetId));
+                if (source == null || target == null)
+                    continue;
+
+                Diagram.Links.Add(new LinkModel(source.Ports.First(p => ((BasePortModel)p).RefId == link.SourceId), target.Ports.First(p => ((BasePortModel)p).RefId == link.TargetId)));
+            }
+        }
+    }
+
+    public SerializedNode ToSerializableNode(NodeModel node)
+    {
+        return new SerializedNode
+        {
+            Id = node.Id,
+            Type = node.GetType().FullName,
+            Position = node.Position,
+            Title = node.Title,
+            Ports = node.Ports.Select(port => new SerializedPort
+            {
+                Id = port.Id,
+                Type = port.GetType().FullName
+            }).ToList()
+        };
+    }
+
+    public SerializedLink ToSerializableLink(BaseLinkModel link)
+    {
+        return new SerializedLink
+        {
+            SourceId = ((SinglePortAnchor)link.Source).Port.Id,
+            TargetId = ((SinglePortAnchor)link.Target).Port.Id
+        };
+    }
+}
+
+public class SerializedNode
+{
+    public string Id { get; set; }
+    public string Type { get; set; }
+    public Point Position { get; set; }
+    public string Title { get; set; }
+    public List<SerializedPort> Ports { get; set; }
+}
+
+public class SerializedPort
+{
+    public string Id { get; set; }
+    public string Type { get; set; }
+}
+
+public class SerializedLink
+{
+    public string SourceId { get; set; }
+    public string TargetId { get; set; }
+}
+
+public class SerializableDiagram
+{
+    public List<SerializedNode> Nodes { get; set; }
+    public List<SerializedLink> Links { get; set; }
 }

@@ -1,5 +1,6 @@
 using Blazor.Diagrams.Core.Anchors;
 using Blazor.Diagrams.Core.Geometry;
+using PLCsimAdvanced_Manager.Services.Nodegraph.BasicLib.BoolInverse;
 using PLCsimAdvanced_Manager.Services.Nodegraph.InputNode;
 using PLCsimAdvanced_Manager.Services.Nodegraph.PortModel;
 
@@ -10,11 +11,12 @@ public abstract class OutputNodeModel(Point position) : BaseNodeModel(position)
 }
 public class OutputNodeModel<T> : OutputNodeModel
 {
+    public InputPortModel<T> InputPort { get; set; }
     public T? Value { get; set; }
-
     public OutputNodeModel(Point position) : base(position)
     {
-        AddPort(new InputPortModel<T>(this));
+        InputPort = new InputPortModel<T>(this);
+        AddPort(InputPort);
     }
 
     public override void Calculate()
@@ -22,7 +24,7 @@ public class OutputNodeModel<T> : OutputNodeModel
         var source = PortLinks.First().Source as SinglePortAnchor;
         if (source == null)
             return;
-        Value = (source.Port.Parent as InputNodeModel<T>).Value;
+        Value = (source.Port as OutputPortModel<T>).Value;
         
     }
 }
