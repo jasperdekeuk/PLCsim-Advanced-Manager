@@ -31,6 +31,25 @@ public static class StartupTasks
 
                             if (settings.PowerOnOnStartup)
                             {
+                                switch (settings.CommunicationInterface)
+                                {
+                                    case "PLCSIM":
+                                        instance.CommunicationInterface = ECommunicationInterface.Softbus;
+                                        break;
+                                    case "TCPIP-single":
+                                        instance.CommunicationInterface = ECommunicationInterface.TCPIP;
+                                        SimulationRuntimeManager.NetworkMode = ECommunicationMode.Promiscuous;
+                                        break;
+                                    case "TCPIP-multiple":
+                                        instance.CommunicationInterface = ECommunicationInterface.TCPIP;
+                                        SimulationRuntimeManager.NetworkMode = ECommunicationMode.Non_Promiscuous;
+                                        break;
+                                    default:
+                                        instance.CommunicationInterface = ECommunicationInterface.Softbus;
+                                        break;
+                                }
+
+                                
                                 instance.PowerOn();
                                 
                             }
@@ -54,6 +73,8 @@ public class PersistenceSettings
 {
     [JsonPropertyName("RegisterOnStartup")] public bool RegisterOnStartup { get; set; } = false;
     [JsonPropertyName("PowerOnOnStartup")] public bool PowerOnOnStartup { get; set; } = false;
+    [JsonPropertyName("CommunicationInterface")] public string CommunicationInterface { get; set; } = "PLCSIM";
+    
 }
 
 public class Persistence

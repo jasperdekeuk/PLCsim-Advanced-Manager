@@ -46,11 +46,12 @@ public class PersistenceHandler
         }
     }
 
-    public void UpdateSettings(string directory, bool registerOnStartup , bool powerOnOnStartup)
+    public void UpdateSettings(string directory, bool registerOnStartup , bool powerOnOnStartup, string communicationInterface)
     {
         setStuffRight(directory);
         _settings.RegisterOnStartup = registerOnStartup;
         _settings.PowerOnOnStartup = powerOnOnStartup;
+        _settings.CommunicationInterface = communicationInterface;
         SaveSettings();
     }
 
@@ -106,6 +107,9 @@ public class PersistenceSettings
     public bool RegisterOnStartup { get; set; } = false;
 
     [JsonPropertyName("PowerOnOnStartup")] public bool PowerOnOnStartup { get; set; } = false;
+
+    [JsonPropertyName("CommunicationInterface")]
+    public string CommunicationInterface { get; set; } = "PLCSIM";
 }
 
 public class NodegraphJson

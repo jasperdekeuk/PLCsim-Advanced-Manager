@@ -26,6 +26,16 @@
                             <MudCheckBox @bind-Checked="PowerOnStartup"></MudCheckBox>
                         </MudStack>
                     </MudItem>
+                    <MudItem xs="4">
+                        <MudStack>
+                            <MudText Typo="Typo.subtitle2">Communication Interface</MudText>
+                            <MudSelect T="string" @bind-Value="CommunicationInterface" OnKeyDown="updateSettings">
+                                <MudSelectItem Value="@("PLCSIM")">PLCSIM</MudSelectItem>
+                                <MudSelectItem Value="@("TCPIP-single")">TCP/IP Single Adapter</MudSelectItem>
+                                <MudSelectItem Value="@("TCPIP-multiple")">TCP/IP Multiple Adapter</MudSelectItem>
+                            </MudSelect>
+                        </MudStack>
+                    </MudItem>
                 </MudGrid>
             </MudCard>
 
@@ -41,6 +51,7 @@
     private bool _registerOnStartup;
     private bool _powerOnStartup;
     private bool _runOnStartup;
+    private string _communicationInterface = "PLCSIM";
 
     private IInstance SelectedInstance;
 
@@ -52,6 +63,7 @@
         {
             _registerOnStartup = settings.RegisterOnStartup;
             _powerOnStartup = settings.PowerOnOnStartup;
+            _communicationInterface = settings.CommunicationInterface;
         }
 
         return base.OnInitializedAsync();
@@ -71,7 +83,7 @@
                 }
             }
 
-            persistenceHandler.UpdateSettings(SelectedInstance.StoragePath, RegisterOnStartup, PowerOnStartup);
+            updateSettings();
         }
     }
 
@@ -89,8 +101,27 @@
                 }
             }
 
-            persistenceHandler.UpdateSettings(SelectedInstance.StoragePath, RegisterOnStartup, PowerOnStartup);
+            updateSettings();
         }
+    }
+    
+    
+    public string CommunicationInterface
+    {
+        get => _communicationInterface;
+        set
+        {
+            if (_communicationInterface != value)
+            {
+                _communicationInterface = value;
+                updateSettings();
+            }
+        }
+    }
+
+    private void updateSettings()
+    {
+        persistenceHandler.UpdateSettings(SelectedInstance.StoragePath, RegisterOnStartup, PowerOnStartup, _communicationInterface.ToString());
     }
 
 }
