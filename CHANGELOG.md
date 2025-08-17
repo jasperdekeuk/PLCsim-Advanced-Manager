@@ -7,6 +7,13 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ## [Unreleased]
 
+## [0.1.6] - 2025-08-17
+Minor update
+
+### Features
+- Save nodegraph as json in persistence.json
+- Network settings of instance now settable for auto-startup
+
 ## [0.1.5] - 2024-12-15
 Stabilizing the features of the last version
 
